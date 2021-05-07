@@ -2,6 +2,23 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 
+{% if tolkien_book_list %}
+    <ul>
+    {% for book in tolkien_book_list %}
+        <li><a href="{% url 'polls:book' book.id %}">
+            {{ book.title }}
+        </a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No books are available.</p>
+{% endif %}
+
+
+<!-- {% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
@@ -10,4 +27,4 @@
     </ul>
 {% else %}
     <p>No polls are available.</p>
-{% endif %}
+{% endif %} -->
