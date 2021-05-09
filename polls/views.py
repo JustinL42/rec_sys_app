@@ -3,6 +3,9 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
+from django.contrib.postgres.search import \
+    SearchQuery, SearchRank
+from django.db.models import F, Value
 
 from .models import Choice, Question, Books
 
@@ -45,8 +48,6 @@ def book(request, book_id):
     if not book.pages:
         book.pages = "Unknown number of"
 
-    book.book_type = book.book_type[0] + book.book_type[1:].lower()
-
     template_data = dict(
         title_id=book_id,
         title=book.title,
@@ -78,6 +79,27 @@ def book(request, book_id):
     rendered_page = render(request, "polls/book.html", template_data)
     if rendered_page is not None:
         return rendered_page
+
+
+class SearchResultsView(generic.ListView):
+    model = Books
+    template_name = 'polls/search_results.html'
+
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        query = SearchQuery(search, config="isfdb_title_tsc")
+        return (
+            Books.objects.filter(**{'general_search': query})
+            .annotate(rank=SearchRank(
+                F('general_search'), 
+                query,
+                normalization=Value(8),
+                cover_density=True
+            )
+            ).order_by("-rank")
+
+        ) 
+
 
 
 class DetailView(generic.DetailView):

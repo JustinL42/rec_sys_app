@@ -1,6 +1,9 @@
-{% load static %}
+{% extends "polls/base.html" %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+{% block title %}Index page{% endblock %}
+
+{% block content %}
+
 
 {% if tolkien_book_list %}
     <ul>
@@ -28,3 +31,5 @@
 {% else %}
     <p>No polls are available.</p>
 {% endif %} -->
+
+{% endblock %}

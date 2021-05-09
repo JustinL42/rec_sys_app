@@ -1,6 +1,26 @@
 li a {
-    color: green;
+    color: black;
 }
 body {
-    background: white url("images/background.gif") no-repeat;
+    /*background: white url("images/background.gif");*/
+}
+input {
+  width: 100%;
+}
+.search_bar_table {
+  width: 100%;
+}
+.center {
+    margin: auto;
+    width: 70%;
+    padding: 10px;
+}
+.short_book_data {
+    text-align: left;
+    vertical-align: top;
+    /*width: 50%;*/
+}
+.cover_image {
+  width: auto;
+  max-height: 300px;
 }
