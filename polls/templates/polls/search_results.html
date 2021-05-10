@@ -1,0 +1,16 @@
+{% extends "polls/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+
+<h1>Search Results</h1>
+
+    <table class=book_list_table>
+        {% for book in object_list %}
+            {% book_row_item book %}
+        {% endfor %}
+    </table>
+
+{% endblock %}

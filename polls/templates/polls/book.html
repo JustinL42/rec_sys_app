@@ -1,4 +1,6 @@
 {% extends "polls/base.html" %}
+{% load isfdb_image_handling %}
+
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -9,10 +11,15 @@
 <table>
     <tr>
         <th>
-            <img class="cover_image" src="{{ cover_image }}" alt="book cover">
+            <a href="{{ cover_image|localize_isfdb_image_url }}">
+            <img class="cover_image" 
+                src="{{ cover_image|localize_isfdb_image_url }}" 
+                alt="book cover for {{ title }}">
+            </a>
         </th>
         <th class="short_book_data">
-            <p>{{ book_type|title }}, {{ pages }} pages<br>
+            <p>{{ book_type|title }}, 
+                {{ pages|default:"Unknown number of" }} pages<br>
             {% if series_str_1 %}
                 {{ series_str_1 }}<br>
                 {% if series_str_2 %}
@@ -38,20 +45,26 @@
         </th>
     <tr>
 </table>
-{% if ambi_isbn %}
+{% if inconsistent %}
     <h4>WARNING: This entry was created by merging two or more records for books that are mostly the same, but may have some differences in contents. This can happen a novel is re-published with additional material or short fiction, or an anthology is republished with a different set of stories, but the same ISBN is reused. If you give this book a rating, keep in mind that you may have read a different book than other people who have given this book a rating, and this could confuse the rating systems if the contents are actually very different. Look at the "Alternate Titles" field and "More Images" to help decide if the contents are generally the same. The "Contents" section should show all novels and novellas (but not short stories) included in all the merged records. </h4>
 {% endif %}
 
 
 {% if original_lang != 'English' or note or not stand_alone%}
     <h4>Notes:</h4>
-    {% if original_lang != 'English' %}
-        <h4>This is book is a translation from {{ original_lang }} of the original book {{ original_title }} ({{ original_year }}).</h4>
-    {% endif %}
     {% if not stand_alone %}
         <h4>This title isn't available as a stand-alone book. See the "Contained in" section to see which volumes it was published in.</h4>
     {% endif %}
-    {% if note %}
+    {% if original_lang != 'English' %}
+        <h4>This is book is a translation from {{ original_lang }} of the original book <i>{{ original_title }}</i> ({{ original_year }}).</h4>
+        <h1>Translations:</h1>
+        <table width="auto" class="tr_table">
+            <tr><th>Year</th><th>Title</th><th>Notes</th></tr>
+            {% for tr in translations %}
+                <tr><th>{{ tr.year }}</th><th>{{ tr.title }}</th><th>{{ tr.note }}</th></tr>
+            {% endfor %}
+        </table>
+    {% elif note %}
         <h4>{{ note|safe }}</h4>
     {% endif %}
 {% endif %}
@@ -59,7 +72,35 @@
 {% if synopsis %}
     <h4>Synopsis:</h4>
     <h4>{{ synopsis|safe }}</h4>
+{% endif %}
 
+{% if contents %}
+    <h1>Title{{contents|pluralize:"s"}}  contained in this book:</h1>
+    <table>
+    {% for book in contents %}
+        {% book_row_item book %}
+    {% endfor %}
+    </table>
+{% endif %}
+
+{% if containers %}
+    <h1>This title can be found in {{containers|pluralize:"this,these"}} book{{containers|pluralize:"s"}}:</h1>
+    <table>
+    {% for book in containers %}
+        {% book_row_item book %}
+    {% endfor %}
+    </table>
+{% endif %}
+
+{% if more_images %}
+    <h1>More Cover Images:</h1>
+    {% for cover in more_images %}
+        <a href="{{ cover.image|localize_isfdb_image_url }}">
+        <img class="cover_image" 
+            src="{{ cover.image|localize_isfdb_image_url }}" 
+            alt="book cover for {{ title }}">
+        </a>
+    {% endfor %}
 {% endif %}
 
 {% endblock %}

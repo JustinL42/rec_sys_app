@@ -1,0 +1,38 @@
+{% load static %}
+
+<link rel="stylesheet" 
+    type="text/css" 
+    href="{% static 'polls/style.css' %}">
+
+<head>
+  <title>
+    {% block title %}
+    {% endblock %}
+  </title>
+</head>
+
+<body>
+<header>
+    <form action="{% url 'polls:search_results' %}" 
+        method="get">
+        <table class="search_bar_table">
+            <tr>
+                <th>
+                    <input type="text" 
+                        name="search"
+                        placeholder="Search by title, author, or ISBN"
+                        value="{{request.GET.books}}">
+                </th>
+                <th>
+                    <input type="submit" value="Search">
+                </th>
+            </tr>
+        </table>
+    </form>
+</header>
+<div class="center">
+{% block content %}
+{% endblock %}
+<footer>Footer placeholder</footer>
+</div>
+</body>

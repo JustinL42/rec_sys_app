@@ -1,0 +1,46 @@
+{% load isfdb_image_handling %}
+
+<tr>
+	<td>
+		<a href="{% url 'polls:book' book.id %}">
+		<img class="thumbnail_cover"
+			src="{{ book.cover_image|localize_isfdb_image_url }}" 
+			alt="book cover for {{ book.title }}">
+		</a>
+	</td>
+	<td>
+		<p class='short_book_data'>
+			<a href="{% url 'polls:book' book.id %}">
+			{{ book.title }}</a> 
+			({{ book.year }})
+			<br>by {{book.authors}}
+			<br>{{ book.book_type|title }}
+			{% if book.pages %}, {{ book.pages }} p. {% endif %}
+    		<br>{{ book.series_str_1|default:"" }}
+		</p>
+		<table width="500px"><tr>
+			<td width="25%">
+				{% if book.award_winner %}
+				<mark class='award_mark' 
+				title="This book won an award">won award<mark>
+    			{% endif %}
+			</td>
+			<td width="25%">
+		    	{% if book.juvenile %}
+		    	<mark class='jvnya_mark' 
+		    	title="juvenile or young adult literature">JVN / YA</mark>
+    			{% endif %}
+			</td>
+			<td width="25%">
+		    	{% if book.wikipedia %}
+		    	<a href="{{ book.wikipedia }}">Wikipedia</a>
+    			{% endif %}
+			</td>
+			<td width="25%">
+		    	<a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.title_id }}">ISFDB</a>
+			</td>
+		</tr></table>
+
+    	</p>
+	</td>
+</tr>

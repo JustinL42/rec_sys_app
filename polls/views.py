@@ -7,7 +7,8 @@ from django.contrib.postgres.search import \
     SearchQuery, SearchRank
 from django.db.models import F, Value
 
-from .models import Choice, Question, Books
+from .models import Choice, Question, Books, More_Images, Contents, \
+    Translations, Words
 
 
 class IndexView(generic.ListView):
@@ -19,34 +20,27 @@ class IndexView(generic.ListView):
             authors="J. R. R. Tolkien"
         ).order_by('year')[:5]
 
-# class IndexView(generic.ListView):
-#     template_name = 'polls/index.html'
-#     context_object_name = 'latest_question_list'
-
-#     def get_queryset(self):
-#         """
-#         Return the last five published questions (not including those set to be
-#         published in the future).
-#         """
-#         return Question.objects.filter(
-#             pub_date__lte=timezone.now()
-#         ).order_by('-pub_date')[:5]
-
 
 def book(request, book_id):
     book = get_object_or_404(Books, id=book_id)
+    
 
-    if not book.cover_image:
-        book.cover_image = "/static/polls/images/default_book_image.svg"
-    elif "isfdb.org" in book.cover_image:
-        try:
-            image_loc = book.cover_image.split("/images/")[1]
-            book.cover_image = "/static/polls/images/isfdb/" + image_loc
-        except:
-            book.cover_image = "/static/polls/images/default_book_image.svg"
+    content_query_set = Contents.objects.filter(book_title_id=book.id)
+    contents = [ Books.objects.filter(pk=c.content_title_id)[0] 
+                for c in content_query_set]
 
-    if not book.pages:
-        book.pages = "Unknown number of"
+    container_query_set = Contents.objects.filter(content_title_id=book.id)
+    containers = [ Books.objects.filter(pk=c.book_title_id)[0] 
+                for c in container_query_set]
+
+    if book.original_lang == "English":
+        translations = []
+    else:
+        translations = Translations.objects \
+        .filter(newest_title_id=book.id) \
+        .order_by('year')
+
+    more_images = More_Images.objects.filter(title_id=book.id)
 
     template_data = dict(
         title_id=book_id,
@@ -72,9 +66,14 @@ def book(request, book_id):
         cover_image=book.cover_image,
         wikipedia=book.wikipedia,
         synopsis=book.synopsis,
-        note=book.note
+        note=book.note,
+        translations=translations,
+        contents=contents,
+        containers=containers,
+        more_images=more_images
 
     )
+
 
     rendered_page = render(request, "polls/book.html", template_data)
     if rendered_page is not None:
@@ -87,7 +86,8 @@ class SearchResultsView(generic.ListView):
 
     def get_queryset(self):
         search = self.request.GET.get('search')
-        query = SearchQuery(search, config="isfdb_title_tsc")
+        query = SearchQuery(
+            search, config="isfdb_title_tsc", search_type='websearch')
         return (
             Books.objects.filter(**{'general_search': query})
             .annotate(rank=SearchRank(

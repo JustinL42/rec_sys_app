@@ -12,15 +12,34 @@ input {
 }
 .center {
     margin: auto;
-    width: 70%;
+    width: 80%;
     padding: 10px;
 }
 .short_book_data {
     text-align: left;
     vertical-align: top;
-    /*width: 50%;*/
 }
 .cover_image {
   width: auto;
   max-height: 300px;
+}
+.thumbnail_cover {
+    width: auto;
+    max-height: 150px;
+}
+.book_list_table {
+  width: 100%
+}
+.award_mark {
+  background-color: green;
+  color: white;
+}
+.jvnya_mark{
+  background-color: purple;
+  color: white;
+}
+.tr_table * {
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align: left;
 }
