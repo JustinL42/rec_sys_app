@@ -1,5 +1,4 @@
 from django.contrib.auth.forms import ValidationError
-from django.urls import reverse_lazy
 from django.views.generic import View
 from django.shortcuts import render
 from django.contrib.auth.models import User

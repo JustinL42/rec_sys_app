@@ -1,23 +1,6 @@
 from django.contrib import admin
 
-from .models import Choice, Question, Books, Isbns, Translations, \
-    Contents, More_Images, Words
-
-
-class ChoiceInline(admin.TabularInline):
-    model = Choice
-    extra = 3
-
-
-class QuestionAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None,               {'fields': ['question_text']}),
-        ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
-    ]
-    inlines = [ChoiceInline]
-    list_display = ('question_text', 'pub_date', 'was_published_recently')
-    list_filter = ['pub_date']
-    search_fields = ['question_text']
+from .models import Books, Isbns, Translations, Contents, More_Images, Words
 
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'authors')
@@ -27,7 +10,6 @@ class IsbnsAdmin(admin.ModelAdmin):
     list_display = ('isbn', 'title_id')
     search_fields = ['isbn', 'title_id']
 
-
 class TranslationAdmin(admin.ModelAdmin):
     list_display = ('title', 'note')
     search_fields = ['title']
@@ -36,7 +18,6 @@ class ContentsAdmin(admin.ModelAdmin):
     list_display = ('book_title_id', 'content_title_id')
     search_fields = ['book_title_id', 'content_title_id']
 
-
 class More_ImagesAdmin(admin.ModelAdmin):
     list_display = ('title_id', 'image')
     search_fields = ['title_id']
@@ -44,8 +25,6 @@ class More_ImagesAdmin(admin.ModelAdmin):
 class WordsAdmin(admin.ModelAdmin):
     list_display = ('word', )
     search_fields = ['word']
-
-
 
 admin.site.register(Books, BookAdmin)
 admin.site.register(Isbns, IsbnsAdmin)
