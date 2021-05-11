@@ -1,0 +1,25 @@
+{% extends "polls/base.html" %}
+
+{% block title %}Username Change{% endblock %}
+
+{% block content %}
+	<h1>Change Username</h1>
+	{% if error_text %}
+	<li>{{ error_text }}</li>
+	{% endif %}
+    <form action="{% url 'username_change' %}" method="POST">
+    	{% csrf_token %}
+        <table>
+            <tr>
+                <th>
+                    <input type="text" 
+                        name="new_username"
+                        value="{{request.POST.new_username}}">
+                </th>
+                <th>
+                    <input type="submit" value="Submit">
+                </th>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

@@ -15,9 +15,42 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls import url
+
+from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-	path('', include('polls.urls')),
+	path('', include('polls.urls'), name='home'),
     path('polls/', include('polls.urls')),
+    
+    url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
+    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
+
+    url(r'^password_reset/$', 
+        auth_views.PasswordResetView.as_view(), 
+        name='password_reset'),
+
+    url(r'^password_reset/done/$', 
+        auth_views.PasswordResetDoneView.as_view(), 
+        name='password_reset_done'),
+
+    path('reset/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(), 
+        name='password_reset_confirm'),
+
+    url(r'^reset/done/$', 
+        auth_views.PasswordResetCompleteView.as_view(), 
+        name='password_reset_complete'),
+    url(r'^password_change/$',
+        auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html'),
+        name='password_change'
+    ),
+    url(r'^password_change_done/$',
+        auth_views.PasswordChangeDoneView.as_view(),
+        name='password_change_done'
+    ),
+    url(r'^username_change/$', views.UserNameChangeView.as_view(), name='username_change'),
+    url(r'^account_delete/$', views.AccountDeleteView.as_view(), name='account_delete'),
     path('admin/', admin.site.urls),
 ]

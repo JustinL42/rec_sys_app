@@ -43,3 +43,6 @@ input {
   border-collapse: collapse;
   text-align: left;
 }
+.change_password_table * {
+  vertical-align: top;
+}

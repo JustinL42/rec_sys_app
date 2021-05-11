@@ -11,8 +11,8 @@ from .models import Choice, Question, Books, More_Images, Contents, \
     Translations, Words
 
 
-class IndexView(generic.ListView):
-    template_name = 'polls/index.html'
+class HomeView(generic.ListView):
+    template_name = 'polls/home.html'
     context_object_name = 'tolkien_book_list'
 
     def get_queryset(self):
@@ -71,7 +71,6 @@ def book(request, book_id):
         contents=contents,
         containers=containers,
         more_images=more_images
-
     )
 
 
