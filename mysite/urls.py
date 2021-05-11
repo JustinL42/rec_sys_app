@@ -21,8 +21,8 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-	path('', include('polls.urls'), name='home'),
-    path('polls/', include('polls.urls')),
+	path('', include('recsys.urls'), name='home'),
+    path('recsys/', include('recsys.urls')),
     
     url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),

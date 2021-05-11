@@ -2,7 +2,7 @@
 
 <tr>
 	<td>
-		<a href="{% url 'polls:book' book.id %}">
+		<a href="{% url 'recsys:book' book.id %}">
 		<img class="thumbnail_cover"
 			src="{{ book.cover_image|localize_isfdb_image_url }}" 
 			alt="book cover for {{ book.title }}">
@@ -10,7 +10,7 @@
 	</td>
 	<td>
 		<p class='short_book_data'>
-			<a href="{% url 'polls:book' book.id %}">
+			<a href="{% url 'recsys:book' book.id %}">
 			{{ book.title }}</a> 
 			({{ book.year }})
 			<br>by {{book.authors}}

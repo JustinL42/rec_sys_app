@@ -1,4 +1,4 @@
-{% extends "polls/base.html" %}
+{% extends "recsys/base.html" %}
 
 {% block title %}Home Page{% endblock %}
 
@@ -17,7 +17,7 @@
 {% if tolkien_book_list %}
     <ul>
     {% for book in tolkien_book_list %}
-        <li><a href="{% url 'polls:book' book.id %}">
+        <li><a href="{% url 'recsys:book' book.id %}">
             {{ book.title }}
         </a></li>
     {% endfor %}

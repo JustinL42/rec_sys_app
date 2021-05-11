@@ -1,4 +1,4 @@
 __pycache__/
-polls/static/polls/images/isfdb/*
+recsys/static/recsys/images/isfdb/*
 sent_emails/*
 

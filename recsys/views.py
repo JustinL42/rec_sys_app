@@ -7,7 +7,7 @@ from .models import Books, More_Images, Contents, Translations, Words
 
 
 class HomeView(generic.ListView):
-    template_name = 'polls/home.html'
+    template_name = 'recsys/home.html'
     context_object_name = 'tolkien_book_list'
 
     def get_queryset(self):
@@ -69,14 +69,14 @@ def book(request, book_id):
     )
 
 
-    rendered_page = render(request, "polls/book.html", template_data)
+    rendered_page = render(request, "recsys/book.html", template_data)
     if rendered_page is not None:
         return rendered_page
 
 
 class SearchResultsView(generic.ListView):
     model = Books
-    template_name = 'polls/search_results.html'
+    template_name = 'recsys/search_results.html'
 
     def get_queryset(self):
         search = self.request.GET.get('search')
