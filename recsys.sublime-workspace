@@ -1,0 +1,2024 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"vir",
+				"virtual"
+			],
+			[
+				"In",
+				"IntegerField"
+			],
+			[
+				"Rat",
+				"RatingAdmin"
+			],
+			[
+				"Data",
+				"DataProblemAdmin"
+			],
+			[
+				"de",
+				"default"
+			],
+			[
+				"m",
+				"max_length"
+			],
+			[
+				"A",
+				"AUTH_USER_MODEL"
+			],
+			[
+				"virt",
+				"virtual_member"
+			],
+			[
+				"Us",
+				"UserAdmin"
+			],
+			[
+				"Boo",
+				"BookClubAdminForm"
+			],
+			[
+				"U",
+				"UserAdmin"
+			],
+			[
+				"e",
+				"error_text"
+			],
+			[
+				"use",
+				"username"
+			],
+			[
+				"ne",
+				"new_username"
+			],
+			[
+				"as",
+				"as_view"
+			],
+			[
+				"mo",
+				"more_images"
+			],
+			[
+				"search",
+				"search_query"
+			],
+			[
+				"sea",
+				"search_query"
+			],
+			[
+				"te",
+				"text-align\tproperty"
+			],
+			[
+				"C",
+				"CREATE_SEARCH_INDEXES"
+			],
+			[
+				"lang",
+				"lang_name"
+			],
+			[
+				"lan",
+				"lang_name"
+			],
+			[
+				"fet",
+				"fetchone"
+			],
+			[
+				"l",
+				"language_name"
+			],
+			[
+				"en",
+				"entity_name"
+			],
+			[
+				"my",
+				"my_lang"
+			],
+			[
+				"cr",
+				"CREATE_SEACH_INDEXES"
+			],
+			[
+				"ser",
+				"series_str_2"
+			],
+			[
+				"sourc",
+				"source_cur"
+			],
+			[
+				"seri",
+				"seriesnum_2"
+			],
+			[
+				"sour",
+				"source_cur"
+			],
+			[
+				"Bo",
+				"BooleanField"
+			],
+			[
+				"i",
+				"isbn_claimants"
+			],
+			[
+				"winner",
+				"winner_id"
+			],
+			[
+				"tit",
+				"titles_match"
+			],
+			[
+				"a_b",
+				"a_b_book_types"
+			],
+			[
+				"delete",
+				"delete_isbn"
+			],
+			[
+				"cl",
+				"claimant_cover_image"
+			],
+			[
+				"lo",
+				"logger"
+			],
+			[
+				"cla",
+				"claimant"
+			],
+			[
+				"winne",
+				"winner_id"
+			],
+			[
+				"isbn_",
+				"isbn_claimants"
+			],
+			[
+				"is",
+				"isbns_deduped"
+			],
+			[
+				"du",
+				"duplicate_isbn"
+			],
+			[
+				"isbns_",
+				"isbns_errored"
+			],
+			[
+				"sou",
+				"source_cur"
+			],
+			[
+				"dest",
+				"dest_cur"
+			],
+			[
+				"squar",
+				"squared"
+			],
+			[
+				"la",
+				"language_dict"
+			],
+			[
+				"N",
+				"N_THREADS"
+			],
+			[
+				"add",
+				"added_to_db"
+			],
+			[
+				"titles",
+				"titles_errored"
+			],
+			[
+				"titles_",
+				"titles_errored"
+			],
+			[
+				"title",
+				"titles_added"
+			],
+			[
+				"proc",
+				"process_title"
+			],
+			[
+				"PRo",
+				"PROGRESS_BAR"
+			],
+			[
+				"P",
+				"PROGRESS_BAR"
+			],
+			[
+				"exc",
+				"excluded_authurs"
+			],
+			[
+				"NO",
+				"NOVELLA"
+			],
+			[
+				"ti",
+				"title_language"
+			],
+			[
+				"tra",
+				"translation_title"
+			],
+			[
+				"ps",
+				"psg_cur"
+			],
+			[
+				"psg",
+				"psg_conn"
+			],
+			[
+				"syno",
+				"synopsis"
+			],
+			[
+				"ori",
+				"original_year"
+			],
+			[
+				"origina",
+				"original_title"
+			],
+			[
+				"ex",
+				"execute"
+			],
+			[
+				"orig",
+				"original_title"
+			],
+			[
+				"paren",
+				"parent_id"
+			],
+			[
+				"se",
+				"series_str_2"
+			],
+			[
+				"serie",
+				"series_str_1"
+			],
+			[
+				"seriesn",
+				"seriesnum"
+			],
+			[
+				"syn",
+				"synopsis_id"
+			],
+			[
+				"get",
+				"get_sql_alchemy_cursur"
+			],
+			[
+				"tot",
+				"total_time"
+			],
+			[
+				"cover",
+				"cover_image"
+			],
+			[
+				"pref",
+				"preferred_isbns"
+			],
+			[
+				"E",
+				"ENGLISH"
+			],
+			[
+				"cove",
+				"cover_image"
+			],
+			[
+				"cov",
+				"cover_image"
+			],
+			[
+				"fr",
+				"front_image"
+			],
+			[
+				"pag",
+				"pages_sort"
+			],
+			[
+				"pub_p",
+				"pub_ptype"
+			],
+			[
+				"favr",
+				"favor_hard_cover"
+			],
+			[
+				"fetch",
+				"fetchall"
+			],
+			[
+				"wiki",
+				"wiki_links"
+			],
+			[
+				"conn",
+				"connection"
+			],
+			[
+				"pa",
+				"parent_language"
+			],
+			[
+				"auth",
+				"author_str"
+			],
+			[
+				"author",
+				"authors"
+			],
+			[
+				"par",
+				"parent_series"
+			],
+			[
+				"s",
+				"series_str"
+			],
+			[
+				"mysq",
+				"mysql_cur"
+			],
+			[
+				"boo",
+				"book_list"
+			],
+			[
+				"templ",
+				"template_data"
+			],
+			[
+				"bo",
+				"book_id"
+			],
+			[
+				"original",
+				"original_isbn"
+			],
+			[
+				"mean",
+				"means_df"
+			],
+			[
+				"ratin",
+				"rating_scale"
+			],
+			[
+				"lar",
+				"large_data"
+			],
+			[
+				"sma",
+				"small_data"
+			],
+			[
+				"raw",
+				"raw_trainset"
+			],
+			[
+				"large_",
+				"large_indices"
+			],
+			[
+				"sm",
+				"small_reader"
+			],
+			[
+				"small_",
+				"small_df"
+			],
+			[
+				"aver",
+				"average_item_imbalance"
+			],
+			[
+				"av",
+				"average_item_imbalance"
+			],
+			[
+				"averag",
+				"average_user_imbalance"
+			],
+			[
+				"to",
+				"total_imbalance"
+			],
+			[
+				"in",
+				"instanceCounts"
+			],
+			[
+				"u_",
+				"u_count"
+			],
+			[
+				"sim",
+				"similarity"
+			],
+			[
+				"us",
+				"user_raw_id"
+			],
+			[
+				"K",
+				"KNNWithZScore"
+			],
+			[
+				"be",
+				"best_params"
+			],
+			[
+				"rm",
+				"rmse_to_beat"
+			],
+			[
+				"user",
+				"user_id"
+			],
+			[
+				"r",
+				"ratings_count_df"
+			],
+			[
+				"rat",
+				"ratings_for_known_books"
+			],
+			[
+				"ra",
+				"ratings_count_df"
+			],
+			[
+				"sq",
+				"sql_query"
+			],
+			[
+				"bc",
+				"bc_ratings_df"
+			],
+			[
+				"file",
+				"filesUnzipped"
+			],
+			[
+				"df_",
+				"df_books"
+			],
+			[
+				"book",
+				"book_club_data"
+			],
+			[
+				"aut",
+				"autocommit"
+			],
+			[
+				"copy",
+				"copy_expert"
+			],
+			[
+				"utf",
+				"utf-users"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "recsys/models.py",
+			"settings":
+			{
+				"buffer_size": 6603,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "recsys/admin.py",
+			"settings":
+			{
+				"buffer_size": 1857,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 124.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"netloc",
+				"Convert Case: Lower Case"
+			],
+			[
+				"projec",
+				"Project: Add Folder"
+			],
+			[
+				"sublimeliner",
+				"Preferences: SublimeLinter Settings"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instll",
+				"Package Control: Install Local Dependency"
+			],
+			[
+				"inde",
+				"Indent XML"
+			],
+			[
+				"xml",
+				"Indent XML"
+			],
+			[
+				"fold",
+				"Code Folding: Unfold All"
+			],
+			[
+				"xmpl",
+				"Snippet: XML Processing Instruction"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Discover Packages"
+			],
+			[
+				"packaeg",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"git commit",
+				"Git: Commit"
+			],
+			[
+				"git commi",
+				"Git: Commit"
+			],
+			[
+				"git ad",
+				"Git: Add All"
+			],
+			[
+				"git status",
+				"Git: Status"
+			],
+			[
+				"git comm",
+				"Git: Commit"
+			],
+			[
+				"git add",
+				"Git: Add All"
+			],
+			[
+				"git",
+				"Git: Add All"
+			],
+			[
+				"git push",
+				"Git: Push"
+			],
+			[
+				"git com",
+				"Git: Commit"
+			],
+			[
+				"git add \t",
+				"Git: Add All"
+			],
+			[
+				"git puhs",
+				"Git: Push"
+			],
+			[
+				"git add all",
+				"Git: Add All"
+			],
+			[
+				"git add ",
+				"Git: Add All"
+			],
+			[
+				"git pull",
+				"Git: Pull"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			],
+			[
+				"viewe",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"ke",
+				"Preferences: Key Bindings"
+			],
+			[
+				"auto",
+				"AutoHotkey - Run"
+			],
+			[
+				"git add c",
+				"Git: Add Current File"
+			],
+			[
+				"git qui",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings"
+			],
+			[
+				"git Qu\t",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git ignoe",
+				"Git: Update Project Ignored Files"
+			],
+			[
+				"git qu",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"push",
+				"Git: Push"
+			],
+			[
+				"qui",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git stat",
+				"Git: Status"
+			],
+			[
+				"git statu",
+				"Git: Status"
+			],
+			[
+				"sublime tuto",
+				"Sublime Tutor: Start"
+			],
+			[
+				"sublimegit",
+				"SublimeGit: Version"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"Remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"fine key ",
+				"FindKeyConflicts: All Key Maps to Quick Panel"
+			],
+			[
+				"install package",
+				"Package Control: Install Package"
+			],
+			[
+				"install packae",
+				"Package Control: Install Package"
+			],
+			[
+				"list package",
+				"Package Control: List Packages"
+			],
+			[
+				"synta",
+				"Set Syntax: Diff"
+			],
+			[
+				"git diff",
+				"Git: Diff"
+			],
+			[
+				"git blame",
+				"Git: Blame"
+			],
+			[
+				"ruby",
+				"Set Syntax: Ruby"
+			],
+			[
+				"diff",
+				"Set Syntax: Diff"
+			],
+			[
+				"pretty ",
+				"Pretty Ruby: Format"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"remove pa",
+				"Package Control: Remove Package"
+			],
+			[
+				"packageinstal",
+				"Package Control: Install Package"
+			],
+			[
+				"syntax git diff",
+				"Set Syntax: SublimeGit Diff"
+			],
+			[
+				"syntax",
+				"Set Syntax: Diff"
+			],
+			[
+				"git b lame",
+				"Git: Blame"
+			],
+			[
+				"install pack",
+				"Package Control: Install Package"
+			],
+			[
+				"removepac",
+				"Package Control: Remove Package"
+			],
+			[
+				"remove pack",
+				"Package Control: Remove Package"
+			],
+			[
+				"package remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"css",
+				"Set Syntax: CSS"
+			],
+			[
+				"package remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"syntax css",
+				"Set Syntax: CSS"
+			],
+			[
+				"git blam",
+				"Git: Blame"
+			],
+			[
+				"syntax diff",
+				"Set Syntax: Diff"
+			],
+			[
+				"syntax ",
+				"Set Syntax: Diff"
+			],
+			[
+				"package install",
+				"Package Control: Install Package"
+			],
+			[
+				"syntax:diff",
+				"Set Syntax: Diff"
+			],
+			[
+				"syntax git",
+				"Set Syntax: SublimeGit Diff"
+			],
+			[
+				"blame",
+				"Git: Blame"
+			],
+			[
+				"gst",
+				"Git: Status"
+			]
+		],
+		"width": 479.0
+	},
+	"console":
+	{
+		"height": 300.0,
+		"history":
+		[
+			"sublime.log_commands(True)",
+			"subprocess.Popen([executable_path, './Tutorial'], cwd='/Users/jai/Library/Application Support/Sublime Text 3/Packages/SublimeTutor/')",
+			"subprocess.Popen([executable_path, './'], cwd='/Users/jai/Library/Application Support/Sublime Text 3/Packages/SublimeTutor/')",
+			"subprocess([executable_path, './'], cwd='/Users/jai/Library/Application Support/Sublime Text 3/Packages/SublimeTutor/')",
+			"executable_path",
+			"executable_path = app_path+\"Contents/SharedSupport/bin/subl\"",
+			"app_path = executable_path[:executable_path.rfind(\".app/\")+5]",
+			"executable_path = sublime.executable_path()",
+			"subprocess.Popen(['pwd'])",
+			"import subprocess",
+			"sublime.active_window().run_command(\"sublime_tutor_new_window\")",
+			"sublime.active_window().run_command",
+			"sublime.active_window()",
+			"sublime.executable_path()",
+			"subliem.executable_path()",
+			"executable_path[:executable_path.rfind(\".app/\")+5] + \"Contents/SharedSupport/bin/subl\"",
+			"executable_path[:executable_path.rfind(\".app/\")+5]",
+			"executable_path = sublime.executable_path()",
+			"sublime.executable_path().executable_path[:executable_path.rfind(\".app/\")+5]",
+			"executable_path[:executable_path.rfind(\".app/\")+5]",
+			"sublime.executable_path()",
+			"sublime.log_commands(False)",
+			"sublime.open_project",
+			"window.open_project",
+			"window.open_file",
+			"view.run_command(\"select_by_index\")",
+			"window.run_command(\"select_by_index\")",
+			"sublime.select_by_index",
+			"view.run_command(\"example\")",
+			"sublime.run_command(\"example\")",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/justin/Documents/projects/rec_sys_app",
+		"/home/justin/Documents/projects/rec_sys_app/mysite",
+		"/home/justin/Documents/projects/rec_sys_app/recsys"
+	],
+	"file_history":
+	[
+		"/home/justin/Documents/projects/rec_sys_app/mysite/settings.py",
+		"/home/justin/Documents/projects/rec_sys_app/recsys/views.py",
+		"/home/justin/Documents/projects/rec_sys_app/deploy_books_db.py",
+		"/home/justin/Documents/projects/rec_sys_app/recsys.sublime_project",
+		"/home/justin/Documents/projects/django-polls/mysite/settings.py",
+		"/home/justin/Documents/projects/django-polls/.gitignore",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/book.html",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/home.html",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/base.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/username_change_done.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/account_delete.html",
+		"/home/justin/Documents/projects/django-polls/mysite/urls.py",
+		"/home/justin/Documents/projects/django-polls/mysite/views.py",
+		"/home/justin/Documents/projects/django-polls/templates/registration/account_delete_done.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/username_change.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_change_done.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_change.html",
+		"/home/justin/Documents/projects/django-polls/polls/static/polls/style.css",
+		"/home/justin/Documents/projects/django-polls/polls/urls.py",
+		"/home/justin/Documents/projects/django-polls/templates/registration/login.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_reset_form.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_reset_complete.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_reset_confirm.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_reset_done.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_reset_email.html",
+		"/home/justin/Documents/projects/django-polls/templates/registration/password_reset_subject.txt",
+		"/home/justin/Documents/projects/django-polls/mysite/wsgi.py",
+		"/home/justin/Documents/projects/django-polls/templates/registration/signup.html",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/search_results.html",
+		"/home/justin/Documents/projects/django-polls/polls/views.py",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/book_row_item.html",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/index.html",
+		"/home/justin/Documents/projects/auth/config/urls.py",
+		"/home/justin/Documents/projects/django-polls/accounts/views.py",
+		"/home/justin/Documents/projects/django-polls/accounts/urls.py",
+		"/home/justin/Documents/projects/django-polls/config/settings.py",
+		"/home/justin/Documents/projects/django-polls/sent_emails/20200911-192044-4484693824.log",
+		"/home/justin/Documents/projects/django-polls/polls/admin.py",
+		"/home/justin/Documents/projects/django-polls/config/asgi.py",
+		"/home/justin/Documents/projects/django-polls/polls/models.py",
+		"/home/justin/Documents/projects/isfdb_migration/migration_functions.py",
+		"/home/justin/Documents/projects/django-polls/polls/static/polls/images/isfdb/c/cd/CSSGLCTC1955.JPG",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/detail.html",
+		"/home/justin/Documents/projects/django-polls/polls/templates/polls/results.html",
+		"/home/justin/Documents/projects/django-polls/polls/templatetags/isfdb_image_handling.py",
+		"/home/justin/Documents/projects/django-polls/polls/templatetags/__init__.py",
+		"/home/justin/Documents/projects/django-polls/polls/tests.py",
+		"/home/justin/Documents/projects/django-polls/polls/__init__.py",
+		"/home/justin/Documents/projects/django-polls/polls/apps.py",
+		"/home/justin/Documents/projects/django-polls/mysite/__init__.py",
+		"/home/justin/Documents/projects/django-polls/LICENSE",
+		"/home/justin/Documents/projects/django-polls/manage.py",
+		"/home/justin/Documents/projects/django-polls/README.md",
+		"/home/justin/Documents/projects/evap/evap/settings.py",
+		"/home/justin/Documents/projects/isfdb_migration/config/isfdb_title.stop",
+		"/home/justin/Documents/projects/isfdb_migration/stop_words/custom.stop",
+		"/etc/postgresql/9.5/main/postgresql.conf",
+		"/usr/share/postgresql/9.5/tsearch_data/en_us.affix",
+		"/usr/share/postgresql/9.5/tsearch_data/danish.stop",
+		"/usr/share/postgresql/9.5/tsearch_data/english.stop",
+		"/home/justin/Documents/projects/isfdb_migration/test.txt",
+		"/home/justin/Documents/projects/isfdb_migration/migration_script.py",
+		"/home/justin/Documents/projects/isfdb_migration/test_mysql.py",
+		"/home/justin/Documents/projects/isfdb_migration/isbn_duplicates_report.py",
+		"/home/justin/Documents/projects/evap/evap/student/models.py",
+		"/home/justin/Documents/projects/evap/evap/contributor/views.py",
+		"/var/lib/postgresql/test.sql",
+		"/home/justin/Documents/projects/evap/evap/books.csv",
+		"/tmp/books.csv",
+		"/home/justin/Documents/projects/evap/evap/student/views.py",
+		"/home/justin/Documents/projects/bookRecommender/book_db_migration/isbn_duplicate_report.csv",
+		"/home/justin/Documents/projects/bookRecommender/book_db_migration/isbn_duplicates_report.py",
+		"/home/justin/Documents/projects/isfdb_migration/sanbox.py",
+		"/home/justin/Documents/projects/bookRecommender/test_mp.py",
+		"/home/justin/Documents/projects/bookRecommender/book_db_migration/migration_script.py",
+		"/home/justin/Documents/projects/isfdb_migration/README.md",
+		"/home/justin/Documents/projects/handson-ml/README.md",
+		"/home/justin/Documents/projects/bookRecommender/book_club_nearest_neighbors.txt",
+		"/home/justin/Documents/projects/bookRecommender/test_script.py",
+		"/home/justin/Downloads/excludeFromBackup/isfdb_download_page.html",
+		"/home/justin/Downloads/excludeFromBackup/covers/temp.txt",
+		"/home/justin/Downloads/excludeFromBackup/isfdb_download.sh",
+		"/home/justin/Documents/projects/bookRecommender/viewUser.py",
+		"/home/justin/Documents/projects/evap/evap/student/migrations/0001_text_answer_warnings.py",
+		"/home/justin/Documents/projects/evap/evap/localsettings.py",
+		"/home/justin/Documents/projects/bookRecommender/book_club_ratings.csv",
+		"/home/justin/Documents/projects/evap/evap/student/forms.py",
+		"/home/justin/Documents/projects/evap/evap/locale/en/formats.py",
+		"/home/justin/Documents/projects/bookRecommender/getAllowedISBN.py",
+		"/home/justin/Documents/projects/bookRecommender/util.py",
+		"/home/justin/Documents/projects/bookRecommender/sandbox.py",
+		"/home/justin/Documents/projects/bookRecommender/utf-ratings.csv",
+		"/home/justin/Documents/projects/bookRecommender/customFolds.py",
+		"/home/justin/Documents/projects/bookRecommender/etl.py",
+		"/home/justin/Documents/projects/bookRecommender/predict.py",
+		"/home/justin/Documents/projects/bookRecommender/parameterTuning.py",
+		"/home/justin/Documents/projects/bookRecommender/utf-users.csv",
+		"/home/justin/Documents/projects/bookRecommender/importGoodreadsRatings.py",
+		"/home/justin/Documents/projects/bookRecommender/book_club_users.csv",
+		"/home/justin/Documents/projects/bookRecommender/book_club_ratings2.csv",
+		"/home/justin/Documents/projects/bookRecommender/ratings by book title and user 2021-03-16.csv",
+		"/home/justin/Documents/projects/bookRecommender/bookRecommender.xlsx",
+		"/home/justin/Documents/projects/bookRecommender/downloadedbook group ratings through November 2019.txt",
+		"/home/justin/Documents/projects/bookRecommender/= pd.read_csv(filename, sep=\",\", quotechar='\"')",
+		"/home/justin/Documents/projects/bookRecommender/nearestNeihbors.py",
+		"/home/justin/Documents/projects/bookRecommender/isbnSet.pickle",
+		"/home/justin/Documents/projects/bookRecommender/predict_old.py",
+		"/home/justin/Documents/projects/bookRecommender/BX-Users.csv",
+		"/mnt/synology/Files/Archive/email/2016-06-04/.thunderbird/dqh8arg9.default/Mail/pop.mail-1.com/Inbox",
+		"/mnt/synology/Files/Archive/email/2016-06-04/.thunderbird/dqh8arg9.default/Mail/pop.mail.com/Inbox",
+		"/home/justin/Documents/projects/bookRecommender/book group ratings through November 2019.txt",
+		"/home/justin/Documents/projects/bookRecommender/notes4.txt",
+		"/home/justin/Documents/projects/bookRecommender/notes3.txt",
+		"/home/justin/Documents/projects/bookRecommender/notes2.txt",
+		"/home/justin/Documents/projects/bookRecommender/notes.txt",
+		"/home/justin/Downloads/excludeFromBackup/utf-ratings.csv",
+		"/home/justin/Downloads/excludeFromBackup/BX-Book-Ratings.sql",
+		"/home/justin/Downloads/excludeFromBackup/BX-Users.sql",
+		"/home/justin/Downloads/excludeFromBackup/BX-Books.sql",
+		"/run/user/1000/gvfs/mtp:host=%5Busb%3A002%2C004%5D/Internal storage/storage/emulated/0",
+		"/home/justin/Documents/projects/bookRecommender/test.txt",
+		"/home/justin/Documents/guestList.txt",
+		"/home/justin/Downloads/excludeFromBackup/BX-Books.csv",
+		"/run/user/1000/gvfs/mtp:host=%5Busb%3A002%2C004%5D/Internal storage/Documents/scratch. txt",
+		"/run/user/1000/gvfs/mtp:host=%5Busb%3A002%2C004%5D/Internal storage/foo2",
+		"/home/justin/Documents/scribere/2010/The_First_Night.txt",
+		"/home/justin/Downloads/zoom_amd64.deb",
+		"/home/justin/Downloads/canon-selphy-print-master/print-selphy-stickers"
+	],
+	"find":
+	{
+		"height": 47.0
+	},
+	"find_in_files":
+	{
+		"height": 448.0,
+		"where_history":
+		[
+			"/home/justin/Documents/projects/rec_sys_app",
+			"/home/justin/Documents/projects/rec_sys_app/recsys",
+			"/home/justin/Documents/projects/django-polls"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"user",
+			"on_delete",
+			"Q",
+			"topping",
+			"toppings",
+			"newest",
+			"poll",
+			"reverse",
+			"user_name",
+			"Password",
+			"password",
+			"Password",
+			"password",
+			"EMAIL_FILE_PATH",
+			"EMAIL_BACKEND",
+			"index",
+			"login",
+			"</th>",
+			"<th>",
+			"\n\t\t",
+			"\t<th>\n",
+			"<th>",
+			"thumbnail_cover",
+			"th",
+			"profile",
+			"button ",
+			"mark",
+			"div",
+			"more_images",
+			"content_query_set",
+			"for",
+			"book.cover_image",
+			"cover",
+			"name",
+			"config",
+			"listview",
+			"|safe",
+			"<p>",
+			"</p>",
+			"class=\"mb-3\"",
+			"h4"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "recsys/models.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6603,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5400,
+								5400
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "recsys/admin.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1857,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1270,
+								1270
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 456.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 35.0
+	},
+	"input":
+	{
+		"height": 152.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 102.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/python37.sublime-build",
+	"project": "recsys.sublime_project",
+	"replace":
+	{
+		"height": 66.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"url",
+				"mysite/urls.py"
+			],
+			[
+				"view",
+				"mysite/views.py"
+			],
+			[
+				"vies",
+				"mysite/views.py"
+			],
+			[
+				"se",
+				"mysite/settings.py"
+			],
+			[
+				"login.",
+				"templates/registration/login.html"
+			],
+			[
+				"css",
+				"polls/static/polls/images/isfdb/c/cd/CSSGLCTC1955.JPG"
+			],
+			[
+				".cs",
+				"polls/static/polls/style.css"
+			],
+			[
+				"boo",
+				"polls/templates/polls/book.html"
+			],
+			[
+				".css",
+				"polls/static/polls/style.css"
+			],
+			[
+				"book",
+				"polls/templates/polls/book.html"
+			],
+			[
+				"views",
+				"polls/views.py"
+			],
+			[
+				"sea",
+				"polls/templates/polls/search_results.html"
+			],
+			[
+				"vie",
+				"polls/views.py"
+			],
+			[
+				"urls",
+				"polls/urls.py"
+			],
+			[
+				"par",
+				"~/Documents/projects/bookRecommender/parameterTuning.py"
+			],
+			[
+				"pre",
+				"~/Documents/projects/bookRecommender/predict.py"
+			],
+			[
+				"etl",
+				"~/Documents/projects/bookRecommender/etl.py"
+			],
+			[
+				"pred",
+				"~/Documents/projects/bookRecommender/predict.py"
+			],
+			[
+				"pa",
+				"~/Documents/projects/bookRecommender/parameterTuning.py"
+			],
+			[
+				"para",
+				"~/Documents/projects/bookRecommender/parameterTuning.py"
+			],
+			[
+				"san",
+				"~/Documents/projects/bookRecommender/sandbox.py"
+			],
+			[
+				"test",
+				"~/Documents/projects/bookRecommender/test_script.py"
+			],
+			[
+				"te",
+				"~/Documents/projects/bookRecommender/test_script.py"
+			],
+			[
+				"cust",
+				"~/Documents/projects/bookRecommender/customFolds.py"
+			],
+			[
+				"et",
+				"~/Documents/projects/bookRecommender/etl.py"
+			],
+			[
+				"ne",
+				"~/Documents/projects/bookRecommender/nearestNeihbors.py"
+			],
+			[
+				"import",
+				"~/Documents/projects/bookRecommender/importGoodreadsRatings.py"
+			],
+			[
+				"setup.py",
+				"keras/setup.py"
+			],
+			[
+				"rec",
+				"keras/keras/layers/recurrent.py"
+			],
+			[
+				"13",
+				"~/Documents/capstone/task13.py"
+			],
+			[
+				"32",
+				"~/Documents/capstone/task32.py"
+			],
+			[
+				"c",
+				"~/Documents/capstone/capstoneUtil.py"
+			],
+			[
+				"cap",
+				"~/Documents/capstone/capstoneUtil.py"
+			],
+			[
+				"task13",
+				"~/Documents/capstone/task13.py"
+			],
+			[
+				"lua",
+				"~/Documents/capstone/launchSparkCluster.py"
+			],
+			[
+				"task",
+				"~/Documents/capstone/task32.py"
+			],
+			[
+				"run",
+				"~/Documents/capstone/runStreamingProgram.py"
+			],
+			[
+				"add",
+				"~/Documents/capstone/addTestStep.py"
+			],
+			[
+				"",
+				"~/Documents/capstone/testTask11.py"
+			],
+			[
+				"python",
+				"~/Downloads/pythonjob.py"
+			],
+			[
+				"spar",
+				"~/Documents/capstone/sparkBootScript.sh"
+			],
+			[
+				"lite",
+				"~/Documents/capstone/launchSparkClusterLite.py"
+			],
+			[
+				"laun",
+				"~/Documents/capstone/launchCassandraCluster.py"
+			],
+			[
+				"tom",
+				"/tmp/cleanData/tomsRecord.txt"
+			],
+			[
+				"ta",
+				"~/Documents/capstone/task23.py"
+			],
+			[
+				"mapper",
+				"~/Documents/capstone/zzpart1/task32/mapper1.py"
+			],
+			[
+				"1",
+				"~/Documents/capstone/zzpart1/task32/mapper1.py"
+			],
+			[
+				"exa",
+				"~/Documents/capstone/recordExample2.txt"
+			],
+			[
+				"21",
+				"~/Documents/capstone/zzpart1/task21/reducer2.py"
+			],
+			[
+				"uti",
+				"~/Documents/capstone/hdfsTest/capstoneUtil.py"
+			],
+			[
+				"spark",
+				"~/Documents/capstone/sparkBootScript.sh"
+			],
+			[
+				"start",
+				"~/Documents/capstone/sparkBootScript.sh"
+			],
+			[
+				"l",
+				"~/Documents/capstone/launchSparkCluster.py"
+			],
+			[
+				"sp",
+				"~/Documents/capstone/sparkBootScript.sh"
+			],
+			[
+				"11",
+				"~/Documents/capstone/hdfsTest/task11.py"
+			],
+			[
+				"rest",
+				"~/Documents/capstone/restartKafka.sh"
+			],
+			[
+				"stat",
+				"~/Documents/capstone/etl/startKafka.py"
+			],
+			[
+				"resta",
+				"~/Documents/capstone/restartKafka.sh"
+			],
+			[
+				"kaf",
+				"~/Documents/capstone/kafkaBootScript.sh"
+			],
+			[
+				"luan",
+				"~/Documents/capstone/launchKafkaCluster.py"
+			],
+			[
+				"ka",
+				"~/Documents/capstone/kafkaBootScript.sh"
+			],
+			[
+				"kafk",
+				"~/Documents/capstone/kafkaBootScript.sh"
+			],
+			[
+				"cass",
+				"~/Documents/capstone/cassandraBootScript.py"
+			],
+			[
+				"kafka",
+				"~/Documents/capstone/kafkaBootScript.sh"
+			],
+			[
+				"produ",
+				"~/Documents/capstone/etl/producerCluster.py"
+			],
+			[
+				"str",
+				"~/Documents/capstone/task11/streamerCluster.py"
+			],
+			[
+				"startK",
+				"~/Documents/capstone/startKafka.py"
+			],
+			[
+				"pro",
+				"~/Documents/capstone/task11/producerCluster.py"
+			],
+			[
+				"stre",
+				"~/Documents/capstone/task11/streamerCluster.py"
+			],
+			[
+				"boot",
+				"~/Documents/capstone/kafkaBootScript.sh"
+			],
+			[
+				"runK",
+				"~/Documents/capstone/runKafkaJob.py"
+			],
+			[
+				"shut",
+				"~/Documents/capstone/shutdownKafka.py"
+			],
+			[
+				"shutdo",
+				"~/Documents/capstone/shutdownKafka.py"
+			],
+			[
+				"shu",
+				"~/Documents/capstone/task1/shutdownCassandra.py"
+			],
+			[
+				"laun\t",
+				"~/Documents/capstone/launchKafkaCluster.py"
+			],
+			[
+				"emr",
+				"~/Documents/capstone/emrBootstrap.sh"
+			],
+			[
+				"k",
+				"~/Documents/capstone/kafkaBootScript.sh"
+			],
+			[
+				"launc",
+				"~/Documents/capstone/launchKafkaCluster.py"
+			],
+			[
+				"launchK",
+				"~/Documents/capstone/launchKafkaCluster.py"
+			],
+			[
+				"check",
+				"~/Documents/capstone/checkCassandraCluster.py"
+			],
+			[
+				"la\t",
+				"~/Documents/capstone/launchCassandraCluster.py"
+			],
+			[
+				"chec",
+				"~/Documents/capstone/checkCassandraCluster.py"
+			],
+			[
+				"lu",
+				"~/Documents/capstone/launchCassandraCluster.py"
+			],
+			[
+				"shun",
+				"~/Documents/capstone/task1/shutdownCassandra.py"
+			],
+			[
+				"che",
+				"~/Documents/capstone/checkCassandraCluster.py"
+			],
+			[
+				"2",
+				"~/Documents/capstone/task1/cassandraSetup2.sh"
+			],
+			[
+				"lau",
+				"~/Documents/capstone/launchCassandraCluster.py"
+			],
+			[
+				"boto",
+				"~/Documents/capstone/task1/testBoto3.py"
+			],
+			[
+				"clust",
+				"~/Documents/capstone/streamerCluster.py"
+			],
+			[
+				"restartC",
+				"~/Documents/capstone/restartCassandra.sh"
+			],
+			[
+				"restartc",
+				"~/Documents/capstone/restartCassandra.sh"
+			],
+			[
+				"produc",
+				"~/Documents/capstone/producer1.py"
+			],
+			[
+				"tests",
+				"~/Documents/capstone/testScript.sh"
+			],
+			[
+				"por",
+				"~/Documents/capstone/producer1.py"
+			],
+			[
+				"re",
+				"~/Documents/capstone/restartKafka.sh"
+			],
+			[
+				"clu",
+				"~/Documents/capstone/producerCluster.py"
+			],
+			[
+				"cql",
+				"~/Documents/capstone/solutionDBSetup.cql"
+			],
+			[
+				"stt",
+				"~/Downloads/spark-2.4.0-bin-without-hadoop/examples/src/main/python/streaming/stateful_network_wordcount.py"
+			],
+			[
+				"proc",
+				"~/Documents/capstone/producer1.py"
+			],
+			[
+				"strea",
+				"~/Documents/capstone/streamer1.py"
+			],
+			[
+				"por\t",
+				"~/Documents/capstone/producer1.py"
+			],
+			[
+				"reco",
+				"~/Downloads/spark-2.4.0-bin-without-hadoop/examples/src/main/python/streaming/recoverable_network_wordcount.py"
+			],
+			[
+				"net",
+				"~/Downloads/spark-2.4.0-bin-without-hadoop/examples/src/main/python/streaming/network_wordcount.py"
+			],
+			[
+				"per2",
+				"~/Documents/capstone/task11/mapper2.py"
+			],
+			[
+				"notes",
+				"~/Documents/capstone/cassandraSetupNotes.txt"
+			],
+			[
+				"solu",
+				"~/Documents/capstone/task1SolutionExamples.txt"
+			],
+			[
+				"per1",
+				"~/Documents/capstone/unifiedJob/mapper1.py"
+			],
+			[
+				"cer2",
+				"~/Documents/capstone/unifiedJob/reducer2.py"
+			],
+			[
+				"per",
+				"~/Documents/capstone/unifiedJob/reducer2.py"
+			],
+			[
+				"cer1",
+				"~/Documents/capstone/unifiedJob/reducer1.py"
+			],
+			[
+				"mapper1",
+				"~/Documents/capstone/unifiedJob/mapper1.py"
+			],
+			[
+				"task1",
+				"~/Documents/capstone/task1Queries.txt"
+			],
+			[
+				"3.txt",
+				"~/Documents/capstone/recordExample3.txt"
+			],
+			[
+				"3.",
+				"~/Documents/capstone/recordExample3.txt"
+			],
+			[
+				"4.",
+				"~/Documents/capstone/recordExample4.txt"
+			],
+			[
+				"cer",
+				"~/Documents/capstone/unifiedJob/reducer2.py"
+			],
+			[
+				"3",
+				"~/Documents/capstone/recordExample3.txt"
+			],
+			[
+				"mapp",
+				"~/Documents/capstone/unifiedJob/mapper1.py"
+			],
+			[
+				"reducer",
+				"~/Documents/capstone/unifiedJob/reducer1.py"
+			],
+			[
+				"noe",
+				"~/Documents/capstone/notes.txt"
+			],
+			[
+				"note",
+				"~/Documents/capstone/notes.txt"
+			],
+			[
+				"qu",
+				"~/Documents/capstone/task1Queries.txt"
+			],
+			[
+				"rcer2",
+				"~/Documents/capstone/1.1reducer2.py"
+			],
+			[
+				"er2",
+				"~/Documents/capstone/1.1reducer2.py"
+			],
+			[
+				"quer",
+				"~/Documents/capstone/task1Queries.txt"
+			],
+			[
+				"pper2",
+				"~/Documents/capstone/1.1mapper2.py"
+			],
+			[
+				"mapper2",
+				"~/Documents/capstone/1.1mapper2.py"
+			],
+			[
+				"reducer1",
+				"~/Documents/capstone/1.1reducer1.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 214.0,
+		"last_filter": "addres",
+		"selected_items":
+		[
+			[
+				"addres",
+				"Address"
+			],
+			[
+				"entry",
+				"Entry"
+			],
+			[
+				"hash",
+				"hashFunction"
+			],
+			[
+				"findnodes",
+				"findNodes"
+			],
+			[
+				"messag",
+				"Message"
+			],
+			[
+				"sendmes",
+				"sendMessage"
+			],
+			[
+				"updatekey",
+				"updateKeyValue"
+			],
+			[
+				"node",
+				"Node"
+			],
+			[
+				"messa",
+				"Message"
+			],
+			[
+				"singlenod",
+				"singleNodeUpdate"
+			],
+			[
+				"addr",
+				"Address"
+			],
+			[
+				"MEssa",
+				"Message"
+			],
+			[
+				"replic",
+				"ReplicaType"
+			],
+			[
+				"mp2no",
+				"MP2Node"
+			],
+			[
+				"membe",
+				"MemberListEntry"
+			],
+			[
+				"messagetyp",
+				"MessageType"
+			],
+			[
+				"logre",
+				"logReadFail"
+			],
+			[
+				"msgty",
+				"MsgTypes"
+			],
+			[
+				"tran",
+				"Transaction"
+			],
+			[
+				"messagty",
+				"MessageType"
+			],
+			[
+				"2node",
+				"MP2Node"
+			],
+			[
+				"logrea",
+				"logReadFail"
+			],
+			[
+				"transa",
+				"Transaction"
+			],
+			[
+				"message",
+				"Message"
+			],
+			[
+				"getme",
+				"getMembershipList"
+			],
+			[
+				"2noe",
+				"MP2Node"
+			],
+			[
+				"addre",
+				"Address"
+			],
+			[
+				"mp2node",
+				"MP2Node"
+			],
+			[
+				"clientcre",
+				"clientCreate"
+			],
+			[
+				"logcre",
+				"logCreateSuccess"
+			],
+			[
+				"mesagety",
+				"MessageType"
+			],
+			[
+				"logde",
+				"logDeleteSuccess"
+			],
+			[
+				"messageT",
+				"MessageType"
+			],
+			[
+				"chekc",
+				"checkMessages"
+			],
+			[
+				"address",
+				"Address"
+			],
+			[
+				"ensend",
+				"ENsend"
+			],
+			[
+				"ENsen",
+				"ENsend"
+			],
+			[
+				"mess",
+				"Message"
+			],
+			[
+				"Ensend",
+				"ENsend"
+			],
+			[
+				"Hash",
+				"HashTable"
+			],
+			[
+				"read",
+				"readKey"
+			],
+			[
+				"client",
+				"clientRead"
+			],
+			[
+				"loc",
+				"logCreateFail"
+			],
+			[
+				"logCreat",
+				"logCreateSuccess"
+			],
+			[
+				"trans",
+				"Transaction"
+			],
+			[
+				"messaeg",
+				"Message"
+			],
+			[
+				"getm",
+				"getMembershipList"
+			],
+			[
+				"hashf",
+				"hashFunction"
+			],
+			[
+				"getmembe",
+				"getMembershipList"
+			],
+			[
+				"a",
+				"Address"
+			],
+			[
+				"ENsend",
+				"ENsend"
+			],
+			[
+				"timestamp",
+				"gettimestamp"
+			],
+			[
+				"membel",
+				"MemberListEntry"
+			],
+			[
+				"list ent",
+				"MemberListEntry"
+			],
+			[
+				"memberlist",
+				"MemberListEntry"
+			],
+			[
+				"memberlistent",
+				"MemberListEntry"
+			],
+			[
+				"memberlisten",
+				"MemberListEntry"
+			],
+			[
+				"heart",
+				"getheartbeat"
+			],
+			[
+				"",
+				"bar1"
+			]
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 134.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -137,3 +137,5 @@ EMAIL_FILE_PATH = str(os.path.join(BASE_DIR, 'sent_emails'))
 # EMAIL_HOST_PASSWORD = 'example_password'
 # EMAIL_USE_TLS = True
 # DEFAULT_FROM_EMAIL = 'Website Admin <noreply@example.com>'
+
+AUTH_USER_MODEL = 'recsys.User'

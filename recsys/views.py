@@ -32,7 +32,7 @@ def book(request, book_id):
         translations = []
     else:
         translations = Translations.objects \
-        .filter(newest_title_id=book.id) \
+        .filter(lowest_title_id=book.id) \
         .order_by('year')
 
     more_images = More_Images.objects.filter(title_id=book.id)
