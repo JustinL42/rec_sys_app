@@ -7,6 +7,33 @@
 
 <h1>{{ title }} ({{ year }})</h1>
 <h4>by {{ authors }}</h4>
+{% if user.is_authenticated %}
+    <form action="{% url 'recsys:book' title_id%}" 
+        method="POST">
+        {% csrf_token %}
+        <table class="rating_form_table">
+            {% if error_text %}
+            <tr><li>{{ error_text }}</li></tr>
+            {% endif %}
+            <tr>
+                <td>Your rating:</td>
+                <td>
+                    <input type="text" 
+                        name="new_rating"
+                        placeholder="{% if not rating %}No rating yet{% endif %}"
+                        value="{% if rating %}{{ rating }}{% endif %}">
+                </td>
+                <td>
+                    Scale: 1-10
+                <td>
+                    <input type="submit" value="Submit">
+                </td>
+            </tr>
+        </table>
+    </form>
+{% else %}
+  <p>Log-in to rate this book</p>
+{% endif %}
 <table>
     <tr>
         <th>

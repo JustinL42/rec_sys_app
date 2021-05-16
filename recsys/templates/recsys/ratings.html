@@ -1,0 +1,19 @@
+{% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}My Ratings{% endblock %}
+
+{% block content %}
+
+<h1>My Ratings</h1>
+	{% if not object_list %}
+	<p>You haven't rated any books yet. When you rate books, they will no longer appear in your recommendations, but can be found here</p>
+	{% else %}
+    <table class=book_list_table>
+        {% for book in object_list %}
+            {% book_row_item book %}
+        {% endfor %}
+    </table>
+    {% endif %}
+
+{% endblock %}

@@ -146,7 +146,8 @@ class Book_Club(models.Model):
 class Meeting(models.Model):
     book_club = models.ForeignKey(
         Book_Club, on_delete=models.CASCADE, null=False)
-    book = models.ForeignKey(Books, on_delete=models.DO_NOTHING, null=True)
+    book = models.ForeignKey(
+        Books, on_delete=models.DO_NOTHING, null=True, db_constraint=False,)
     date = models.DateField(null=True)
 
     class Meta:
@@ -160,10 +161,8 @@ class Meeting(models.Model):
         return self.book.title + '(' + str(self.date) + ')'
 
 class Rating(models.Model):
-    book = models.ForeignKey(Books, 
-        null=False, 
-        db_constraint=False,
-        on_delete=models.DO_NOTHING)
+    book = models.ForeignKey(
+        Books, null=False,  db_constraint=False, on_delete=models.DO_NOTHING)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
     rating = models.FloatField(null=True)
@@ -187,6 +186,7 @@ class Rating(models.Model):
                 name='floor_predicted_rating_idx'),
             models.Index(fields=['saved']),
             models.Index(fields=['blocked']),
+            models.Index(fields=['last_updated'])
         ]
         constraints = [
             models.UniqueConstraint(
@@ -216,7 +216,8 @@ class Rating(models.Model):
             return self.user.first_name + " hasn't rated " + self.book.title
 
 class DataProblem(models.Model):
-    book = models.ForeignKey(Books, null=False, on_delete=models.DO_NOTHING)
+    book = models.ForeignKey(
+        Books, null=False, on_delete=models.DO_NOTHING, db_constraint=False,)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
     problem = models.CharField(max_length=32768)
