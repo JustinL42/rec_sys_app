@@ -1,3 +1,18 @@
+body {
+  font-family: Avenir, Corbel, sans-serif;
+}
+body p {
+  font-size: 24px;
+}
+body h1 {
+  font-size: 40px;
+}
+body h2 {
+  font-size: 32px;
+}
+body h3 {
+  font-size: 26px;
+}
 li a {
     color: black;
 }
@@ -7,6 +22,32 @@ input {
 .search_bar_table {
   width: 100%;
 }
+.search_bar_table * {
+  height: 60;
+  font-size: 28px;
+}
+.header_row {
+  width: 100%;
+  height: 60;
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.header_row  * {
+/*  width: 100%;
+  height: 60;*/
+  color: white;
+  background-color: #042F66;
+  font-weight: bold;
+}
+.header_row  td {
+  border: 2px solid black;
+  border-collapse: collapse;
+  width: 25%;
+}
+.header_row  a {
+  display: block;
+  text-decoration: none;
+}
 .center {
     margin: auto;
     width: 80%;
@@ -15,6 +56,11 @@ input {
 .short_book_data {
     text-align: left;
     vertical-align: top;
+    font-weight: normal;
+}
+.short_book_data a {
+    color: black;
+    font-weight: bold;
 }
 .cover_image {
   width: auto;
@@ -42,4 +88,20 @@ input {
 }
 .change_password_table * {
   vertical-align: top;
+}
+.external_db_link a {
+  color: black;
+}
+.datum  {
+  font-weight: bold;
+}
+.rating_form_table * {
+  height: 60;
+  font-size: 24px;
+  font-weight: bold;
+}
+.rating_input {
+  font-size: 32px;
+  width: 200px;
+  text-align: center;
 }

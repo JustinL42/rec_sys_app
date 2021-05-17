@@ -13,6 +13,26 @@
 
 <body>
 <header>
+    <table class='header_row'>
+        <tr>
+            <td>
+                <a href="/" alt="Bookclub.guide home page link">Book<br>Club<br>.Guide</a>
+            </td>
+            <td>
+                <a href="{% url 'recsys:ratings' %}">My<br>Ratings</a>
+            </td>
+            <td>
+                <a href="{% url 'recsys:ratings' %}">My<br>Account</a>
+            </td>
+            <td>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">Log<br>Out</a>
+            {% else %}
+                <a href="{% url 'login' %}">Log<br>In</a>
+            {% endif %}
+            </td>
+        </tr>
+    </table>
     <form action="{% url 'recsys:search_results' %}" 
         method="get">
         <table class="search_bar_table">
@@ -21,7 +41,7 @@
                     <input type="text" 
                         name="search"
                         placeholder="Search by title, author, or ISBN"
-                        value="{{request.GET.books}}">
+                        value="{{request.GET.search}}">
                 </th>
                 <th>
                     <input type="submit" value="Search">
@@ -33,6 +53,6 @@
 <div class="center">
 {% block content %}
 {% endblock %}
-<footer>Footer placeholder</footer>
+<footer><br><br><br>The bibliographic data on this website is sourced from <a href="http://www.isfdb.org">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/">Creative Commons Attribution</a> license. The source data is currently available <a href="http://www.isfdb.org/wiki/index.php/ISFDB_Downloads">here.</a></footer>
 </div>
 </body>

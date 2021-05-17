@@ -1,4 +1,5 @@
 {% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
 
 {% block title %}Home Page{% endblock %}
 
@@ -7,23 +8,17 @@
 {% if user.is_authenticated %}
   <p>Hi {{ user.username }}!
     <br>Please <a href="{% url 'password_change' %}">change your password</a> and <a href="{% url 'username_change' %}">change your user name</a> if you haven't done so already</p>
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">Log In</a>
 {% endif %}
 
-
-{% if tolkien_book_list %}
-    <ul>
-    {% for book in tolkien_book_list %}
-        <li><a href="{% url 'recsys:book' book.id %}">
-            {{ book.title }}
-        </a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No books are available.</p>
-{% endif %}
+<table class=book_list_table>
+{% for book in object_list %}
+    {% book_row_item book %}
+{% empty %}
+<p>No books are available.</p>
+{% endfor %}
+</table>
 
 {% endblock %}

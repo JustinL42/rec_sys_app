@@ -3,20 +3,42 @@ from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F, Value
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
+from datetime import datetime
+from itertools import chain
+from functools import reduce
 
-from .models import Books, More_Images, Contents, Translations, Words, Rating
+from .models import Books, More_Images, Contents, Translations, \
+    Words, Rating, Isbns
 
 
 class HomeView(generic.ListView):
     template_name = 'recsys/home.html'
-    context_object_name = 'tolkien_book_list'
 
     def get_queryset(self):
-        return Books.objects.filter(
-            authors="J. R. R. Tolkien"
-        ).order_by('year')[:5]
+        num_books = 10
+        highly_rated = Books.objects \
+            .filter(isfdb_rating__gte=9).order_by('?')[:num_books//2]
 
+        five_years_ago = datetime.now().year - 5
+        recent_award_winners = Books.objects \
+            .filter(year__gte=five_years_ago, 
+                award_winner=True, juvenile=False) \
+            .order_by('?')[:num_books//2]
+
+        if not recent_award_winners:
+            return highly_rated
+
+        # return a queryset that alternates between the two catagories
+        return [ b for b in 
+            chain.from_iterable(zip(highly_rated, recent_award_winners)) ]
+
+
+def isbn10_to_13(isbn10):
+    cd = ( 10 - ( sum([38] + [int(x) * 3 for x in isbn10[:-1][0::2]] + \
+        [int(x) for x in isbn10[:-1][1::2]]) % 10 ) ) % 10
+    return '978' + isbn10[:-1]  + str(cd)
 
 class book(generic.View):
 
@@ -114,30 +136,61 @@ class book(generic.View):
             return rendered_page
 
 
-class SearchResultsView(generic.ListView):
-    model = Books
-    template_name = 'recsys/search_results.html'
+class SearchResultsView(generic.View):
+    paginate_by = 5
 
-    def get_queryset(self):
+    def get(self, request):
         search = self.request.GET.get('search')
+        page_num = self.request.GET.get('page', 1)
+
         query = SearchQuery(
             search, config="isfdb_title_tsc", search_type='websearch')
-        print(query)
-        return (
-            Books.objects.filter(**{'general_search': query})
-            .annotate(rank=SearchRank(
-                F('general_search'), 
-                query,
-                normalization=Value(8),
-                cover_density=True
-            )
+        books = Books.objects.filter(**{'general_search': query}) \
+            .annotate(
+                rank=SearchRank(
+                    F('general_search'), 
+                    query,
+                    normalization=Value(8),
+                    cover_density=True
+                )
             ).order_by("-rank")
 
-        ) 
+        if len(books) == 1:
+            return book.get(self, request, books[0].id)
+        elif len(books) == 0:
+            possible_isbn = ''.join(filter(lambda x: x.isdigit(), search))
+            if len(possible_isbn) in [13, 10]:
+                isbns_to_try = [possible_isbn]
+                if len(possible_isbn) == 10:
+                    isbns_to_try += [isbn10_to_13(possible_isbn)]
+                for isbn in isbns_to_try:
+                    try:
+                        title_id = Isbns.objects.get(isbn=isbn).title_id
+                        return book.get(self, request, title_id)
+                    except Isbns.DoesNotExist:
+                        pass
+
+        paginator = Paginator(books, self.paginate_by)
+        page_obj = paginator.page(page_num)
+
+        template_data = dict(
+            search=search,
+            books=page_obj.object_list,
+            paginator=paginator,
+            page_obj = paginator.get_page(page_num),
+            is_paginated = len(books) > self.paginate_by,
+        )
+
+        rendered_page = render(request, "recsys/search_results.html", template_data)
+        if rendered_page is not None:
+            return rendered_page
 
 class RatingsView(LoginRequiredMixin, generic.ListView):
     model = Books
+    paginate_by = 20
     template_name = 'recsys/ratings.html'
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
 
     def get_queryset(self):
         ratings = self.request.user.rating_set.order_by('-last_updated')
