@@ -1,4 +1,9 @@
 __pycache__/
 recsys/static/recsys/images/isfdb/*
 sent_emails/*
+aws
+recsys.sublime-workspace
+recsys/migrations/*
+
+
 
