@@ -6,8 +6,8 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-  <p>Hi {{ user.username }}!
-    <br>Please <a href="{% url 'password_change' %}">change your password</a> and <a href="{% url 'username_change' %}">change your user name</a> if you haven't done so already</p>
+  <p>Hi {{ user.first_name }}!
+    <br>Please <a href="{% url 'password_change' %}">change your password</a> and <a href="{% url 'username_change' %}">change your user name</a> if you haven't done so already.</p>
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">Log In</a>

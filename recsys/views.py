@@ -19,7 +19,7 @@ class HomeView(generic.ListView):
     def get_queryset(self):
         num_books = 10
         highly_rated = Books.objects \
-            .filter(isfdb_rating__gte=9).order_by('?')[:num_books//2]
+            .filter(isfdb_rating__gte=8).order_by('?')[:num_books//2]
 
         five_years_ago = datetime.now().year - 5
         recent_award_winners = Books.objects \

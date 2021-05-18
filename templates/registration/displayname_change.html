@@ -1,0 +1,26 @@
+{% extends "recsys/base.html" %}
+
+{% block title %}Display Name Change{% endblock %}
+
+{% block content %}
+	<h1>Change your Display Name</h1>
+    <p>Choose a name to identify yourself on the website. It doesn't need to be unique or include a last name. However, your display name may be visible to other members of your book clubs at certain points, so try to choose a name that will help them recognize you.</p>
+	{% if error_text %}
+	<li>{{ error_text }}</li>
+	{% endif %}
+    <form action="{% url 'displayname_change' %}" method="POST">
+    	{% csrf_token %}
+        <table>
+            <tr>
+                <th>
+                    <input type="text" 
+                        name="new_displayname"
+                        value="{{request.POST.new_displayname}}">
+                </th>
+                <th>
+                    <input type="submit" value="Submit">
+                </th>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

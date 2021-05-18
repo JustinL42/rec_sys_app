@@ -1,0 +1,11 @@
+{% extends "recsys/base.html" %}
+
+{% block title %}My Account{% endblock %}
+
+{% block content %}
+	<h1>My Account</h1>
+    <p>Username: <span class="datum">{{ user.username }}</span>&nbsp;&nbsp;<a href="{% url 'username_change' %}">(change username)</a></p>
+    <p>Password: <span class="datum">***</span>&nbsp;&nbsp;<a href="{% url 'password_change' %}">(change password)</a></p>
+    <p>Display Name: <span class="datum">{{ user.first_name }}</span>&nbsp;&nbsp;<a href="{% url 'displayname_change' %}">(change display name)</a></p>
+    <p>Delete Account: <a href="{% url 'account_delete' %}">(click for more information)</a></p>
+{% endblock %}

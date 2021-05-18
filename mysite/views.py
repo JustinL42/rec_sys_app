@@ -6,6 +6,36 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 User = get_user_model()
 
+class Account(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        return render(request, "registration/account.html")
+
+
+class DisplayNameChangeView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, "registration/displayname_change.html")
+
+    def post(self, request):
+        old_displayname=request.user.first_name
+        new_displayname = str(self.request.POST.get('new_displayname')).strip()
+
+        if new_displayname == old_displayname:
+            error_text = \
+            u'Your display name already is "{}". Choose a different name'\
+            .format(new_displayname)
+            return render(request, "registration/displayname_change.html", 
+                {'error_text': error_text } )
+
+        user = request.user
+        user.first_name = new_displayname
+        user.save()
+        return render(request, "registration/username_change_done.html",
+            { 'new_displayname' : new_displayname} )
+
 class UserNameChangeView(LoginRequiredMixin, View):
 
     def get(self, request):
@@ -13,17 +43,24 @@ class UserNameChangeView(LoginRequiredMixin, View):
 
     def post(self, request):
         old_username=request.user.username
-        new_username = self.request.POST.get('new_username')
+        new_username = str(self.request.POST.get('new_username')).strip()
 
         if new_username == old_username:
             error_text = \
-            u'Your user name already is "{}". Choose a different name'\
+                u'Your user name already is "{}". Choose a different name'\
             .format(new_username)
             return render(request, "registration/username_change.html", 
                 {'error_text': error_text } )
 
         if User.objects.filter(username=new_username).exists():
-            error_text = u'Username "{}" is not available.'.format(new_username)
+            error_text = u'Username "{}" is not available.' \
+                .format(new_username)
+            return render(request, "registration/username_change.html", 
+                {'error_text': error_text } )
+
+        if any([ c.isspace() for c in new_username]):
+            error_text = u"Username can't contain whitespace characters" \
+                .format(new_username)
             return render(request, "registration/username_change.html", 
                 {'error_text': error_text } )
 
