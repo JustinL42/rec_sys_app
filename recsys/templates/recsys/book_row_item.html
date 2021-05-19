@@ -33,11 +33,11 @@
 			</td>
 			<td class="external_db_link" width="25%">
 		    	{% if book.wikipedia %}
-		    	<a href="{{ book.wikipedia }}">Wikipedia</a>
+		    	<a href="{{ book.wikipedia }}" target="_blank">Wikipedia</a>
     			{% endif %}
 			</td>
 			<td class="external_db_link" width="25%">
-		    	<a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.title_id }}">ISFDB</a>
+		    	<a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.id }}" target="_blank">ISFDB</a>
 			</td>
 		</tr></table>
 

@@ -4,10 +4,10 @@
 {% block title %}Home Page{% endblock %}
 
 {% block content %}
-
+<p>Welcome to BookClub.Guide, a website where you can browse and give ratings to books from the science fiction, fantasy, and speculative fiction genres.</p>
 {% if user.is_authenticated %}
   <p>Hi {{ user.first_name }}!
-    <br>Please <a href="{% url 'password_change' %}">change your password</a> and <a href="{% url 'username_change' %}">change your user name</a> if you haven't done so already.</p>
+    <br>Please <a href="{% url 'password_change' %}">change your password</a> if you haven't done so already.</p>
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">Log In</a>

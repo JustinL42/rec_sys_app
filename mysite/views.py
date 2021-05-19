@@ -33,7 +33,7 @@ class DisplayNameChangeView(LoginRequiredMixin, View):
         user = request.user
         user.first_name = new_displayname
         user.save()
-        return render(request, "registration/username_change_done.html",
+        return render(request, "registration/displayname_change_done.html",
             { 'new_displayname' : new_displayname} )
 
 class UserNameChangeView(LoginRequiredMixin, View):
