@@ -67,7 +67,7 @@
                 <a href="{{ wikipedia }}" target="_blank">Wikipedia</a>
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 {% endif %}
-                <a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ title_id }}" target="_blank">ISFDB</a><br>
+                <a href="https://www.isfdb.org/cgi-bin/title.cgi?{{ title_id }}" target="_blank">ISFDB</a><br>
             ISBN: <span class="datum">{{ isbn }}</span></p>
         </th>
     <tr>
@@ -82,7 +82,7 @@
         <p>This title isn't available as a stand-alone book. See the "Contained in" section to see which volumes it was published in.</p>
     {% endif %}
     {% if original_lang != 'English' %}
-        <p>This is book is a translation from {{ original_lang }} of the original book <i>{{ original_title }}</i> ({{ original_year }}).</p>
+        <p>This is book is a translation from <span class="datum">{{ original_lang }}</span> of the original book <span class="datum"><i>{{ original_title }}</i></span> ({{ original_year }}).</p>
         <h2>Translations:</h2>
         <table width="auto" class="tr_table">
             <tr><th>Year</th><th>Title</th><th>Notes</th></tr>
