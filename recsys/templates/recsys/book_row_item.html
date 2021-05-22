@@ -1,6 +1,8 @@
 {% load isfdb_image_handling %}
 
-<tr>
+<tr><td>
+		My Rating: {{ book.my_rating }}
+	</td>
 	<td>
 		<a href="{% url 'recsys:book' book.id %}">
 		<img class="thumbnail_cover"
@@ -37,10 +39,8 @@
     			{% endif %}
 			</td>
 			<td class="external_db_link" width="25%">
-		    	<a href="https://www.isfdb.org/cgi-bin/title.cgi?{{ book.id }}" target="_blank">ISFDB</a>
+		    	<a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.id }}" target="_blank">ISFDB</a>
 			</td>
 		</tr></table>
-
-    	</p>
 	</td>
 </tr>

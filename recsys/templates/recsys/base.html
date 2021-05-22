@@ -9,6 +9,8 @@
     {% block title %}
     {% endblock %}
   </title>
+  <link rel="icon" type="image/png"
+        href="{% static 'recsys/images/favicon.ico' %}"/>
 </head>
 
 <body>
@@ -16,7 +18,7 @@
     <table class='header_row'>
         <tr>
             <td>
-                <a href="/" alt="Bookclub.guide home page link">Book<br>Club<br>.Guide</a>
+                <a href="/" alt="Bookclub.guide home page link">BookClub<br>.Guide</a>
             </td>
             <td>
                 <a href="{% url 'recsys:ratings' %}">My<br>Ratings</a>
@@ -53,6 +55,6 @@
 <div class="center">
 {% block content %}
 {% endblock %}
-<footer><br><br><br>The bibliographic data on this website is sourced from <a href="https://www.isfdb.org" target="_blank">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution</a> license. The source data is currently available <a href="https://www.isfdb.org/wiki/index.php/ISFDB_Downloads" target="_blank">here.</a></footer>
+<footer><br><br><br>The bibliographic data on this website is sourced from <a href="http://www.isfdb.org" target="_blank">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution</a> license. The source data is currently available <a href="http://www.isfdb.org/wiki/index.php/ISFDB_Downloads" target="_blank">here.</a></footer>
 </div>
 </body>

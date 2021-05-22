@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F, Value
+from django.db.models import F, Value, FilteredRelation, Q, Count
+from django.db.models.functions import Lower
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
@@ -137,23 +138,31 @@ class book(generic.View):
 
 
 class SearchResultsView(generic.View):
-    paginate_by = 5
+    paginate_by = 10
 
     def get(self, request):
-        search = self.request.GET.get('search')
+        search = self.request.GET.get('search').strip().lower()
         page_num = self.request.GET.get('page', 1)
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            user = None
 
         query = SearchQuery(
             search, config="isfdb_title_tsc", search_type='websearch')
-        books = Books.objects.filter(**{'general_search': query}) \
-            .annotate(
+        books = Books.objects.filter(**{'general_search': query}
+            ).extra(
+                select={'exact_match' : 'lower(title) = %s'},
+                select_params=[search]
+            ).annotate(
                 rank=SearchRank(
                     F('general_search'), 
                     query,
                     normalization=Value(8),
                     cover_density=True
                 )
-            ).order_by("-rank")
+            ).order_by('-exact_match', '-rank')
+
 
         if len(books) == 1:
             return book.get(self, request, books[0].id)
@@ -173,9 +182,21 @@ class SearchResultsView(generic.View):
         paginator = Paginator(books, self.paginate_by)
         page_obj = paginator.page(page_num)
 
+        if request.user.is_authenticated:
+            book_ratings = []
+            for b in page_obj.object_list:
+                try:
+                    rating = Rating.objects.get(book=b.id, user=request.user)
+                except Rating.DoesNotExist:
+                    rating = None
+                book_ratings.append(rating)
+        else:
+            book_ratings = [None] * len(page_obj.object_list)
+
         template_data = dict(
             search=search,
-            books=page_obj.object_list,
+            books_and_ratings=zip(page_obj.object_list, book_ratings),
+            ratings=book_ratings,
             paginator=paginator,
             page_obj = paginator.get_page(page_num),
             is_paginated = len(books) > self.paginate_by,
@@ -187,7 +208,7 @@ class SearchResultsView(generic.View):
 
 class RatingsView(LoginRequiredMixin, generic.ListView):
     model = Books
-    paginate_by = 20
+    paginate_by = 10
     template_name = 'recsys/ratings.html'
     login_url = '/login/'
     redirect_field_name = 'redirect_to'

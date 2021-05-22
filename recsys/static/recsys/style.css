@@ -38,6 +38,7 @@ input {
   color: white;
   background-color: #042F66;
   font-weight: bold;
+  font-size: 24px;
 }
 .header_row  td {
   border: 2px solid black;
