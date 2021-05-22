@@ -1,10 +1,10 @@
 {% load isfdb_image_handling %}
 
 <tr><td>
-		My Rating: {{ book.my_rating }}
+		<p><datum>{{ book.rating_score|default:"" }}</datum></p>
 	</td>
 	<td>
-		<a href="{% url 'recsys:book' book.id %}">
+		<a href="{% url 'recsys:book' book.title_id %}">
 		<img class="thumbnail_cover"
 			src="{{ book.cover_image|localize_isfdb_image_url }}" 
 			alt="book cover for {{ book.title }}">
@@ -12,7 +12,7 @@
 	</td>
 	<td>
 		<p class='short_book_data'>
-			<a href="{% url 'recsys:book' book.id %}">
+			<a href="{% url 'recsys:book' book.title_id %}">
 			{{ book.title }}</a> 
 			({{ book.year }})
 			<br>by {{book.authors}}
@@ -39,7 +39,7 @@
     			{% endif %}
 			</td>
 			<td class="external_db_link" width="25%">
-		    	<a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.id }}" target="_blank">ISFDB</a>
+		    	<a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.title_id }}" target="_blank">ISFDB</a>
 			</td>
 		</tr></table>
 	</td>

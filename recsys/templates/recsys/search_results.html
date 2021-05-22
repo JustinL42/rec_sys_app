@@ -8,7 +8,7 @@
 <h1>Search Results</h1>
 
     <table class=book_list_table>
-        {% for book, rating in books_and_ratings %}
+        {% for book in books %}
             {% book_row_item book %}
         {% empty %}
         	<li>No results for "{{ search }}"</li>

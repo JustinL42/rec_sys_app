@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import connection
 from django.db.models import F, Value, FilteredRelation, Q, Count
 from django.db.models.functions import Lower
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
 from datetime import datetime
@@ -20,20 +21,50 @@ class HomeView(generic.ListView):
     def get_queryset(self):
         num_books = 10
         highly_rated = Books.objects \
-            .filter(isfdb_rating__gte=8).order_by('?')[:num_books//2]
+            .values('title', 'year', 'authors', 'book_type', 
+                    'cover_image', 'pages', 'series_str_1', 'award_winner', 
+                    'juvenile', 'wikipedia', title_id=F('id')) \
+            .filter(isfdb_rating__gte=8).order_by('?')
 
         five_years_ago = datetime.now().year - 5
         recent_award_winners = Books.objects \
+            .values('title', 'year', 'authors', 'book_type', 
+                    'cover_image', 'pages', 'series_str_1', 'award_winner', 
+                    'juvenile', 'wikipedia', title_id=F('id')) \
             .filter(year__gte=five_years_ago, 
                 award_winner=True, juvenile=False) \
-            .order_by('?')[:num_books//2]
+            .order_by('?')
+
+        if self.request.user.is_authenticated:
+            highly_rated = highly_rated.annotate(
+                rating_score=F('rating__rating'), 
+                rating_saved=F('rating__saved'), 
+                rating_blocked=F('rating__blocked'), 
+                rating_user=F('rating__user')
+            ).filter(
+                Q(rating_user__isnull=True) | 
+                Q(rating_user=self.request.user.id) 
+            )
+
+            recent_award_winners = recent_award_winners.annotate(
+                rating_score=F('rating__rating'), 
+                rating_saved=F('rating__saved'), 
+                rating_blocked=F('rating__blocked'), 
+                rating_user=F('rating__user')
+            ).filter(
+                Q(rating_user__isnull=True) | 
+                Q(rating_user=self.request.user.id) 
+            )
 
         if not recent_award_winners:
-            return highly_rated
+            return highly_rated[:num_books]
 
         # return a queryset that alternates between the two catagories
         return [ b for b in 
-            chain.from_iterable(zip(highly_rated, recent_award_winners)) ]
+            chain.from_iterable(zip(
+                highly_rated[:num_books//2], 
+                recent_award_winners[:num_books//2]
+            )) ]
 
 
 def isbn10_to_13(isbn10):
@@ -82,11 +113,17 @@ class book(generic.View):
             rating = None    
 
         content_query_set = Contents.objects.filter(book_title_id=book.id)
-        contents = [ Books.objects.filter(pk=c.content_title_id)[0] 
+        contents = [ Books.objects.filter(pk=c.content_title_id) \
+            .values('title', 'year', 'authors', 'book_type', 'cover_image', 
+                'pages', 'series_str_1', 'award_winner', 'juvenile', 
+                'wikipedia', title_id=F('id') )[0]
                     for c in content_query_set]
 
-        container_query_set = Contents.objects.filter(content_title_id=book.id)
-        containers = [ Books.objects.filter(pk=c.book_title_id)[0] 
+        container_query_set = Contents.objects.filter(content_title_id=book.id) 
+        containers = [ Books.objects.filter(pk=c.book_title_id) \
+            .values('title', 'year', 'authors', 'book_type', 
+                'cover_image', 'pages', 'series_str_1', 'award_winner', 
+                'juvenile', 'wikipedia', title_id=F('id') )[0]
                     for c in container_query_set]
 
         if book.original_lang == "English":
@@ -143,14 +180,18 @@ class SearchResultsView(generic.View):
     def get(self, request):
         search = self.request.GET.get('search').strip().lower()
         page_num = self.request.GET.get('page', 1)
-        if request.user.is_authenticated:
-            user = request.user
-        else:
-            user = None
+
+        # remove any character accent using the same method 
+        # used to unaccent the search terms in the general_search column
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT unaccent(%s)", [search])
+            search = cursor.fetchone()[0]
 
         query = SearchQuery(
             search, config="isfdb_title_tsc", search_type='websearch')
-        books = Books.objects.filter(**{'general_search': query}
+        books = Books.objects\
+            .filter(
+                **{'general_search': query}
             ).extra(
                 select={'exact_match' : 'lower(title) = %s'},
                 select_params=[search]
@@ -161,8 +202,20 @@ class SearchResultsView(generic.View):
                     normalization=Value(8),
                     cover_density=True
                 )
-            ).order_by('-exact_match', '-rank')
+            ).values('title', 'year', 'authors', 'book_type', 
+                'cover_image', 'pages', 'series_str_1', 'award_winner', 
+                'juvenile', 'wikipedia', title_id=F('id')) \
+            .order_by('-exact_match', '-rank')
 
+        if request.user.is_authenticated:
+            books = books.annotate(
+                rating_score=F('rating__rating'), 
+                rating_saved=F('rating__saved'), 
+                rating_blocked=F('rating__blocked'), 
+                rating_user=F('rating__user')
+            ).filter(
+                Q(rating_user__isnull=True) | Q(rating_user=request.user.id) 
+            )
 
         if len(books) == 1:
             return book.get(self, request, books[0].id)
@@ -182,27 +235,16 @@ class SearchResultsView(generic.View):
         paginator = Paginator(books, self.paginate_by)
         page_obj = paginator.page(page_num)
 
-        if request.user.is_authenticated:
-            book_ratings = []
-            for b in page_obj.object_list:
-                try:
-                    rating = Rating.objects.get(book=b.id, user=request.user)
-                except Rating.DoesNotExist:
-                    rating = None
-                book_ratings.append(rating)
-        else:
-            book_ratings = [None] * len(page_obj.object_list)
-
         template_data = dict(
             search=search,
-            books_and_ratings=zip(page_obj.object_list, book_ratings),
-            ratings=book_ratings,
+            books=page_obj.object_list,
             paginator=paginator,
             page_obj = paginator.get_page(page_num),
             is_paginated = len(books) > self.paginate_by,
         )
 
-        rendered_page = render(request, "recsys/search_results.html", template_data)
+        rendered_page = render(
+            request, "recsys/search_results.html", template_data)
         if rendered_page is not None:
             return rendered_page
 
@@ -214,5 +256,14 @@ class RatingsView(LoginRequiredMixin, generic.ListView):
     redirect_field_name = 'redirect_to'
 
     def get_queryset(self):
-        ratings = self.request.user.rating_set.order_by('-last_updated')
-        return [r.book for r in ratings]
+        return self.request.user.rating_set.select_related('book') \
+        .values(
+            title_id=F('book__id'), title=F('book__title'), 
+            year=F('book__year'), authors=F('book__authors'), 
+            book_type=F('book__book_type'), cover_image=F('book__cover_image'),
+             pages=F('book__pages'), series_str_1=F('book__series_str_1'), 
+             award_winner=F('book__award_winner'), 
+             juvenile=F('book__juvenile'), wikipedi=F('book__wikipedia'), 
+             rating_score=F('rating'), rating_saved=F('saved'), 
+             rating_blocked=F('blocked'), rating_user=F('user') 
+        ).order_by('-last_updated')
