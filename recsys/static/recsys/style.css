@@ -106,3 +106,6 @@ input {
   width: 200px;
   text-align: center;
 }
+.error {
+  font-size: 24px;
+}

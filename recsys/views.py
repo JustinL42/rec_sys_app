@@ -2,18 +2,16 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import connection
-from django.db.models import F, Value, FilteredRelation, Q, Count
-from django.db.models.functions import Lower
+from django.db.models import F, Value, FilteredRelation, Q
 from django.core.paginator import Paginator
 
 from datetime import datetime
 from itertools import chain
-from functools import reduce
 
 from .models import Books, More_Images, Contents, Translations, \
     Words, Rating, Isbns
 
+from .search_functions import unaccent, general_book_search, joined_to_ratings
 
 class HomeView(generic.ListView):
     template_name = 'recsys/home.html'
@@ -178,49 +176,23 @@ class SearchResultsView(generic.View):
     paginate_by = 10
 
     def get(self, request):
-        search = self.request.GET.get('search').strip().lower()
+        search = unaccent(self.request.GET.get('search').strip().lower())
         page_num = self.request.GET.get('page', 1)
+        search_errors = []
 
-        # remove any character accent using the same method 
-        # used to unaccent the search terms in the general_search column
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT unaccent(%s)", [search])
-            search = cursor.fetchone()[0]
-
-        query = SearchQuery(
-            search, config="isfdb_title_tsc", search_type='websearch')
-        books = Books.objects\
-            .filter(
-                **{'general_search': query}
-            ).extra(
-                select={'exact_match' : 'lower(title) = %s'},
-                select_params=[search]
-            ).annotate(
-                rank=SearchRank(
-                    F('general_search'), 
-                    query,
-                    normalization=Value(8),
-                    cover_density=True
-                )
-            ).values('title', 'year', 'authors', 'book_type', 
-                'cover_image', 'pages', 'series_str_1', 'award_winner', 
-                'juvenile', 'wikipedia', title_id=F('id')) \
-            .order_by('-exact_match', '-rank')
-
+        books = general_book_search(search)
         if request.user.is_authenticated:
-            books = books.annotate(
-                rating_score=F('rating__rating'), 
-                rating_saved=F('rating__saved'), 
-                rating_blocked=F('rating__blocked'), 
-                rating_user=F('rating__user')
-            ).filter(
-                Q(rating_user__isnull=True) | Q(rating_user=request.user.id) 
-            )
+            books = joined_to_ratings(books, request.user.id)
 
         if len(books) == 1:
-            return book.get(self, request, books[0].id)
+            return book.get(self, request, books[0]['title_id'])
+        elif search == '':
+            search_errors.append({'text': 'No search terms entered.'})
         elif len(books) == 0:
+
             possible_isbn = ''.join(filter(lambda x: x.isdigit(), search))
+            if search[-1] in ['X', 'x']:
+                possible_isbn += 'X'
             if len(possible_isbn) in [13, 10]:
                 isbns_to_try = [possible_isbn]
                 if len(possible_isbn) == 10:
@@ -232,6 +204,66 @@ class SearchResultsView(generic.View):
                     except Isbns.DoesNotExist:
                         pass
 
+            new_search = []
+            search_words = search.split()
+            for i in range(len(search_words)):
+                search_word = search_words[i]
+                try:
+                    # If this word is known to exist in the database, 
+                    # try including it as-is in the new search
+                    Words.objects.get(word=search_word)
+                    new_search.append(search_word)
+                    continue
+                except Words.DoesNotExist:
+                    pass
+
+                # If the exact word isn't in the database, it may be a 
+                # misspelling. Find 3 nearby words to suggest, and 
+                # try the search again with the most popular word that 
+                # is within 2 distance. 
+                alt_word_query = Words.objects.raw("""
+                    SELECT word, levenshtein(%s, word) AS distance
+                    FROM recsys_words
+                    WHERE levenshtein_less_equal(%s, word, 2) <= 2 
+                    ORDER BY nentry_log DESC, distance
+                    LIMIT 3;
+                    """, (search_word,search_word))
+                text = 'No results for "<b>{}</b>"'.format(search_word)
+                alt_words = [w.word for w in alt_word_query]
+                if not alt_words:
+                    search_errors.append({'text': text })
+                    continue
+                new_search.append(alt_words[0])
+                alt = []
+                for alt_word in alt_words:
+                    alt_search = "+".join(
+                        search_words[:i] + [alt_word] + search_words[i+1:]
+                    )
+                    alt.append({'word': alt_word, 'search': alt_search})
+                search_errors.append({'text': text, 'alt': alt })
+
+            if new_search:
+                new_search_str = ' '.join(new_search)
+                text = 'Showing results for "<b>{}</b>"'.format(new_search_str)
+                books = general_book_search(new_search_str)
+                if request.user.is_authenticated:
+                    books = joined_to_ratings(books, request.user.id)
+                if len(books) == 1:
+                    return book.get(self, request, books[0]['title_id'])
+                elif len(books) == 0:
+                    new_search_str = ' OR '.join(new_search)
+                    books = general_book_search(new_search_str)
+                    if request.user.is_authenticated:
+                        books = joined_to_ratings(books, request.user.id)
+                    search_errors.append({'text': 
+                        "No book's data contains all the search terms."})
+                    text = 'Showing results for "<b>{}</b>".'\
+                        .format(new_search_str)
+                search_errors.append({'text': text })
+
+            if len(books) == 0:
+                search_errors.append({'text': 'No results for this query.' })
+
         paginator = Paginator(books, self.paginate_by)
         page_obj = paginator.page(page_num)
 
@@ -241,6 +273,7 @@ class SearchResultsView(generic.View):
             paginator=paginator,
             page_obj = paginator.get_page(page_num),
             is_paginated = len(books) > self.paginate_by,
+            search_errors=search_errors
         )
 
         rendered_page = render(

@@ -6,14 +6,24 @@
 {% block content %}
 
 <h1>Search Results</h1>
+{% for error in search_errors %}
+    <li class='error'>{{error.text|safe}}
+    {% if error.alt %}
+    Did you mean 
+            {% for alt in error.alt %}
+                <a href="/search/?search={{alt.search}}">"{{alt.word}}"</a>
+                {% if not forloop.last %}
+                    or
+                {% endif %}
+            {% endfor %}?
+    {% endif %}</li>
+{% endfor %}
 
-    <table class=book_list_table>
-        {% for book in books %}
-            {% book_row_item book %}
-        {% empty %}
-        	<li>No results for "{{ search }}"</li>
-        {% endfor %}
-    </table>
+<table class=book_list_table>
+    {% for book in books %}
+        {% book_row_item book %}
+    {% endfor %}
+</table>
 
 {% block pagination %}
     {% if is_paginated %}

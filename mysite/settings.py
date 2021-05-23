@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from mysite import secret_keys
+
+if os.environ['USER'] == 'bitnami':
+    on_aws = True
+else:
+    on_aws = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -23,12 +29,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your_secret_key_here'
+if on_aws:
+    SECRET_KEY = secret_keys.django
+else:
+    SECRET_KEY = 'your_secret_key_here'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -78,16 +87,29 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'recsysdev',
-        'USER': 'postgres',
-        # 'PASSWORD': '',
-        # 'HOST': 'localhost',
-        'PORT': '5434',
+if on_aws:
+    # Use live db and secret passwords
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'recsyslive',
+            'USER': 'postgres',
+            'PASSWORD': secret_keys.db,
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
     }
-}
+else:
+    # on development system
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'recsysdev',
+            'USER': 'postgres',
+            'PORT': '5434',
+        }
+    }
+
 
 
 # Password validation
