@@ -1,23 +1,28 @@
 from django.contrib.auth.forms import ValidationError
 from django.views.generic import View
 from django.shortcuts import render
+from django.views.generic.base import TemplateView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 User = get_user_model()
 
-class Account(LoginRequiredMixin, View):
+class AbstractAccount(TemplateView):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
-    def get(self, request):
-        return render(request, "registration/account.html")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['in_account_tab'] = True
+        return context
 
 
-class DisplayNameChangeView(LoginRequiredMixin, View):
+class Account(LoginRequiredMixin, AbstractAccount):
+    template_name = "registration/account.html"
 
-    def get(self, request):
-        return render(request, "registration/displayname_change.html")
+
+class DisplayNameChangeView(LoginRequiredMixin, AbstractAccount):
+    template_name = "registration/displayname_change.html"
 
     def post(self, request):
         old_displayname=request.user.first_name
@@ -36,10 +41,9 @@ class DisplayNameChangeView(LoginRequiredMixin, View):
         return render(request, "registration/displayname_change_done.html",
             { 'new_displayname' : new_displayname} )
 
-class UserNameChangeView(LoginRequiredMixin, View):
 
-    def get(self, request):
-        return render(request, "registration/username_change.html")
+class UserNameChangeView(LoginRequiredMixin, AbstractAccount):
+    template_name = "registration/username_change.html"
 
     def post(self, request):
         old_username=request.user.username
@@ -71,10 +75,8 @@ class UserNameChangeView(LoginRequiredMixin, View):
             { 'new_username' : new_username} )
 
 
-class AccountDeleteView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        return render(request, "registration/account_delete.html")
+class AccountDeleteView(LoginRequiredMixin, AbstractAccount):
+    template_name = "registration/account_delete.html"
 
     def post(self, request):
         username = request.user.username

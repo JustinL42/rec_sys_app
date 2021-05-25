@@ -22,23 +22,17 @@ li a {
 .search_bar_table {
   width: 100%;
 }
-.search_bar_table * {
+.search_bar_table input {
+  width: 100%;
   height: 60;
   font-size: 28px;
 }
 .header_row {
+  background-color: #042F66;
   width: 100%;
   height: 60;
   border: 1px solid black;
   border-collapse: collapse;
-}
-.header_row  * {
-  width: 100%;
-  height: 60;
-  color: white;
-  background-color: #042F66;
-  font-weight: bold;
-  font-size: 24px;
 }
 .header_row  td {
   border: 2px solid black;
@@ -46,8 +40,18 @@ li a {
   width: 25%;
 }
 .header_row  a {
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
   display: block;
   text-decoration: none;
+}
+.header_row_highlighted {
+  background-color: #b0e0e6;
+}
+.header_row_highlighted  a {
+  color: black;
+
 }
 .center {
     margin: auto;
@@ -64,12 +68,12 @@ li a {
     font-weight: bold;
 }
 .cover_image {
-  width: auto;
+  max-width: 200px;
   max-height: 300px;
 }
 .thumbnail_cover {
-    width: auto;
-    max-height: 150px;
+    max-width: 120px;
+    max-height: 180px;
 }
 .book_list_table {
   width: 100%
@@ -100,25 +104,42 @@ li a {
   font-weight: bold;
 }
 .rating_form_table * {
-  height: 60;
   font-size: 24px;
-  font-weight: bold;
 }
-.rating_input {
+.rating_input_book {
   font-size: 32px;
-  width: 120px;
+  width: 200px;
+  text-align: center;
+}
+.rating_input_row {
+  font-size: 32px;
+  width: 100px;
   text-align: center;
 }
 .error {
   font-size: 24px;
 }
+.book_checkbox_row {
+  height: 30;
+}
 .book_checkbox_row td {
-  overflow: hidden;
   display: inline-block;
-  white-space: nowrap;
 }
 .book_rating_row td {
-  overflow: hidden;
   display: inline-block;
-  white-space: nowrap;
+}
+.check_box {
+  transform : scale(2.2);
+}
+.check_box_label {
+  font-size: 18px;
+}
+.submit_button_book {
+  font-size: 40px;
+}
+.submit_button_row {
+  font-size: 28px;
+}
+.pagination {
+  font-size: 24
 }

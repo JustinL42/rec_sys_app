@@ -8,4 +8,7 @@ urlpatterns = [
     path('<int:book_id>/', views.book.as_view(), name='book'),
     path('search/', views.SearchResultsView.as_view(), name='search_results'),
     path('ratings/', views.RatingsView.as_view(), name='ratings'),
+    path('blocked/', views.BlockedView.as_view(), name='blocked'),
+    path('saved/', views.SavedView.as_view(), name='saved'),
+
 ]

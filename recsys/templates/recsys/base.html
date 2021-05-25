@@ -17,16 +17,17 @@
 <header>
     <table class='header_row'>
         <tr>
-            <td>
+            <td >
                 <a href="/" alt="Bookclub.guide home page link">BookClub<br>.Guide</a>
             </td>
-            <td>
+            <td class='{% if in_ratings_tab %}header_row_highlighted{% endif %}'>
+                <a href="{% url 'recsys:ratings' %}">
                 <a href="{% url 'recsys:ratings' %}">My<br>Ratings</a>
             </td>
-            <td>
+            <td class='{% if in_account_tab %}header_row_highlighted{% endif %}'>
                 <a href="{% url 'account' %}">My<br>Account</a>
             </td>
-            <td>
+            <td class='{% if "/login" in request.path %}header_row_highlighted{% endif %}'>
             {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}">Log<br>Out</a>
             {% else %}
@@ -35,6 +36,23 @@
             </td>
         </tr>
     </table>
+    {% if rating_count or saved_count or blocked_count %}
+    <table class='header_row'>
+        <tr>
+            <td class='{% if request.path == "/ratings/" %}header_row_highlighted{% endif %}'>
+                <a href="{% url 'recsys:ratings' %}">Ratings ({{rating_count}})</a>
+            </td>
+            <td class='{% if request.path == "/saved/" %}header_row_highlighted{% endif %}'>
+                <a href="{% url 'recsys:saved' %}">
+                <a href="{% url 'recsys:saved' %}">Saved ({{saved_count}})</a>
+            </td>            
+            <td class='{% if request.path == "/blocked/" %}header_row_highlighted{% endif %}'>
+                <a href="{% url 'recsys:blocked' %}">
+                <a href="{% url 'recsys:blocked' %}">Blocked ({{blocked_count}})</a>
+            </td>
+        </tr>
+    </table>
+    {% endif %}
     <form action="{% url 'recsys:search_results' %}" 
         method="get">
         <table class="search_bar_table">

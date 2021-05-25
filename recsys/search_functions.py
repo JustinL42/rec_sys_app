@@ -2,7 +2,11 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank
 
 from django.db import connection
-from django.db.models import F, Value, FilteredRelation, Q
+from django.db.models import F, Func, Value, FilteredRelation, Q, Case, \
+    When, CharField
+from django.db.models.functions import Lower
+
+CharField.register_lookup(Lower)
 
 from .models import Books, Words, Isbns
 
@@ -26,9 +30,14 @@ def general_book_search(search):
     books = Books.objects\
         .filter(
         	general_search=query
-        ).extra(
-            select={'exact_match' : 'lower(title) = %s'},
-            select_params=[search]
+        ).annotate(
+            exact_match=Case(
+                When(
+                    title__lower=search, 
+                    then=Value(1)
+                ), 
+                default=Value(2)
+            )
         ).annotate(
             rank=SearchRank(
                 F('general_search'), 
@@ -38,7 +47,8 @@ def general_book_search(search):
             )
         )
 
-    return select_bookrow_values(books).order_by('-exact_match', '-rank')
+    return select_bookrow_values(books) \
+        .order_by('exact_match', '-rank', 'title_id')
         
 
 

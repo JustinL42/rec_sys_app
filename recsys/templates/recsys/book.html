@@ -26,9 +26,10 @@
                                 <input type="hidden" 
                                     name="rating_title_id" 
                                     value="{{title_id}}" />
-                                <input class="rating_input"
+                                <input class="rating_input_book"
                                     type="text" 
                                     name="new_rating"
+                                    autocomplete="off" 
                                     placeholder="{% if not rating %}No rating yet{% endif %}"
                                     value="{% if rating %}{{ rating }}{% endif %}">
                             </td>
@@ -39,22 +40,22 @@
                         </tr>
                         <tr class="book_checkbox_row">
                             <td>
-                                <input type="checkbox" id="save" name="save" {% if rating_saved %}checked{% endif %}>
+                                <input class="check_box" type="checkbox" id="save" name="save" {% if rating_saved %}checked{% endif %}>
                             </td>
                             <td>
-                                <label class="book_checkbox_row_label" for="save">Saved</label>
+                                <label class="book_checkbox_row_label" for="save">&nbsp;Saved&nbsp;&nbsp;&nbsp;&nbsp;</label>
                             </td>
                             <td>
-                                <input width="10px" type="checkbox" id="block" name="block" {% if rating_blocked %}checked{% endif %}>
+                                <input class="check_box" width="10px" type="checkbox" id="block" name="block" {% if rating_blocked %}checked{% endif %}>
                             </td>
                             <td>
-                                <label class="book_checkbox_row_label" for="save">Blocked</label>
+                                <label class="book_checkbox_row_label" for="save">&nbsp;Blocked</label>
                             </td>
                         </tr>
                     </table>
                 </td>
                 <td>
-                    <input type="submit" value="Submit">
+                    <input class="submit_button_book" type="submit" value="Submit">
                 </td>
             </tr>
         </table>
@@ -125,13 +126,14 @@
 {% endif %}
 
 {% if synopsis %}
-    <p>Synopsis:</p>
+    <h2>Synopsis:</h2>
     <p>{{ synopsis|safe }}</p>
 {% endif %}
 
 {% if contents %}
     <h2>Title{{contents|pluralize:"s"}}  contained in this book:</h2>
     <table>
+    <p>Each item can be rated independently of the book it is contained in. This book might also include short stories that aren't included here. See the ISFDB entry for a ful listing of the contents.</p>
     {% for book in contents %}
         {% book_row_item book %}
     {% endfor %}
@@ -140,6 +142,7 @@
 
 {% if containers %}
     <h2>This title can be found in {{containers|pluralize:"this,these"}} book{{containers|pluralize:"s"}}:</h2>
+    <p>This book can be rated independently of the books it is contained in.</p>
     <table>
     {% for book in containers %}
         {% book_row_item book %}

@@ -7,17 +7,19 @@
 				<input type="hidden" 
 					name="rating_title_id" value="{{book.title_id}}" />
 				<table>
-				<tr><td><input class="rating_input"
+				<tr><td><input class="rating_input_row"
 					type="text" 
+					autocomplete="off"
 					name="new_rating"
 					placeholder="{% if not book.rating_score %}Rating{% endif %}"
-					value="{% if book.rating_score %} {{ book.rating_score }} {% endif %}"></td></tr>
-					<tr><td><input type="checkbox" id="save" name="save" {% if book.rating_saved %}checked{% endif %}>
-					<label for="save">Saved</label></td></tr>
-					<tr><td><input type="checkbox" id="block" name="block" {% if book.rating_blocked %}checked{% endif %}>
-					<label for="save">Blocked</label></td></tr>
+					value="{% if book.rating_score %} {{ book.rating_score }}
+					{% endif %}"></td></tr>
+					<tr><td><input class="check_box" type="checkbox" id="save_{{book.title_id}}" name="save" {% if book.rating_saved %}checked{% endif %}>
+					<label for="save_{{book.title_id}}"><span class="check_box_label">Saved</span></label></td></tr>
+					<tr><td><input class="check_box" type="checkbox" id="block_{{book.title_id}}" name="block" {% if book.rating_blocked %}checked{% endif %}>
+					<label for="block_{{book.title_id}}"><span class="check_box_label">Blocked</span></label></td></tr>
 				</table>
-				<input type="submit" value="Submit">
+				<input class="submit_button_row" type="submit" value="Submit">
 		    </form>
 		{% endif %}
 	</td>

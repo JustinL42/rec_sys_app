@@ -24,7 +24,7 @@ urlpatterns = [
 	path('', include('recsys.urls'), name='home'),
     path('recsys/', include('recsys.urls')),
     
-    url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
+    url(r'^(accounts/)?login/.*$', auth_views.LoginView.as_view(), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 
     url(r'^account/$', views.Account.as_view(), name='account'),

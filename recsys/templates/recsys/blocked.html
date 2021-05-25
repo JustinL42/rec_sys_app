@@ -1,18 +1,18 @@
 {% extends "recsys/base.html" %}
 {% load isfdb_image_handling %}
 
-{% block title %}My Ratings{% endblock %}
+{% block title %}My Blocked Books{% endblock %}
 
 {% block content %}
 
-<h1>My Ratings</h1>
-    <p>The books you have already rated will appear here. The ratings you give will affect the recommendations created for you and other users. Books you've already rated won't appear in your recommendations, since you have probably already read them. You can remove your rating from a book by removing the number from the form and clicking "Submit". You can also save or block a book you've rated, which doesn't affect your recommendations.</p>
+<h1>My Blocked Books</h1>
+    <p>Blocked books won't appear in your recommendations. They will still appear in searches and other lists. You may want to block a book you know you aren't interested in, but don't want to give a rating to. This has no effect on your recommendations. You can also save or rate a book you've blocked. You can un-block a book by unchecking the "Blocked" check box and clicking "Submit".</p>
     {% if error_text %}
         <br>
         <li class='error'>Couldn't update rating: {{error_text}}</li>
     {% endif %}
 	{% if not object_list %}
-	<p>You haven't rated any books yet.</p>
+	<p>You haven't blocked any books yet.</p>
 	{% else %}
     <table class=book_list_table>
         {% for book in object_list %}

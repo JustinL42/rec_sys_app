@@ -23,7 +23,7 @@ class HomeView(generic.ListView):
         return self.get(request, error_text=error_text)
 
     def get_queryset(self):
-        num_books = 10
+        num_books = 4
         highly_rated = Books.objects \
             .values('title', 'year', 'authors', 'book_type', 
                     'cover_image', 'pages', 'series_str_1', 'award_winner', 
@@ -95,7 +95,7 @@ class book(generic.View):
             except Rating.DoesNotExist:
                 rating = saved = blocked =None;
         else:
-            rating = None    
+            rating = saved = blocked = None    
 
 
         translations = book.translations_set.all().order_by('year')
@@ -152,7 +152,7 @@ class book(generic.View):
 
 
 class SearchResultsView(generic.View):
-    paginate_by = 10
+    paginate_by = 8
 
     def post(self, request):
         error_text = update_rating(request)
@@ -160,16 +160,27 @@ class SearchResultsView(generic.View):
 
     def get(self, request, error_text=None):
         search = unaccent(self.request.GET.get('search').strip().lower())
-        page_num = self.request.GET.get('page', 1)
         search_errors = []
+        if len(search) > 70:
+            search_errors.append(
+                {'text': 'The character limit for the search string is 70.'}
+            )
+            return render(
+                request, "recsys/search_results.html",
+                {'search_errors': search_errors}
+            )
+
+        page_num = self.request.GET.get('page', 1)
+
 
         books = general_book_search(search)
-        if request.user.is_authenticated:
+
+        if request.user.is_authenticated and books:
             books = joined_to_ratings(books, request.user.id)
 
         if len(books) == 1:
             return book.get(self, request, books[0]['title_id'])
-        elif search == '':
+        elif search == '' or search == None:
             search_errors.append({'text': 'No search terms entered.'})
         elif len(books) == 0:
 
@@ -265,30 +276,62 @@ class SearchResultsView(generic.View):
         if rendered_page is not None:
             return rendered_page
 
-class RatingsView(LoginRequiredMixin, generic.ListView):
+class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
     model = Books
-    paginate_by = 10
-    template_name = 'recsys/ratings.html'
+    paginate_by = 20
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['in_ratings_tab'] = True
+        context['rating_count'] = self.request.user.rating_set.\
+            select_related('book').filter(rating__isnull=False).count()
+        context['saved_count'] = self.request.user.rating_set.\
+            select_related('book').filter(saved=True).count()
+        context['blocked_count'] = self.request.user.rating_set.\
+            select_related('book').filter(blocked=True).count()
+        return context
 
     def post(self, request):
         error_text = update_rating(request)
         return self.get(request, error_text=error_text)
 
+class RatingsView(AbstractRatingsView):
+    template_name = 'recsys/ratings.html'
+
     def get_queryset(self):
-        return self.request.user.rating_set.select_related('book') \
-        .filter(rating__isnull=False) \
-        .values(
-            title_id=F('book__id'), title=F('book__title'), 
-            year=F('book__year'), authors=F('book__authors'), 
-            book_type=F('book__book_type'), cover_image=F('book__cover_image'),
-             pages=F('book__pages'), series_str_1=F('book__series_str_1'), 
-             award_winner=F('book__award_winner'), 
-             juvenile=F('book__juvenile'), wikipedi=F('book__wikipedia'), 
-             rating_score=F('rating'), rating_saved=F('saved'), 
-             rating_blocked=F('blocked'), rating_user=F('user') 
-        ).order_by('-last_updated')
+        ratings = self.request.user.rating_set.select_related('book') \
+        .filter(rating__isnull=False)
+        return select_ratings_row_values(ratings).order_by('-last_updated')
+
+class SavedView(AbstractRatingsView):
+    template_name = 'recsys/saved.html'
+
+    def get_queryset(self):
+        ratings = self.request.user.rating_set.select_related('book') \
+        .filter(saved=True)
+        return select_ratings_row_values(ratings).order_by('-last_updated')
+
+class BlockedView(AbstractRatingsView):
+    template_name = 'recsys/blocked.html'
+
+    def get_queryset(self):
+        ratings = self.request.user.rating_set.select_related('book') \
+        .filter(blocked=True)
+        return select_ratings_row_values(ratings).order_by('-last_updated')
+
+def select_ratings_row_values(ratings):
+    return ratings.values(
+        title_id=F('book__id'), title=F('book__title'), year=F('book__year'), 
+        authors=F('book__authors'), book_type=F('book__book_type'), 
+        cover_image=F('book__cover_image'), pages=F('book__pages'), 
+        series_str_1=F('book__series_str_1'), 
+        award_winner=F('book__award_winner'), juvenile=F('book__juvenile'), 
+        wikipedi=F('book__wikipedia'), rating_score=F('rating'), 
+        rating_saved=F('saved'), rating_blocked=F('blocked'), 
+        rating_user=F('user')
+    )
 
 
 def update_rating(request):
