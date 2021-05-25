@@ -1,7 +1,25 @@
 {% load isfdb_image_handling %}
 
 <tr><td>
-		<p><datum>{{ book.rating_score|default:"" }}</datum></p>
+		{% if user.is_authenticated %}
+		    <form action="{{ request.get_full_path }}" method="POST">
+		        {% csrf_token %}
+				<input type="hidden" 
+					name="rating_title_id" value="{{book.title_id}}" />
+				<table>
+				<tr><td><input class="rating_input"
+					type="text" 
+					name="new_rating"
+					placeholder="{% if not book.rating_score %}Rating{% endif %}"
+					value="{% if book.rating_score %} {{ book.rating_score }} {% endif %}"></td></tr>
+					<tr><td><input type="checkbox" id="save" name="save" {% if book.rating_saved %}checked{% endif %}>
+					<label for="save">Saved</label></td></tr>
+					<tr><td><input type="checkbox" id="block" name="block" {% if book.rating_blocked %}checked{% endif %}>
+					<label for="save">Blocked</label></td></tr>
+				</table>
+				<input type="submit" value="Submit">
+		    </form>
+		{% endif %}
 	</td>
 	<td>
 		<a href="{% url 'recsys:book' book.title_id %}">
@@ -14,7 +32,7 @@
 		<p class='short_book_data'>
 			<a href="{% url 'recsys:book' book.title_id %}">
 			{{ book.title }}</a> 
-			({{ book.year }})
+			({{ book.year|default:"date unknown" }})
 			<br>by {{book.authors}}
 			<br>{{ book.book_type|title }}
 			{% if book.pages %}, {{ book.pages }} p. {% endif %}

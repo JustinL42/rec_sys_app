@@ -32,6 +32,24 @@ class Books(models.Model):
     note = models.CharField(max_length=5125, null=True)
     general_search = SearchVectorField(null=True)
 
+    contents_m2m = models.ManyToManyField(
+        "self",
+        through='Contents',
+        through_fields=('book_title', 'content_title'),
+        symmetrical=False,
+        related_name='containers',
+        related_query_name='container_title',
+    )
+
+    containers_m2m = models.ManyToManyField(
+        "self",
+        through='Contents',
+        through_fields=('content_title', 'book_title'),
+        symmetrical=False,
+        related_name='contents',
+        related_query_name='content_title',
+    )
+
     options = {
         'managed' : False,
     }
@@ -40,9 +58,34 @@ class Books(models.Model):
         return self.title
 
 
+class Contents(models.Model):
+    book_title = models.ForeignKey(
+        Books, 
+        null=False, 
+        on_delete=models.CASCADE,
+        related_name='c_contents',
+    )
+    content_title = models.ForeignKey(
+        Books, 
+        null=False, 
+        on_delete=models.CASCADE,
+        related_name='c_containers',
+    )
+
+    options = {
+        'managed' : False,
+    }
+
+    def __str__(self):
+        return "{}: {} contains {}".format(
+            self.id, self.book_title, self.content_title
+        )
+
+
 class Isbns(models.Model):
     isbn = models.CharField(max_length=13)
-    title_id = models.IntegerField()
+    title = models.ForeignKey(
+        Books, null=False,  db_constraint=False, on_delete=models.DO_NOTHING)
 
     options = {
         'managed' : False,
@@ -53,7 +96,8 @@ class Isbns(models.Model):
 
 
 class Translations(models.Model):
-    lowest_title_id = models.IntegerField()
+    lowest_title = models.ForeignKey(
+        Books, null=False,  db_constraint=False, on_delete=models.DO_NOTHING)
     title = models.CharField(max_length=5125)
     year = models.IntegerField()
     note = models.CharField(max_length=20000)
@@ -66,20 +110,9 @@ class Translations(models.Model):
         return self.title
 
 
-class Contents(models.Model):
-    book_title_id = models.IntegerField()
-    content_title_id = models.IntegerField()
-
-    options = {
-        'managed' : False,
-    }
-
-    def __str__(self):
-        return str(self.book_title_id)
-
-
 class More_Images(models.Model):
-    title_id = models.IntegerField()
+    title = models.ForeignKey(
+        Books, null=False,  db_constraint=False, on_delete=models.DO_NOTHING)
     image = models.CharField(max_length=5125)
 
     options = {
@@ -92,6 +125,9 @@ class More_Images(models.Model):
 
 class Words(models.Model):
     word = models.CharField(primary_key=True, max_length=5125)
+    ndoc = models.IntegerField(null=True)
+    nentry = models.IntegerField(null=True)
+    nentry_log = models.IntegerField(null=True)
 
     options = {
         'managed' : False,

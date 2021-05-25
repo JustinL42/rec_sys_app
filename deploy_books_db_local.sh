@@ -15,6 +15,10 @@ psql -p 5434 -U postgres -d recsysdev -c 'DROP TABLE IF EXISTS recsys_books'
 rm -rf /tmp/recsysdev
 /usr/lib/postgresql/13/bin/pg_dump -Fd recsysetl -j 3 -f /tmp/recsysdev --verbose -p 5434 -U postgres
 /usr/lib/postgresql/13/bin/pg_restore -d recsysdev -j 3 --clean --if-exists --verbose -p 5434 -U postgres /tmp/recsysdev
+psql -p 5434 -U postgres -d recsyslive -c 'CREATE EXTENSION IF NOT EXISTS fuzzystrmatch'
+psql -p 5434 -U postgres -d recsyslive -c 'CREATE EXTENSION IF NOT EXISTS unaccent'
+psql -p 5434 -U postgres -d recsyslive -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm'
+
 
 
 psql -p 5434 -U postgres -d recsysdev -c 'ALTER TABLE books RENAME TO recsys_books'

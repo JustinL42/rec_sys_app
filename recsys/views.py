@@ -4,6 +4,7 @@ from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Value, FilteredRelation, Q
 from django.core.paginator import Paginator
+from django.utils import timezone
 
 from datetime import datetime
 from itertools import chain
@@ -11,10 +12,15 @@ from itertools import chain
 from .models import Books, More_Images, Contents, Translations, \
     Words, Rating, Isbns
 
-from .search_functions import unaccent, general_book_search, joined_to_ratings
+from .search_functions import unaccent, general_book_search, \
+    joined_to_ratings, select_bookrow_values
 
 class HomeView(generic.ListView):
     template_name = 'recsys/home.html'
+
+    def post(self, request):
+        error_text = update_rating(request)
+        return self.get(request, error_text=error_text)
 
     def get_queryset(self):
         num_books = 10
@@ -73,28 +79,7 @@ def isbn10_to_13(isbn10):
 class book(generic.View):
 
     def post(self, request, book_id):
-        error_text=None
-        if not request.user.is_authenticated:
-            error_text = "You must be logged in to rate books."
-        else:
-            try:
-                new_rating = float(self.request.POST.get('new_rating'))
-                if new_rating > 10 or new_rating < 1:
-                    raise ValueError
-            except (TypeError, ValueError):
-                error_text = "The rating must be a whole number or " + \
-                    "decimal between 1 and 10 (inclusive)."
-
-        if not error_text:
-            try:
-                rating_obj = Rating.objects.get(
-                    book=book_id, user=request.user.id)
-            except Rating.DoesNotExist:
-                b = Books.objects.get(pk=book_id)
-                rating_obj = Rating(book=b, user=request.user)
-            rating_obj.rating = new_rating
-            rating_obj.save()
-
+        error_text = update_rating(request)
         return self.get(request, book_id, error_text=error_text)
 
     def get(self, request, book_id, error_text=None):
@@ -105,33 +90,25 @@ class book(generic.View):
                 rating_obj = Rating.objects.get(
                     book=book_id, user=request.user.id)
                 rating = rating_obj.rating
+                saved = rating_obj.saved
+                blocked = rating_obj.blocked
             except Rating.DoesNotExist:
-                rating = None;
+                rating = saved = blocked =None;
         else:
             rating = None    
 
-        content_query_set = Contents.objects.filter(book_title_id=book.id)
-        contents = [ Books.objects.filter(pk=c.content_title_id) \
-            .values('title', 'year', 'authors', 'book_type', 'cover_image', 
-                'pages', 'series_str_1', 'award_winner', 'juvenile', 
-                'wikipedia', title_id=F('id') )[0]
-                    for c in content_query_set]
 
-        container_query_set = Contents.objects.filter(content_title_id=book.id) 
-        containers = [ Books.objects.filter(pk=c.book_title_id) \
-            .values('title', 'year', 'authors', 'book_type', 
-                'cover_image', 'pages', 'series_str_1', 'award_winner', 
-                'juvenile', 'wikipedia', title_id=F('id') )[0]
-                    for c in container_query_set]
+        translations = book.translations_set.all().order_by('year')
+        more_images = book.more_images_set.all()
 
-        if book.original_lang == "English":
-            translations = []
-        else:
-            translations = Translations.objects \
-            .filter(lowest_title_id=book.id) \
-            .order_by('year')
+        contents = select_bookrow_values(book.contents.all()).order_by('year')
+        containers = \
+            select_bookrow_values(book.containers.all()).order_by('year')
 
-        more_images = More_Images.objects.filter(title_id=book.id)
+        if request.user.is_authenticated:
+            contents = joined_to_ratings(contents, request.user.id)
+            containers = joined_to_ratings(containers, request.user.id)
+
 
         template_data = dict(
             title_id=book_id,
@@ -163,6 +140,8 @@ class book(generic.View):
             containers=containers,
             more_images=more_images,
             rating=rating,
+            rating_saved=saved,
+            rating_blocked=blocked,
             error_text=error_text
         )
 
@@ -175,7 +154,11 @@ class book(generic.View):
 class SearchResultsView(generic.View):
     paginate_by = 10
 
-    def get(self, request):
+    def post(self, request):
+        error_text = update_rating(request)
+        return self.get(request, error_text=error_text)
+
+    def get(self, request, error_text=None):
         search = unaccent(self.request.GET.get('search').strip().lower())
         page_num = self.request.GET.get('page', 1)
         search_errors = []
@@ -273,7 +256,8 @@ class SearchResultsView(generic.View):
             paginator=paginator,
             page_obj = paginator.get_page(page_num),
             is_paginated = len(books) > self.paginate_by,
-            search_errors=search_errors
+            search_errors=search_errors,
+            error_text=error_text
         )
 
         rendered_page = render(
@@ -288,8 +272,13 @@ class RatingsView(LoginRequiredMixin, generic.ListView):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
+    def post(self, request):
+        error_text = update_rating(request)
+        return self.get(request, error_text=error_text)
+
     def get_queryset(self):
         return self.request.user.rating_set.select_related('book') \
+        .filter(rating__isnull=False) \
         .values(
             title_id=F('book__id'), title=F('book__title'), 
             year=F('book__year'), authors=F('book__authors'), 
@@ -300,3 +289,43 @@ class RatingsView(LoginRequiredMixin, generic.ListView):
              rating_score=F('rating'), rating_saved=F('saved'), 
              rating_blocked=F('blocked'), rating_user=F('user') 
         ).order_by('-last_updated')
+
+
+def update_rating(request):
+    print('here')
+    error_text=None
+    new_rating = request.POST.get('new_rating')
+    rating_title_id = request.POST.get('rating_title_id')
+    save = bool(request.POST.get('save'))
+    block = bool(request.POST.get('block'))
+    print(str(save) + str(block) + str(rating_title_id))
+
+    if not request.user.is_authenticated:
+        error_text = "You must be logged in to rate books."
+    elif new_rating == '':
+        new_rating = None
+    else:
+        try:
+            print("here2")
+            new_rating = float(new_rating)
+            if new_rating > 10 or new_rating < 1:
+                raise ValueError
+        except (TypeError, ValueError):
+            error_text = "The rating must be a whole number or " + \
+                "decimal between 1 and 10 (inclusive)."
+
+    if not error_text:
+        try:
+            rating_obj = Rating.objects.get(
+                book=rating_title_id, user=request.user.id)
+        except Rating.DoesNotExist:
+            b = Books.objects.get(pk=rating_title_id)
+            rating_obj = Rating(book=b, user=request.user)
+        print('here3')
+        rating_obj.rating = new_rating
+        rating_obj.saved = save
+        rating_obj.blocked = block
+        rating_obj.last_updated = timezone.now()
+        rating_obj.save()
+
+    return error_text

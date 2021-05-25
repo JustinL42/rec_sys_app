@@ -15,6 +15,9 @@ def localize_isfdb_image_url(img_url):
     return img_url
 
 
-@register.inclusion_tag('recsys/book_row_item.html')
-def book_row_item(book):
-    return {'book': book}
+@register.inclusion_tag('recsys/book_row_item.html', takes_context=True )
+def book_row_item(context, book):
+    return {
+        'book': book,
+        'user': context['user']
+    }

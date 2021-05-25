@@ -24,7 +24,7 @@ class More_ImagesAdmin(admin.ModelAdmin):
     search_fields = ['title_id']
 
 class WordsAdmin(admin.ModelAdmin):
-    list_display = ('word', )
+    list_display = ('word', 'nentry', 'nentry_log')
     search_fields = ['word']
 
 class CustomUserAdmin(UserAdmin):

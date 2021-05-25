@@ -16,7 +16,7 @@ body h3 {
 li a {
     color: black;
 }
-input {
+.general_search_bar {
   width: 100%;
 }
 .search_bar_table {
@@ -33,8 +33,8 @@ input {
   border-collapse: collapse;
 }
 .header_row  * {
-/*  width: 100%;
-  height: 60;*/
+  width: 100%;
+  height: 60;
   color: white;
   background-color: #042F66;
   font-weight: bold;
@@ -82,10 +82,13 @@ input {
   background-color: purple;
   color: white;
 }
-.tr_table * {
+.tr_table td, th {
   border: 1px solid black;
   border-collapse: collapse;
   text-align: left;
+}
+.tr_table a {
+  color: black;
 }
 .change_password_table * {
   vertical-align: top;
@@ -103,9 +106,19 @@ input {
 }
 .rating_input {
   font-size: 32px;
-  width: 200px;
+  width: 120px;
   text-align: center;
 }
 .error {
   font-size: 24px;
+}
+.book_checkbox_row td {
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+}
+.book_rating_row td {
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
 }

@@ -14,10 +14,16 @@ def unaccent(search):
         return cursor.fetchone()[0]
 
 
+def select_bookrow_values(books):
+    return books.values('title', 'year', 'authors', 'book_type', 
+        'cover_image', 'pages', 'series_str_1', 'award_winner', 
+        'juvenile', 'wikipedia', title_id=F('id'))
+
+
 def general_book_search(search):
     query = SearchQuery(
         search, config="isfdb_title_tsc", search_type='websearch')
-    return Books.objects\
+    books = Books.objects\
         .filter(
         	general_search=query
         ).extra(
@@ -30,10 +36,11 @@ def general_book_search(search):
                 normalization=Value(8),
                 cover_density=True
             )
-        ).values('title', 'year', 'authors', 'book_type', 
-            'cover_image', 'pages', 'series_str_1', 'award_winner', 
-            'juvenile', 'wikipedia', title_id=F('id')) \
-        .order_by('-exact_match', '-rank')
+        )
+
+    return select_bookrow_values(books).order_by('-exact_match', '-rank')
+        
+
 
 def joined_to_ratings(books, user_id):
 	return books.annotate(

@@ -18,6 +18,10 @@
             {% endfor %}?
     {% endif %}</li>
 {% endfor %}
+{% if error_text %}
+    <br>
+    <li class='error'>Couldn't update rating: {{error_text}}</li>
+{% endif %}
 
 <table class=book_list_table>
     {% for book in books %}

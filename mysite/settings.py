@@ -13,10 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 from mysite import secret_keys
 
-if os.environ['USER'] == 'bitnami':
-    on_aws = True
-else:
-    on_aws = False
+on_aws = os.path.exists('/home/bitnami')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

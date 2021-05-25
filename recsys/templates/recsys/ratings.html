@@ -9,6 +9,10 @@
 	{% if not object_list %}
 	<p>You haven't rated any books yet. When you rate books, they will no longer appear in your recommendations, but can be found here</p>
 	{% else %}
+    {% if error_text %}
+        <br>
+        <li class='error'>Couldn't update rating: {{error_text}}</li>
+    {% endif %}
     <table class=book_list_table>
         {% for book in object_list %}
             {% book_row_item book %}

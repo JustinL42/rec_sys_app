@@ -5,27 +5,54 @@
 
 {% block content %}
 
-<h1>{{ title }} ({{ year }})</h1>
-<h3>by {{ authors }}</h3>
+<h1>{{ title }} ({{ year|default:"date uknown" }})</h1>
+<h3>by {{ authors|default:"uknown author" }}</h3>
 {% if user.is_authenticated %}
     <form action="{% url 'recsys:book' title_id%}" 
         method="POST">
         {% csrf_token %}
         <table class="rating_form_table">
             {% if error_text %}
-            <tr><li>{{ error_text }}</li></tr>
+            <tr>
+                <li>{{ error_text }}</li>
+            </tr>
             {% endif %}
             <tr>
-                <td>Your<br>rating:</td>
                 <td>
-                    <input class="rating_input"
-                        type="text" 
-                        name="new_rating"
-                        placeholder="{% if not rating %}No rating yet{% endif %}"
-                        value="{% if rating %}{{ rating }}{% endif %}">
+                    <table>
+                        <tr class="book_rating_row">
+                            <td>Your<br>rating:</td>
+                            <td>
+                                <input type="hidden" 
+                                    name="rating_title_id" 
+                                    value="{{title_id}}" />
+                                <input class="rating_input"
+                                    type="text" 
+                                    name="new_rating"
+                                    placeholder="{% if not rating %}No rating yet{% endif %}"
+                                    value="{% if rating %}{{ rating }}{% endif %}">
+                            </td>
+
+                            <td>
+                                Scale:<br>1-10
+                            </td>
+                        </tr>
+                        <tr class="book_checkbox_row">
+                            <td>
+                                <input type="checkbox" id="save" name="save" {% if rating_saved %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <label class="book_checkbox_row_label" for="save">Saved</label>
+                            </td>
+                            <td>
+                                <input width="10px" type="checkbox" id="block" name="block" {% if rating_blocked %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <label class="book_checkbox_row_label" for="save">Blocked</label>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
-                <td>
-                    Scale:<br>1-10
                 <td>
                     <input type="submit" value="Submit">
                 </td>
@@ -83,13 +110,15 @@
     {% endif %}
     {% if original_lang != 'English' %}
         <p>This is book is a translation from <span class="datum">{{ original_lang }}</span> of the original book <span class="datum"><i>{{ original_title }}</i></span> ({{ original_year }}).</p>
-        <h2>Translations:</h2>
-        <table width="auto" class="tr_table">
-            <tr><th>Year</th><th>Title</th><th>Notes</th></tr>
-            {% for tr in translations %}
-                <tr><th>{{ tr.year }}</th><th>{{ tr.title }}</th><th>{{ tr.note }}</th></tr>
-            {% endfor %}
-        </table>
+        {% if translations %}
+            <h2>Translations:</h2>
+            <table width="auto" class="tr_table">
+                <tr><th>Year</th><th>Title</th><th>Notes</th></tr>
+                {% for tr in translations %}
+                    <tr><th>{{ tr.year|default:"date unknown" }}</th><th>{{ tr.title }}</th><th>{{ tr.note|safe }}</th></tr>
+                {% endfor %}
+            </table>
+        {% endif %}
     {% elif note %}
         <p>{{ note|safe }}</p>
     {% endif %}
