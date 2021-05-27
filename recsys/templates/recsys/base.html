@@ -62,7 +62,8 @@
                         type="text" 
                         name="search"
                         placeholder="Search by title, author, series, or ISBN"
-                        value="{{request.GET.search}}">
+                        value="{{request.GET.search}}"
+                        {% if not in_account_tab %}autofocus{% endif %} >
                 </th>
                 <th>
                     <input type="submit" value="Search">

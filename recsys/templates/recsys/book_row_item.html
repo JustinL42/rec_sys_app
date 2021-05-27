@@ -8,7 +8,11 @@
 					name="rating_title_id" value="{{book.title_id}}" />
 				<table>
 				<tr><td><input class="rating_input_row"
-					type="text" 
+					label="book_rating"
+					type="number"
+					step="any"
+					min=1
+					max=10
 					autocomplete="off"
 					name="new_rating"
 					placeholder="{% if not book.rating_score %}Rating{% endif %}"

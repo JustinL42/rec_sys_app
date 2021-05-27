@@ -27,7 +27,11 @@
                                     name="rating_title_id" 
                                     value="{{title_id}}" />
                                 <input class="rating_input_book"
-                                    type="text" 
+                                    label="book_rating"
+                                    type="number"
+                                    step="any"
+                                    min="1"
+                                    max="10" 
                                     name="new_rating"
                                     autocomplete="off" 
                                     placeholder="{% if not rating %}No rating yet{% endif %}"
