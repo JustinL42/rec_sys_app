@@ -171,6 +171,11 @@ class Book_Club(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name'], name='UniqueBookClubNames'
+            )
+        ]
         indexes = [
             models.Index(fields=['name']),
             models.Index(fields=['virtual']),

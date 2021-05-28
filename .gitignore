@@ -4,6 +4,8 @@ sent_emails/*
 aws
 recsys.sublime-workspace
 recsys/migrations/*
+mysite/secret_keys.py
+data/book_crossing/*
 
 
 
