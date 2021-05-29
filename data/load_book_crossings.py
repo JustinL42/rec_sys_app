@@ -124,61 +124,132 @@ try:
                     )
                     member_ids.append(cur.fetchone()[0])
 
-                # Create the virtual user, whose ratings are the 
-                # average for the book crossings users as a whole
-                username = "bx_virtual"
-                first_name = "virtual"
-                virtual = True
-                location = None
-                age = None
-                cur.execute("""
-                    INSERT INTO recsys_user 
-                    (username, first_name, last_name, password, email, 
-                        location, age, is_active, is_superuser, 
-                        is_staff, date_joined, virtual)
-                    VALUES (%s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (username) 
-                    DO UPDATE 
-                    SET first_name = EXCLUDED.first_name
-                    RETURNING ID;
-                """, (username, first_name, last_name, password, email, 
-                        location, age, is_active, is_superuser, 
-                        is_staff, date_joined, virtual)
-                )
-                virtual_user_id = cur.fetchone()[0]
+            # Create the virtual user, whose ratings are the 
+            # average for the book crossings users as a whole
+            username = "bx_virtual"
+            first_name = "virtual"
+            virtual = True
+            location = None
+            age = None
+            cur.execute("""
+                INSERT INTO recsys_user 
+                (username, first_name, last_name, password, email, location, 
+                age, is_active, is_superuser, is_staff, date_joined, virtual)
+                VALUES (%s, %s, %s, %s, %s, %s, 
+                    %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (username) 
+                DO UPDATE 
+                SET first_name = EXCLUDED.first_name,
+                    virtual = EXCLUDED.virtual
+                RETURNING ID;
+            """, (username, first_name, last_name, password, email, 
+                    location, age, is_active, is_superuser, 
+                    is_staff, date_joined, virtual)
+            )
+            virtual_user_id = cur.fetchone()[0]
 
-                # create the BookCrossing virtual book club
+            # delete any prior BookCrossing virtual book club
+            cur.execute("""
+                SELECT id
+                FROM recsys_book_club
+                WHERE name = %s;
+            """, ("Book Crossings Virtual Book Club", )
+            )
+            existing_bx_clubs = cur.fetchall()
+            for club in existing_bx_clubs:
                 cur.execute("""
-                    DELETE 
-                    FROM recsys_book_club
-                    WHERE name = %s;
+                    DELETE
+                    FROM recsys_book_club_members
+                    WHERE book_club_id = %s
+                    """, (club)
+                )
+            cur.execute("""
+                DELETE 
+                FROM recsys_book_club
+                WHERE name = %s;
                 """, ("Book Crossings Virtual Book Club", )
-                )
+            )
 
-                # create the BookCrossing virtual book club
+            # create the BookCrossing virtual book club
+            cur.execute("""
+                INSERT INTO recsys_book_club
+                (name, virtual, virtual_member_id)
+                VALUES (%s, %s, %s)
+                RETURNING ID;
+            """, ("Book Crossings Virtual Book Club", 
+                    True, virtual_user_id)
+            )
+
+            # populate the virtual book club
+            virtual_book_club_id = cur.fetchone()[0]
+            for member_id in member_ids:
                 cur.execute("""
-                    INSERT INTO recsys_book_club
-                    (name, virtual, virtual_member_id)
-                    VALUES (%s, %s, %s)
-                    RETURNING ID;
-                """, ("Book Crossings Virtual Book Club", 
-                        True, virtual_user_id)
+                    INSERT INTO recsys_book_club_members
+                    (book_club_id, user_id)
+                    VALUES (%s, %s)
+                """, (virtual_book_club_id, member_id)
                 )
 
-                # populate the virtual book club
-                virtual_book_club_id = cur.fetchone()[0]
-                for member_id in member_ids:
+                # delete any pre-existing ratings for these users
+                cur.execute("""
+                    DELETE
+                    FROM recsys_rating
+                    where user_id = %s
+                """, (member_id,))
+
+            #TODO: update the virtual user's ratings
+            # update_virtual_user("BookCrossing")
+
+
+            print("Loading ratings data...")
+            with open(
+                os.path.join(path_to_bx_data, 'utf-ratings.csv')) as r_csv:
+                
+                r_reader = csv.reader(
+                    r_csv, delimiter=';', quotechar='"')
+                # discard header
+                next(r_reader, None)
+
+                saved = False
+                blocked = False
+                last_updated = '2004-08-01'
+
+
+                for row in r_reader:
+
+                    # The bx data uses 0 for implicit ratings. Skip these.
+                    rating = row[2]
+                    if rating == '0':
+                        continue
+
                     cur.execute("""
-                        INSERT INTO recsys_book_club_members
-                        (book_club_id, user_id)
-                        VALUES (%s, %s)
-                    """, (virtual_book_club_id, member_id)
+                        select title_id
+                        from recsys_isbns
+                        where isbn  = %s;
+                        """, (row[1],)
                     )
+                    book_id = cur.fetchone()
+                    if not book_id:
+                        continue
+
+                    username = "bx" + row[0]
+                    cur.execute("""
+                        SELECT ID
+                        FROM recsys_user
+                        WHERE username = %s;
+                        """, (username,)
+                    )
+                    user_id = cur.fetchone()
 
 
-                #TODO: update the virtual user's ratings
-                # update_virtual_user("BookCrossing")
+                    cur.execute("""
+                        INSERT INTO recsys_rating 
+                        (rating, saved, blocked, last_updated, 
+                            book_id, user_id)
+                        VALUES (%s, %s, %s, %s, %s, %s);
+                    """, (rating, saved, blocked, last_updated, 
+                            book_id, user_id)
+                    )
 
 except Exception as e:
     raise e
