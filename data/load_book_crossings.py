@@ -2,10 +2,6 @@
 import os, sys, csv, zipfile
 from urllib import request
 import psycopg2
-# import pandas as pd
-# from psycopg2.extras import execute_values
-# import util
-# from math import nan
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
@@ -42,7 +38,7 @@ if not (zipDownloaded or filesUnzipped):
     # the download command is commented out to prevent unintentional 
     # traffic to the site. 
     # Uncomment the following line if actually fetching the data.
-    request.urlretrieve(dataURL, path_to_zip)
+    # request.urlretrieve(dataURL, path_to_zip)
 
 if not filesUnzipped:
     try:
@@ -214,7 +210,7 @@ try:
                 blocked = False
                 last_updated = '2004-08-01'
 
-
+                ratings_dict = {}
                 for row in r_reader:
 
                     # The bx data uses 0 for implicit ratings. Skip these.
@@ -239,8 +235,16 @@ try:
                         WHERE username = %s;
                         """, (username,)
                     )
-                    user_id = cur.fetchone()
+                    user_id = cur.fetchone()[0]
 
+                    ratings_dict[(book_id[0], user_id)] = \
+                        ratings_dict.get((book_id[0], user_id), []) + \
+                        [float(rating)]
+
+
+                for (book_id, user_id), rating_list in ratings_dict.items():
+                    # book_id, user_id = rating_tuple
+                    rating = sum(rating_list)/len(rating_list)
 
                     cur.execute("""
                         INSERT INTO recsys_rating 
@@ -255,5 +259,3 @@ except Exception as e:
     raise e
 finally:
     conn.close()
-
-
