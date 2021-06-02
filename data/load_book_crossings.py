@@ -243,7 +243,6 @@ try:
 
 
                 for (book_id, user_id), rating_list in ratings_dict.items():
-                    # book_id, user_id = rating_tuple
                     rating = sum(rating_list)/len(rating_list)
 
                     cur.execute("""
