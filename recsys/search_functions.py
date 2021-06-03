@@ -3,8 +3,9 @@ from django.contrib.postgres.search import SearchQuery, SearchRank
 
 from django.db import connection
 from django.db.models import F, Func, Value, FilteredRelation, Q, Case, \
-    When, CharField
+    When, CharField, Avg
 from django.db.models.functions import Lower
+from django.contrib.postgres.aggregates import BoolAnd
 
 CharField.register_lookup(Lower)
 
@@ -29,7 +30,7 @@ def general_book_search(search):
         search, config="isfdb_title_tsc", search_type='websearch')
     books = Books.objects\
         .filter(
-        	general_search=query
+            general_search=query
         ).annotate(
             exact_match=Case(
                 When(
@@ -51,14 +52,14 @@ def general_book_search(search):
         .order_by('exact_match', '-rank', 'title_id')
         
 
-
 def joined_to_ratings(books, user_id):
-	return books.annotate(
-		    rating_score=F('rating__rating'), 
-		    rating_saved=F('rating__saved'), 
-		    rating_blocked=F('rating__blocked'), 
-		    rating_user=F('rating__user')
-		).filter(
-		    Q(rating_user__isnull=True) | Q(rating_user=user_id) 
-		)
+    return books.annotate(
+            rating_score=Avg('rating__rating', 
+                filter=Q(rating__user = user_id)),
+            rating_saved=BoolAnd('rating__saved', 
+                filter=Q(rating__user = user_id)),
+            rating_blocked=BoolAnd('rating__blocked', 
+                filter=Q(rating__user = user_id)),
+            rating_user=Value(user_id)
+        )
 

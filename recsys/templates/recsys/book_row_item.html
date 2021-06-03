@@ -16,8 +16,7 @@
 					autocomplete="off"
 					name="new_rating"
 					placeholder="{% if not book.rating_score %}Rating{% endif %}"
-					value="{% if book.rating_score %} {{ book.rating_score }}
-					{% endif %}"></td></tr>
+					value="{% if book.rating_score %}{{ book.rating_score }}{% endif %}"></td></tr>
 					<tr><td><input class="check_box" type="checkbox" id="save_{{book.title_id}}" name="save" {% if book.rating_saved %}checked{% endif %}>
 					<label for="save_{{book.title_id}}"><span class="check_box_label">Saved</span></label></td></tr>
 					<tr><td><input class="check_box" type="checkbox" id="block_{{book.title_id}}" name="block" {% if book.rating_blocked %}checked{% endif %}>
