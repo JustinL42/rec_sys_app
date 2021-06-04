@@ -86,13 +86,19 @@ li a {
   background-color: purple;
   color: white;
 }
-.tr_table td, th {
+.tr_table  {
   border: 1px solid black;
   border-collapse: collapse;
+}
+.tr_table th, 
+.tr_table td {
+  border: 1px solid black;
   text-align: left;
 }
-.tr_table a {
+.tr_table * {
   color: black;
+  font-size: 24px;
+  font-weight: normal;
 }
 .change_password_table * {
   vertical-align: top;
@@ -112,7 +118,7 @@ li a {
   text-align: center;
 }
 .rating_input_row {
-  font-size: 32px;
+  font-size: 28px;
   width: 100px;
   text-align: center;
 }
@@ -135,11 +141,17 @@ li a {
   font-size: 18px;
 }
 .submit_button_book {
-  font-size: 40px;
+  font-size: 32px;
 }
 .submit_button_row {
   font-size: 28px;
 }
 .pagination {
   font-size: 24
+}
+.book_row_item {
+  width: 85vw;
+  max-width: 1000px;
+  border: 2px solid black;
+  border-radius: 10px;
 }
