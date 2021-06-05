@@ -9,6 +9,8 @@ sys.path.append(path)
 from mysite import settings
 from mysite import secret_keys
 
+INCONSISTENT_ISBN_VIRTUAL_TITLE = 73
+
 
 db_name = settings.DATABASES['default'].get('NAME', 'recsysdev')
 db_port = settings.DATABASES['default'].get('PORT', '5432')
@@ -70,6 +72,28 @@ os.system("iconv -f ISO_8859-16 -t utf-8 {} > {}" \
         os.path.join(path_to_bx_data, 'utf-ratings.csv')
     )
 )
+
+# The isbn table will be used to map most isbns to title_ids. However,
+# some of these are marked as ambiguous since they've been re-used for
+# multiple books. In most of these cases, the intended book has been 
+# determined by looking at the BX-Books.csv file
+bx_title_dict = {
+    "0064405052" : 1589,
+    "0330016970" : 25149,
+    "0373638094" : 12715,
+    "0439169445" : 1867874,
+    "0441007015" : 9847,
+    "0451453026" : 13244,
+    "0671028065" : 26947,
+    "0671040707" : 26274,
+    "0671787551" : 12360,
+    "0671878468" : 3719,
+    "0765348446" : 1055216,
+    "0786851473" : 155306,
+    "0786913886" : 19400,
+    "0915442639" : 2801,
+    "0946626987" : 980005
+}
 
 
 conn = psycopg2.connect(db_conn_string)
@@ -211,22 +235,30 @@ try:
                 last_updated = '2004-08-01'
 
                 ratings_dict = {}
+                inconsistent_isbns = set()
                 for row in r_reader:
 
                     # The bx data uses 0 for implicit ratings. Skip these.
                     rating = row[2]
                     if rating == '0':
                         continue
+                    isbn = row[1]
 
                     cur.execute("""
                         select title_id
                         from recsys_isbns
                         where isbn  = %s;
-                        """, (row[1],)
+                        """, (isbn,)
                     )
                     book_id = cur.fetchone()
                     if not book_id:
                         continue
+                    elif book_id[0] == INCONSISTENT_ISBN_VIRTUAL_TITLE:
+                        try:
+                            book_id = [bx_title_dict[isbn]]
+                        except KeyError:
+                            inconsistent_isbns.add(isbn)
+                            continue
 
                     username = "bx" + row[0]
                     cur.execute("""
@@ -237,24 +269,35 @@ try:
                     )
                     user_id = cur.fetchone()[0]
 
+                    rating_list, isbns_set = \
+                        ratings_dict.get((book_id[0], user_id), ([], set()))
+                    rating_list.append(float(rating))
+                    isbns_set.add(isbn)
                     ratings_dict[(book_id[0], user_id)] = \
-                        ratings_dict.get((book_id[0], user_id), []) + \
-                        [float(rating)]
+                        (rating_list, isbns_set)
 
 
-                for (book_id, user_id), rating_list in ratings_dict.items():
+                for (book_id, user_id), (rating_list, isbns_set) \
+                    in ratings_dict.items():
+
                     rating = sum(rating_list)/len(rating_list)
+                    original_book_id = ", ".join(sorted(isbns_set))
 
                     cur.execute("""
                         INSERT INTO recsys_rating 
                         (rating, saved, blocked, last_updated, 
-                            book_id, user_id)
-                        VALUES (%s, %s, %s, %s, %s, %s);
+                            book_id, user_id, original_book_id)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s);
                     """, (rating, saved, blocked, last_updated, 
-                            book_id, user_id)
+                            book_id, user_id, original_book_id)
                     )
 
 except Exception as e:
     raise e
 finally:
     conn.close()
+
+if inconsistent_isbns:
+    print("Inconsistent isbns skipped: ")
+    for isbn in sorted(inconsistent_isbns):
+        print(isbn)

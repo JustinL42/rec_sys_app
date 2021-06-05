@@ -1,8 +1,11 @@
 #!/usr/bin/python3
-import os
+import os, sys
 from datetime import datetime
 import pandas as pd
 import psycopg2
+
+path = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(path)
 
 from mysite import settings
 from mysite import secret_keys
@@ -47,9 +50,9 @@ df.loc[(df.Name =="Mike") | (df.Name == "Michael"), 'Name'] = "Mike N."
 # convert these to 1-10
 df['original_rating'] = df['Value']
 df.Timestamp = pd.to_datetime(df.Timestamp)
-conversion = lambda r : max(1, min(10, (r * 3) + 5.5))
+conversion = lambda r : max(1, min(10, (r * 3.5) + 5.5))
 df.loc[df.Timestamp < '1/21/20', 'Value'] = df['Value'].map(conversion)
-conversion = lambda r : max(1, min(10, r * 2))
+conversion = lambda r : max(1, min(10, r * 2 - 0.5))
 df.loc[df.Timestamp >= '1/21/20', 'Value'] = df['Value'].map(conversion)
 
 
@@ -67,6 +70,7 @@ else:
     numeric_alias = pd.Series(
         range(5001, 5001 + name_series.shape[0]), name="Numeric Alias")
     name_key = pd.concat([name_series, numeric_alias], axis=1)
+    name_key.to_csv(name_key_file)
 
 if os.path.exists(opt_out_list_file):
     with open(opt_out_list_file) as file:
@@ -267,18 +271,16 @@ try:
                 if not DRY_RUN:
                     cur.execute("""
                         INSERT INTO recsys_rating 
-                        (original_rating, original_min, original_max, rating, 
-                            saved, blocked, last_updated, book_id, user_id)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
-                    """, (original_rating, original_min, original_max, rating,
-                             saved, blocked, last_updated, book_id, user_id)
+                        (original_rating, original_min, original_max, 
+                            original_book_id, rating, saved, blocked, 
+                            last_updated, book_id, user_id)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (original_rating, original_min, original_max, 
+                            row.Title, rating, saved, blocked, 
+                            last_updated, book_id, user_id)
                     )
 
 except Exception as e:
     raise e
 finally:
     conn.close()
-
-
-
-

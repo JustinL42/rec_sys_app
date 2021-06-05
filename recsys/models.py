@@ -208,6 +208,7 @@ class Rating(models.Model):
         settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
     rating = models.FloatField(null=True)
     predicted_rating = models.FloatField(null=True)
+    original_book_id = models.CharField(max_length=1024, null=True)
     original_rating = models.FloatField(null=True)
     original_min = models.FloatField(null=True)
     original_max = models.FloatField(null=True)
