@@ -303,7 +303,8 @@ class RatingsView(AbstractRatingsView):
     def get_queryset(self):
         ratings = self.request.user.rating_set.select_related('book') \
         .filter(rating__isnull=False)
-        return select_ratings_row_values(ratings).order_by('-last_updated')
+        return select_ratings_row_values(ratings) \
+            .order_by('-last_updated', '-year', 'id')
 
 class SavedView(AbstractRatingsView):
     template_name = 'recsys/saved.html'
