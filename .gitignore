@@ -7,6 +7,10 @@ recsys/migrations/*
 mysite/secret_keys.py
 data/book_crossing/*
 data/custom/*
+data/goodreads/*
+data/super_rater/*
+data/title_handling.py
+
 
 
 
