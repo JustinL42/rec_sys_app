@@ -17,7 +17,7 @@ from data.super_rater.title_handling import titles_to_skip, title_override
 # On a dry run, print the book found for the title 
 # and do everything except actually inserting the data into
 DRY_RUN = False
-FILE = 'super_rater/SFRatings-N'
+FILES = ['super_rater/SFRatings-N', 'super_rater/SFRatings-AC']
 ORIGINAL_MIN = 1
 ORIGINAL_MAX = 13
 conversion = lambda r : max(1, min(10, r*3/4 + 1/4))
@@ -31,13 +31,12 @@ db_conn_string = "dbname={} port={} user={} password= {} host={} "\
     .format(db_name, db_port, db_user, db_password, db_host)
 
 data_dir = os.path.dirname(os.path.realpath(__file__))
-filename = os.path.join(data_dir, FILE)
-title_override = title_override[FILE]
-titles_to_skip = titles_to_skip[FILE]
-
-
-with open(filename) as f:
-    rows = f.readlines()
+rows = []
+for file in FILES:
+    filename = os.path.join(data_dir, file)
+    with open(filename) as f:
+        filerows = f.readlines()
+    rows += filerows
 
 count = defaultdict(lambda : 0)
 ratings_dict = {}
@@ -49,8 +48,8 @@ try:
     with conn:
         with conn.cursor() as cur:
             for row, index in zip(rows, range(len(rows))):
-                if row[:3] == "===":
-                    break
+                if row[:5] in ["=====", "[834]", "[288]"]:
+                    continue
                 count["total"] += 1
                 rating_and_authors, title = re.split(r" {3,}", row, maxsplit=1)
                 title = re.sub(r"\\`", r"", re.sub(r"\\'", r"", title))\
@@ -94,7 +93,8 @@ try:
                             title_id = title_id[0]
                     elif title == "New Dimensions 1":
                         if author_str == "Robert Silverberg, Marta Randall":
-                            title_id = title_id[1]
+                            count["titles_skipped"] += 1
+                            continue
                         else:
                             title_id = title_id[0]
 
@@ -251,6 +251,14 @@ try:
                 )
                 user_id = cur.fetchone()[0]
 
+                cur.execute("""
+                    DELETE
+                    FROM recsys_rating
+                    WHERE user_id = %s
+                """, (user_id,)
+                )
+
+
             saved = False
             blocked = False
             for book_id, (rating_list, _, original_id_set) in \
@@ -266,11 +274,6 @@ try:
                             book_id, user_id, original_book_id,
                             original_rating, original_min, original_max)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (book_id, user_id) DO UPDATE SET
-                                rating = EXCLUDED.rating,
-                                last_updated = EXCLUDED.last_updated,
-                                original_book_id = EXCLUDED.original_book_id,
-                                original_rating = EXCLUDED.original_rating;
                     """, (conversion(rating), saved, blocked, datetime.now(), 
                             book_id, user_id, original_book_id,
                             rating, ORIGINAL_MIN, ORIGINAL_MAX)
@@ -286,9 +289,9 @@ for category, total in sorted(count.items(), key=lambda i : -i[1]):
 
 needs_review.to_clipboard()
 
-if count["handled_by_override"] != len(title_override):
+if count["handled_by_override"] < len(title_override):
     print("WARNING: not all titles in title_override were processed. " + \
         "Do they all match the titles in the source file exactly?")
-if count["titles_skipped"] != len(titles_to_skip):
+if count["titles_skipped"] < len(titles_to_skip):
     print("WARNING: not all titles in title_to_skip were seen. " + \
         "Do they all match the titles in the source file exactly?")

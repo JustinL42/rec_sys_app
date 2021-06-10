@@ -17,6 +17,8 @@ OVERWRITE_EXISTING = True
 FILE = 'goodreads/j_goodreads_library_export.csv'
 USERNAME = '5013'
 INCONSISTENT_ISBN_VIRTUAL_TITLE = 73
+ORIGINAL_MIN = 1
+ORIGINAL_MAX = 5
 conversion = lambda r : max(1, min(10, r * 2 - 0.5))
 
 db_name = settings.DATABASES['default'].get('NAME', 'recsysdev')
@@ -74,7 +76,7 @@ try:
 
                 rating_list, isbns_set = \
                     ratings_dict.get(book_id[0], ([], set()))
-                rating_list.append(float(conversion(row['My Rating'])))
+                rating_list.append(float(row['My Rating']))
                 isbns_set.add(isbn)
                 ratings_dict[book_id[0]] = (rating_list, isbns_set)
 
@@ -90,27 +92,36 @@ try:
                         cur.execute("""
                             INSERT INTO recsys_rating 
                             (rating, saved, blocked, last_updated, 
-                                book_id, user_id, original_book_id)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                book_id, user_id, original_book_id,
+                                original_rating, original_min, original_max)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             ON CONFLICT (book_id, user_id) DO UPDATE SET
                                 rating = EXCLUDED.rating,
                                 last_updated = EXCLUDED.last_updated,
                                 original_book_id = EXCLUDED.original_book_id;
-                        """, (rating, saved, blocked, last_updated, 
-                                book_id, user_id, original_book_id)
+                        """, (conversion(rating), saved, blocked, last_updated, 
+                                book_id, user_id, original_book_id, 
+                                rating, ORIGINAL_MIN, ORIGINAL_MAX)
                         )
                     else:
                         cur.execute("""
                             INSERT INTO recsys_rating 
                             (rating, saved, blocked, last_updated, 
-                                book_id, user_id, original_book_id)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                book_id, user_id, original_book_id,
+                                original_rating, original_min, original_max)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             ON CONFLICT DO NOTHING;
-                        """, (rating, saved, blocked, last_updated, 
-                                book_id, user_id, original_book_id)
+                        """, (conversion(rating), saved, blocked, last_updated, 
+                                book_id, user_id, original_book_id,
+                                rating, ORIGINAL_MIN, ORIGINAL_MAX)
                         )
 
 except Exception as e:
     raise e
 finally:
     conn.close()
+
+if inconsistent_isbns:
+    print("Inconsistent ISBNs were skipped:")
+for isbn in inconsistent_isbns:
+    print(isbn)
