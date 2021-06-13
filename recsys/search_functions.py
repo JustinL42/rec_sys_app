@@ -35,9 +35,9 @@ def general_book_search(search):
             exact_match=Case(
                 When(
                     title__lower=search, 
-                    then=Value(1)
+                    then=Value(1) + F('editions')
                 ), 
-                default=Value(2)
+                default=Value(0)
             )
         ).annotate(
             rank=SearchRank(
@@ -49,7 +49,8 @@ def general_book_search(search):
         )
 
     return select_bookrow_values(books) \
-        .order_by('exact_match', '-rank', 'title_id')
+        .order_by('-exact_match', '-rank', 'title_id')
+
         
 
 def joined_to_ratings(books, user_id):
