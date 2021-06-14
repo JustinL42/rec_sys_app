@@ -11,3 +11,4 @@ data/goodreads/*
 data/super_rater/*
 data/title_handling.py
 backup/*
+sync_user_tables.sh
