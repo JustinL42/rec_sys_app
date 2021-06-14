@@ -31,3 +31,6 @@ psql -p 5434 -U postgres -d recsysdev -c 'ALTER TABLE words RENAME TO recsys_wor
 psql -p 5434 -U postgres -d recsysdev -c 'ALTER TABLE recsys_books RENAME COLUMN title_id to id'
 psql -p 5434 -U postgres -d recsysdev -c 'ALTER TABLE recsys_translations RENAME COLUMN title_id to id'
 psql -p 5434 -U postgres -d recsysdev -c 'ANALYZE'
+
+psql -p 5434 -U postgres -d recsysdev -c 'SELECT book_id FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
+# psql -p 5434 -U postgres -d recsysdev -c 'DELETE FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'

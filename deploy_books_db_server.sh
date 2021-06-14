@@ -29,3 +29,7 @@ psql -p 5432 -U postgres -d recsyslive -c 'ALTER TABLE words RENAME TO recsys_wo
 
 psql -p 5432 -U postgres -d recsyslive -c 'ALTER TABLE recsys_books RENAME COLUMN title_id to id'
 psql -p 5432 -U postgres -d recsyslive -c 'ALTER TABLE recsys_translations RENAME COLUMN title_id to id'
+
+
+psql -p 5432 -U postgres -d recsyslive -c 'SELECT book_id FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
+# psql -p 5432 -U postgres -d recsyslive -c 'DELETE FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
