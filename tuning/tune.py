@@ -9,6 +9,8 @@ from customFolds import JumpStartKFolds
 from sqlalchemy import create_engine
 import pandas as pd
 
+REAL_BOOK_CLUB_ID = 8
+
 print("Connecting to db and loading data into memory...")
 alchemyEngine = create_engine(
     'postgresql+psycopg2://postgres:@:5434/recsysdev')
@@ -20,8 +22,8 @@ small_df = pd.read_sql("""
     JOIN recsys_user as u ON u.id = r.user_id
     LEFT JOIN recsys_book_club_members as m ON m.user_id = u.id
     LEFT JOIN recsys_book_club as c ON c.id = m.book_club_id
-    WHERE c.name = %s;
-    """, conn, params=["The Somerville Sci-fi/Fantasy Book Club"])
+    WHERE c.id = %s;
+    """, conn, params=[REAL_BOOK_CLUB_ID])
 
 large_df = pd.read_sql("""
     SELECT r.user_id, r.book_id, r.rating 
@@ -29,11 +31,8 @@ large_df = pd.read_sql("""
     JOIN recsys_user as u ON u.id = r.user_id
     LEFT JOIN recsys_book_club_members as m ON m.user_id = u.id
     LEFT JOIN recsys_book_club as c ON c.id = m.book_club_id
-    WHERE (
-        c.name != %s
-        OR c.name is NULL
-    );
-    """, conn, params=["The Somerville Sci-fi/Fantasy Book Club"])
+    WHERE c.id != %s;
+    """, conn, params=[REAL_BOOK_CLUB_ID])
 
 df = pd.read_sql("""
     SELECT user_id, book_id, rating
@@ -68,38 +67,37 @@ param_grid = {
     'n_factors': [30],
     'n_epochs': [40], 
 
-    # 'lr_all': [ 0.005],
+    # 'lr_all': [0.005],
 
-    'lr_pu': [0.0011, 0.0013,  0.0015],
-    # 'lr_pu': [0.0009],
+    # 'lr_pu': [0.001, 0.01, 0.1],
+    'lr_pu': [0.01],
 
-    'lr_bu': [0.0065, 0.007, 0.0075],
-    # 'lr_bu': [0.006],
+    # 'lr_bu': [0.001, 0.01, 0.1],
+    'lr_bu': [0.01],
 
-    'lr_bi': [0.0095, 0.0100, 0.0110],
-    # 'lr_bi': [0.01],
+    # 'lr_bi': [0.001, 0.003, 0.005],
+    'lr_bi': [0.003],
 
-    'lr_qi': [0.5, 0.8, 1.0],
-    # 'lr_qi': [0.3],
+    # 'lr_qi': [0.001, 0.01, 0.1],
+    'lr_qi': [0.01],
 
 
-    # 'reg_all': [0.4],
+    # 'reg_all': [0.07, 0.1, 0.3],
 
-    # 'reg_bu': [0.025, 0.05, 0.075],
-    'reg_bu': [0.025],
+    'reg_bu': [0.01],
+    # 'reg_bu': [0.001, 0.01, 0.1],
 
-    # 'reg_bi': [0.15, 0.20, 0.25],
-    'reg_bi': [0.20],
+    'reg_bi': [0.15],
+    # 'reg_bi': [0.15, 0.2, 0.25],
     
-    # 'reg_pu': [0.30, 0.35, 0.40],
-    'reg_pu': [0.30],
+    'reg_pu': [0.5],
+    # 'reg_pu': [0.3, 0.5, 0.7],
 
-    # 'reg_qi': [0.30, 0.40, 0.7],
-    'reg_qi': [0.30],
+    'reg_qi': [0.25],
+    # 'reg_qi': [.25, .5, .75],
 
     
 }
-
 
 print("Gridsearch...")
 gs = GridSearchCV(
@@ -109,19 +107,22 @@ gs.fit(data)
 
 # best RMSE score
 print(gs.best_score['rmse'])
+print(gs.best_params)
 
 # combination of parameters that gave the best RMSE score
-print(gs.best_params['rmse'])
+best_rmse = gs.best_score['rmse']
+print(best_rmse)
 
 algo = gs.best_estimator['rmse']
+print("Fitting and dumping algorithm...")
 algo.fit(data.build_full_trainset())
 
 
 dump.dump('test.dump', algo=algo)
 algo2 = dump.load('test.dump')[1]
 
-uid = algo.trainset.to_inner_uid(557924)  # raw user id (as in the ratings file). They are **strings**!
-iid = str(1475)  # raw item id (as in the ratings file). They are **strings**!
+uid = algo.trainset.to_inner_uid(557924)
+iid = str(  )
 
 print(algo.predict(uid, iid, clip=False).est)
 print(algo2.predict(uid, iid, clip=False).est)
@@ -136,3 +137,22 @@ all_ratings = [
 
 r_df = pd.DataFrame(all_ratings)
 r_df.sort_values(by=2, ascending=False, inplace=True)
+
+
+try:
+    rmse_to_beat = pickle.load(open("rmse_to_beat.pickle", "rb"))
+except FileNotFoundError: 
+    rmse_to_beat = 99999
+
+if best_rmse <= rmse_to_beat:
+    print("A new record")
+    print(r_df.head(15))
+    dump.dump("bestAlgo.pickle", algo=gs.best_estimator['rmse'])
+
+    pickle.dump(best_rmse, open("rmse_to_beat.pickle", "wb"))
+    logFile = open("rmse_records.txt", "a")
+    logFile.write("\n{}\nRMSE: {}\n{}\n".format(
+            gs.algo_class.__name__, gs.best_params['rmse'], best_rmse
+        )
+    )
+    logFile.close()
