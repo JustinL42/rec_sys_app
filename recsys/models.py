@@ -273,3 +273,30 @@ class DataProblem(models.Model):
 
     def __str__(self):
         return self.book.title
+
+
+class SVDModel(models.Model):
+    ratings = models.IntegerField(null=False)
+    last_rating = models.IntegerField(null=False)
+    time_created = models.DateTimeField(default=timezone.now)
+    factors = models.IntegerField(null=False)
+    rmse = models.FloatField(null=False)
+    book_club = models.ForeignKey(
+        Book_Club, null=False, default=None, db_constraint=False, 
+        on_delete=models.DO_NOTHING
+    )
+    params_bin = models.BinaryField()
+    model_bin = models.BinaryField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['ratings']),
+            models.Index(fields=['last_rating']),
+            models.Index(fields=['time_created']),
+            models.Index(fields=['factors']),
+            models.Index(fields=['rmse']),
+            models.Index(fields=['book_club']),
+        ]
+
+    def __str__(self):
+        return str(self.time_created)
