@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+
+"""
+Prototype code for tuning parameters and 
+estimating ratings for book-user pairs.
+"""
+
+import os, sys
 from surprise import SVD
 from surprise import Dataset, Reader
 from surprise.model_selection import GridSearchCV
@@ -8,6 +15,13 @@ from customFolds import JumpStartKFolds
 
 from sqlalchemy import create_engine
 import pandas as pd
+
+path = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(path)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
+import django
+django.setup()
+from recsys.models import SVDModel, Book_Club
 
 REAL_BOOK_CLUB_ID = 8
 
@@ -39,6 +53,40 @@ df = pd.read_sql("""
     FROM recsys_rating
     WHERE rating is not NULL;
     """, conn)
+
+last_rating = conn.execute("""
+    SELECT id 
+    FROM recsys_rating 
+    ORDER BY id DESC 
+    LIMIT 1;
+    """).fetchone()[0]
+
+rmse_to_beat = conn.execute("""
+    SELECT rmse 
+    FROM recsys_svdmodel
+    WHERE ratings = %s
+    AND last_rating = %s
+    ORDER BY rmse ASC, time_created DESC 
+    LIMIT 1;
+    """, [len(df), last_rating]).fetchone()
+
+if rmse_to_beat:
+    rmse_to_beat = rmse_to_beat[0]
+else:
+    rmse_to_beat = 9999
+
+params_to_beat = conn.execute("""
+    SELECT params_bin 
+    FROM recsys_svdmodel
+    WHERE ratings = %s
+    AND last_rating = %s
+    ORDER BY rmse ASC, time_created DESC
+    LIMIT 1;
+    """, [len(df), last_rating]).fetchone()
+
+if params_to_beat:
+    params_to_beat = pickle.loads(params_to_beat[0])
+
 
 try:
     title_dict = pickle.load(open("title_dict.pickle", "rb"))
@@ -118,19 +166,19 @@ print("Fitting and dumping algorithm...")
 algo.fit(data.build_full_trainset())
 
 
-dump.dump('test.dump', algo=algo)
-algo2 = dump.load('test.dump')[1]
+# dump.dump('test.dump', algo=algo)
+# algo2 = dump.load('test.dump')[1]
 
 uid = algo.trainset.to_inner_uid(557924)
-iid = str(  )
+iid = algo.trainset.to_inner_iid(1475)
 
 print(algo.predict(uid, iid, clip=False).est)
-print(algo2.predict(uid, iid, clip=False).est)
+# print(algo2.predict(uid, iid, clip=False).est)
 
 all_ratings = [
     (
         algo.trainset.to_raw_iid(x), 
-        title_dict.get(algo.trainset.to_raw_iid(x), 2858493), 
+        title_dict.get(algo.trainset.to_raw_iid(x), "Title Unknown"), 
         algo.predict(uid, x, clip=False).est
     ) for x in algo.trainset.all_items()
 ]
@@ -139,20 +187,31 @@ r_df = pd.DataFrame(all_ratings)
 r_df.sort_values(by=2, ascending=False, inplace=True)
 
 
-try:
-    rmse_to_beat = pickle.load(open("rmse_to_beat.pickle", "rb"))
-except FileNotFoundError: 
-    rmse_to_beat = 99999
+# try:
+#     rmse_to_beat = pickle.load(open("rmse_to_beat.pickle", "rb"))
+# except FileNotFoundError: 
+#     rmse_to_beat = 99999
 
 if best_rmse <= rmse_to_beat:
     print("A new record")
-    print(r_df.head(15))
-    dump.dump("bestAlgo.pickle", algo=gs.best_estimator['rmse'])
+    print(r_df[[1,2]].head(10))
 
-    pickle.dump(best_rmse, open("rmse_to_beat.pickle", "wb"))
-    logFile = open("rmse_records.txt", "a")
-    logFile.write("\n{}\nRMSE: {}\n{}\n".format(
-            gs.algo_class.__name__, gs.best_params['rmse'], best_rmse
-        )
-    )
-    logFile.close()
+    
+    # dump.dump("bestAlgo.pickle", algo=gs.best_estimator['rmse'])
+    # pickle.dump(best_rmse, open("rmse_to_beat.pickle", "wb"))
+    # logFile = open("rmse_records.txt", "a")
+    # logFile.write("\n{}\nRMSE: {}\n{}\n".format(
+    #         gs.algo_class.__name__, gs.best_params['rmse'], best_rmse
+    #     )
+    # )
+    # logFile.close()
+
+    model_obj = SVDModel()
+    model_obj.ratings = len(df)
+    model_obj.last_rating = last_rating
+    model_obj.factors = gs.best_params['rmse']['n_factors']
+    model_obj.rmse = best_rmse
+    model_obj.book_club = Book_Club.objects.get(id=REAL_BOOK_CLUB_ID)
+    model_obj.params_bin = pickle.dumps(gs.best_params['rmse'])
+    model_obj.model_bin = pickle.dumps(gs.best_estimator['rmse'])
+    model_obj.save()
