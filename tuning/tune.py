@@ -16,6 +16,12 @@ from customFolds import JumpStartKFolds
 from sqlalchemy import create_engine
 import pandas as pd
 
+class DefaultlessSVD(SVD):
+
+    def default_prediction(self):
+        print("Prediction Impossible")
+        return None
+
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
@@ -149,7 +155,7 @@ param_grid = {
 
 print("Gridsearch...")
 gs = GridSearchCV(
-    SVD, param_grid, measures=['rmse'], cv=3, n_jobs = -2)
+    DefaultlessSVD, param_grid, measures=['rmse'], cv=3, n_jobs = -2)
 
 gs.fit(data)
 
@@ -169,8 +175,13 @@ algo.fit(data.build_full_trainset())
 # dump.dump('test.dump', algo=algo)
 # algo2 = dump.load('test.dump')[1]
 
-uid = algo.trainset.to_inner_uid(557924)
-iid = algo.trainset.to_inner_iid(1475)
+# My own user id
+USER_ID = 557924
+# A title id that should be estimated with a positive rating
+TITLE_ID = 1475
+
+uid = algo.trainset.to_inner_uid(USER_ID)
+iid = algo.trainset.to_inner_iid(TITLE_ID)
 
 print(algo.predict(uid, iid, clip=False).est)
 # print(algo2.predict(uid, iid, clip=False).est)
@@ -187,31 +198,39 @@ r_df = pd.DataFrame(all_ratings)
 r_df.sort_values(by=2, ascending=False, inplace=True)
 
 
-# try:
-#     rmse_to_beat = pickle.load(open("rmse_to_beat.pickle", "rb"))
-# except FileNotFoundError: 
-#     rmse_to_beat = 99999
+if best_rmse > rmse_to_beat:
+    sys.exit()
 
-if best_rmse <= rmse_to_beat:
-    print("A new record")
-    print(r_df[[1,2]].head(10))
+print("A new record")
+print(r_df[[1,2]].head(10))
 
-    
-    # dump.dump("bestAlgo.pickle", algo=gs.best_estimator['rmse'])
-    # pickle.dump(best_rmse, open("rmse_to_beat.pickle", "wb"))
-    # logFile = open("rmse_records.txt", "a")
-    # logFile.write("\n{}\nRMSE: {}\n{}\n".format(
-    #         gs.algo_class.__name__, gs.best_params['rmse'], best_rmse
-    #     )
-    # )
-    # logFile.close()
+# Save the new model to the database
+model_obj = SVDModel()
+model_obj.ratings = len(df)
+model_obj.last_rating = last_rating
+model_obj.factors = gs.best_params['rmse']['n_factors']
+model_obj.rmse = best_rmse
+model_obj.book_club = Book_Club.objects.get(id=REAL_BOOK_CLUB_ID)
+model_obj.params_bin = pickle.dumps(gs.best_params['rmse'])
+model_obj.model_bin = pickle.dumps(gs.best_estimator['rmse'])
+model_obj.save()
 
-    model_obj = SVDModel()
-    model_obj.ratings = len(df)
-    model_obj.last_rating = last_rating
-    model_obj.factors = gs.best_params['rmse']['n_factors']
-    model_obj.rmse = best_rmse
-    model_obj.book_club = Book_Club.objects.get(id=REAL_BOOK_CLUB_ID)
-    model_obj.params_bin = pickle.dumps(gs.best_params['rmse'])
-    model_obj.model_bin = pickle.dumps(gs.best_estimator['rmse'])
-    model_obj.save()
+#Update USER_ID's ratings
+conn = alchemyEngine.connect()
+conn.execute("""
+    UPDATE recsys_rating  
+    SET predicted_rating = NULL
+    WHERE ID = %s;
+    """, [USER_ID])
+
+for row_id, (title_id, title, prediction) in r_df.iterrows():
+    conn.execute("""
+        INSERT INTO recsys_rating 
+            (book_id, user_id, predicted_rating, saved, blocked, last_updated)
+        VALUES 
+            (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
+        ON CONFLICT (book_id, user_id)
+        DO UPDATE SET predicted_rating = %s
+        """, [title_id, USER_ID, prediction, prediction])
+
+conn.close()
