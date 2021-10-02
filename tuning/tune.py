@@ -11,7 +11,7 @@ from surprise import Dataset, Reader
 from surprise.model_selection import GridSearchCV
 from surprise import dump
 import pickle
-from customFolds import JumpStartKFolds
+from customSurpriseClasses import JumpStartKFolds
 
 from sqlalchemy import create_engine
 import pandas as pd
