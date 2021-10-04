@@ -282,7 +282,7 @@ class SVDModel(models.Model):
     factors = models.IntegerField(null=False)
     rmse = models.FloatField(null=False)
     book_club = models.ForeignKey(
-        Book_Club, null=False, default=None, db_constraint=False, 
+        Book_Club, null=True, default=None, db_constraint=False, 
         on_delete=models.DO_NOTHING
     )
     params_bin = models.BinaryField()
