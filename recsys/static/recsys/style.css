@@ -37,7 +37,7 @@ li a {
 .header_row  td {
   border: 2px solid black;
   border-collapse: collapse;
-  width: 25%;
+  width: 20%;
 }
 .header_row  a {
   color: white;

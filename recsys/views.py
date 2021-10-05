@@ -276,6 +276,25 @@ class SearchResultsView(generic.View):
         if rendered_page is not None:
             return rendered_page
 
+
+class RecommendationsView(LoginRequiredMixin, generic.ListView):
+    template_name = 'recsys/recommendations.html'
+    model = Books
+    paginate_by = 10
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+
+    def post(self, request):
+        error_text = update_rating(request)
+        return self.get(request, error_text=error_text)
+
+    def get_queryset(self):
+        recs = self.request.user.rating_set.select_related('book') \
+        .filter(predicted_rating__isnull=False, rating__isnull=True)
+        return select_ratings_row_values(recs) \
+            .order_by('-predicted_rating', '-year', 'id')
+
+
 class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
     model = Books
     paginate_by = 20
@@ -292,6 +311,12 @@ class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
         context['blocked_count'] = self.request.user.rating_set.\
             select_related('book').filter(blocked=True).count()
         return context
+
+    def get_queryset(self):
+        ratings = self.request.user.rating_set.select_related('book') \
+        .filter(rating__isnull=False)
+        return select_ratings_row_values(ratings) \
+            .order_by('-last_updated', '-year', 'id')
 
     def post(self, request):
         error_text = update_rating(request)

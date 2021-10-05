@@ -24,6 +24,10 @@
                 <a href="{% url 'recsys:ratings' %}">
                 <a href="{% url 'recsys:ratings' %}">My<br>Ratings</a>
             </td>
+            <td class='{% if "/recommendations" in request.path %}header_row_highlighted{% endif %}'>
+                <a href="{% url 'recsys:recommendations' %}">
+                <a href="{% url 'recsys:recommendations' %}">Recommen-<br>dations</a>
+            </td>
             <td class='{% if in_account_tab %}header_row_highlighted{% endif %}'>
                 <a href="{% url 'account' %}">My<br>Account</a>
             </td>

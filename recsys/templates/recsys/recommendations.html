@@ -1,0 +1,43 @@
+{% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}Recommendations{% endblock %}
+
+{% block content %}
+
+<h1>Recommendations</h1>
+    <p>Here are your current top recommendations. Rate more books to improve the quality of the recommendations.</p>
+    {% if error_text %}
+        <br>
+        <li class='error'>Couldn't update rating: {{error_text}}</li>
+    {% endif %}
+	{% if not object_list %}
+	<p>You don't currently have any recommendations</p>
+	{% else %}
+    <table class=book_list_table>
+        {% for book in object_list %}
+            {% book_row_item book %}
+        {% endfor %}
+    </table>
+    {% endif %}
+
+<br>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}
