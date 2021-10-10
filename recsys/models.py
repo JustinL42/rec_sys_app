@@ -21,6 +21,7 @@ class Books(models.Model):
     original_title = models.CharField(max_length=5125, null=True)
     original_year = models.IntegerField()
     isfdb_rating = models.FloatField()
+    cold_start_rank = models.IntegerField(null=True)
     award_winner = models.BooleanField()
     juvenile = models.BooleanField()
     stand_alone = models.BooleanField()

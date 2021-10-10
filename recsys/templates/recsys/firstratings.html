@@ -1,0 +1,50 @@
+{% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}Start Rating Books{% endblock %}
+
+{% block content %}
+
+<h1>Let's start rating books</h1>
+    <p>In order to give you personalized recommendations, we will need get some initial ratings from you for books that other users have also evaluated. If you have read any of the books below, give them a whole number or decimal rating between 1 (very bad) and 10 (very good). Be sure to click the corresponding "Submit" button after each rating, or your rating may be lost. You may also use the search bar to find and rate other books you have read. Just click the "Recommendations" button at the top of the page to return here when you are done.</p>
+    {% if error_text %}
+        <br>
+        <li class='error'>Couldn't update rating: {{error_text}}</li>
+    {% endif %}
+    <br>
+    {% if rating_count >= 10 %}
+        <p>You've rated <b>{{rating_count}}</b> books. Click this button to generate some recommendations</p>
+    {% else %}
+        <p> You need to rate at least 10 books to generate your first recommendations. You have currently rated <b>{{rating_count}}</b><p>
+    {% endif %}
+    <br>
+	{% if not object_list %}
+	<p>There was a problem loading the list of books. Try searching for books you know instead.</p>
+	{% else %}
+    <table class=book_list_table>
+        {% for book in object_list %}
+            {% book_row_item book %}
+        {% endfor %}
+    </table>
+    {% endif %}
+
+<br>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}

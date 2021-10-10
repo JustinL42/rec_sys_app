@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Value, FilteredRelation, Q
+from django.db.models import \
+    F, Value, FilteredRelation, Q, OuterRef, Count, Exists
 from django.core.paginator import Paginator
 from django.utils import timezone
 
@@ -277,23 +278,6 @@ class SearchResultsView(generic.View):
             return rendered_page
 
 
-class RecommendationsView(LoginRequiredMixin, generic.ListView):
-    template_name = 'recsys/recommendations.html'
-    model = Books
-    paginate_by = 10
-    login_url = '/login/'
-    redirect_field_name = 'redirect_to'
-
-    def post(self, request):
-        error_text = update_rating(request)
-        return self.get(request, error_text=error_text)
-
-    def get_queryset(self):
-        recs = self.request.user.rating_set.select_related('book') \
-        .filter(predicted_rating__isnull=False, rating__isnull=True)
-        return select_ratings_row_values(recs) \
-            .order_by('-predicted_rating', '-year', 'id')
-
 
 class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
     model = Books
@@ -311,12 +295,6 @@ class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
         context['blocked_count'] = self.request.user.rating_set.\
             select_related('book').filter(blocked=True).count()
         return context
-
-    def get_queryset(self):
-        ratings = self.request.user.rating_set.select_related('book') \
-        .filter(rating__isnull=False)
-        return select_ratings_row_values(ratings) \
-            .order_by('-last_updated', '-year', 'id')
 
     def post(self, request):
         error_text = update_rating(request)
@@ -347,6 +325,75 @@ class BlockedView(AbstractRatingsView):
         .filter(blocked=True)
         return select_ratings_row_values(ratings).order_by('-last_updated')
 
+
+class RecommendationsView(LoginRequiredMixin, generic.ListView):
+    template_name = 'recsys/recommendations.html'
+    model = Books
+    paginate_by = 10
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+
+    def post(self, request):
+        error_text = update_rating(request)
+        return self.get(request, error_text=error_text)
+
+    def get_queryset(self):
+        recs = self.request.user.rating_set.select_related('book') \
+        .filter(predicted_rating__isnull=False, 
+            rating__isnull=True,
+            saved=False,
+            blocked=False
+        )
+        return select_ratings_row_values(recs) \
+            .order_by('-predicted_rating', '-year', 'id')
+
+
+class AbstractColdStartView(LoginRequiredMixin, generic.ListView):
+    model = Books
+    paginate_by = 10
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rating_count'] = self.request.user.rating_set.\
+            select_related('book').filter(rating__isnull=False).count()
+        return context
+
+    def post(self, request):
+        error_text = update_rating(request)
+        return self.get(request, error_text=error_text)
+
+
+class FirstRatingsView(AbstractColdStartView):
+    template_name = 'recsys/firstratings.html'
+
+    def get_queryset(self):
+        ratings = self.request.user.rating_set.select_related('book') \
+        .filter(book__cold_start_rank__isnull=False) \
+        .annotate(
+            multiple_ratings_exist=Exists(Rating.objects \
+                .filter(rating__isnull=False) \
+                .values('book_id') \
+                .annotate(num_ratings=Count('book_id')) \
+                .filter(num_ratings__gt=1) \
+                .filter(book_id=OuterRef('book_id')))
+        ).filter(multiple_ratings_exist=True)
+
+        return select_ratings_row_values(ratings) \
+            .order_by('book__cold_start_rank', 'id')[:160]
+
+
+class SecondRatingsView(AbstractColdStartView):
+    template_name = 'recsys/secondratings.html'
+
+    def get_queryset(self):
+        ratings = self.request.user.rating_set.select_related('book') \
+        .filter(cold_start_rank__isnull=False)
+        return select_ratings_row_values(ratings) \
+            .order_by('-predicted_rating', 'year', 'id')
+
+
 def select_ratings_row_values(ratings):
     return ratings.values(
         title_id=F('book__id'), title=F('book__title'), year=F('book__year'), 
@@ -356,12 +403,11 @@ def select_ratings_row_values(ratings):
         award_winner=F('book__award_winner'), juvenile=F('book__juvenile'), 
         wikipedi=F('book__wikipedia'), rating_score=F('rating'), 
         rating_saved=F('saved'), rating_blocked=F('blocked'), 
-        rating_user=F('user')
+        rating_user=F('user'), cold_start_rank=F('book__cold_start_rank')
     )
 
 
 def update_rating(request):
-    print('here')
     error_text=None
     new_rating = request.POST.get('new_rating')
     rating_title_id = request.POST.get('rating_title_id')
