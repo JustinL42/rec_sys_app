@@ -40,7 +40,7 @@
             </td>
         </tr>
     </table>
-    {% if rating_count or saved_count or blocked_count %}
+    {% if in_ratings_tab %}
     <table class='header_row'>
         <tr>
             <td class='{% if request.path == "/ratings/" %}header_row_highlighted{% endif %}'>

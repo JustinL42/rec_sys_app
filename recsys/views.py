@@ -3,7 +3,8 @@ from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import \
-    F, Value, FilteredRelation, Q, OuterRef, Count, Exists
+    F, Value, FilteredRelation, Q, OuterRef, Count, Exists, CharField
+from django.db.models.functions import Cast, MD5
 from django.core.paginator import Paginator
 from django.utils import timezone
 
@@ -379,7 +380,6 @@ class FirstRatingsView(AbstractColdStartView):
                 .filter(num_ratings__gt=1) \
                 .filter(book_id=OuterRef('book_id')))
         ).filter(multiple_ratings_exist=True)
-
         return select_ratings_row_values(ratings) \
             .order_by('book__cold_start_rank', 'id')[:160]
 
@@ -389,9 +389,17 @@ class SecondRatingsView(AbstractColdStartView):
 
     def get_queryset(self):
         ratings = self.request.user.rating_set.select_related('book') \
-        .filter(cold_start_rank__isnull=False)
+            .filter(book__cold_start_rank__isnull=False, 
+                predicted_rating__isnull=False,
+                rating__isnull=True,
+                saved=False,
+                blocked=False
+            ) \
+            .annotate(
+                sort_val=MD5(Cast('book__id', output_field=CharField()))
+            )
         return select_ratings_row_values(ratings) \
-            .order_by('-predicted_rating', 'year', 'id')
+            .order_by('sort_val')[:20]
 
 
 def select_ratings_row_values(ratings):

@@ -1,0 +1,29 @@
+{% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}Rate More Books{% endblock %}
+
+{% block content %}
+
+<h1>Have you read any of these books?</h1>
+    <p>A preliminary version of the model used to generate recommendations for you thinks you will either like or dislike the following books. Please give ratings to any of these you have read in order to further tune the model. Then, click the button at the bottom of the page.</p>
+    <p>As before, be sure to click the corresponding "Submit" button after each rating, or your rating may be lost. If you haven't read any of these books, it's fine to just skip to the next page.</p>
+    {% if error_text %}
+        <br>
+        <li class='error'>Couldn't update rating: {{error_text}}</li>
+    {% endif %}
+    <br>
+	{% if not object_list %}
+	<p>There was a problem loading the list of books. Visit the <a href="{% url 'recsys:recommendations' %}">Recommendations</a> page or try again later</p>
+	{% else %}
+    <table class=book_list_table>
+        {% for book in object_list %}
+            {% book_row_item book %}
+        {% endfor %}
+    </table>
+    {% endif %}
+
+<br>
+<p>Click this button to generate your recommendations</p>
+
+{% endblock %}
