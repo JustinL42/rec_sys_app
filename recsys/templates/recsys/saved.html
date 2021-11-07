@@ -21,6 +21,7 @@
     </table>
     {% endif %}
 
+{% if page_obj.paginator.num_pages > 1 %}
 <br>
 <div class="pagination">
     <span class="step-links">
@@ -39,5 +40,6 @@
         {% endif %}
     </span>
 </div>
+{% endif %}
 
 {% endblock %}

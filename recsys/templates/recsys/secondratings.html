@@ -6,7 +6,7 @@
 {% block content %}
 
 <h1>Have you read any of these books?</h1>
-    <p>A preliminary version of the model used to generate recommendations for you thinks you will either like or dislike the following books. Please give ratings to any of these you have read in order to further tune the model. Then, click the button at the bottom of the page.</p>
+    <p>A preliminary version of the model used to generate recommendations for you thinks you will like some of these books and dislike others. Please give ratings to any of these you have read in order to further tune the model. Then, click the button at the bottom of the page.</p>
     <p>As before, be sure to click the corresponding "Submit" button after each rating, or your rating may be lost. If you haven't read any of these books, it's fine to just skip to the next page.</p>
     {% if error_text %}
         <br>
@@ -24,6 +24,10 @@
     {% endif %}
 
 <br>
-<p>Click this button to generate your recommendations</p>
-
+<p>Click this button to generate your recommendations: </p>
+<form action="{{ request.get_full_path }}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="done" value="done"/>
+    <input class="submit_button_form" type="submit" value="Generate Recommendations">
+</form>
 {% endblock %}

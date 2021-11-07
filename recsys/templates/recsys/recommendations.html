@@ -12,7 +12,7 @@
         <li class='error'>Couldn't update rating: {{error_text}}</li>
     {% endif %}
 	{% if not object_list %}
-	<p>You don't currently have any recommendations</p>
+	<p>You don't currently have any recommendations. <a href="/firstratings/">Click here to start generating recommendations!</a></p>
 	{% else %}
     <table class=book_list_table>
         {% for book in object_list %}
@@ -21,6 +21,8 @@
     </table>
     {% endif %}
 
+{# TODO: move paginator to its own template}
+{% if page_obj.paginator.num_pages > 1 %}
 <br>
 <div class="pagination">
     <span class="step-links">
@@ -39,5 +41,6 @@
         {% endif %}
     </span>
 </div>
+{% endif %}
 
 {% endblock %}

@@ -14,6 +14,11 @@
     <br>
     {% if rating_count >= 10 %}
         <p>You've rated <b>{{rating_count}}</b> books. Click this button to generate some recommendations</p>
+        <form action="{{ request.get_full_path }}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="done" value="done"/>
+            <input class="submit_button_form" type="submit" value="Generate Recommendations">
+        </form>
     {% else %}
         <p> You need to rate at least 10 books to generate your first recommendations. You have currently rated <b>{{rating_count}}</b><p>
     {% endif %}
@@ -28,6 +33,7 @@
     </table>
     {% endif %}
 
+{% if page_obj.paginator.num_pages > 1 %}
 <br>
 <div class="pagination">
     <span class="step-links">
@@ -46,5 +52,6 @@
         {% endif %}
     </span>
 </div>
+{% endif %}
 
 {% endblock %}

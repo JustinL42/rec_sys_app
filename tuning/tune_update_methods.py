@@ -7,10 +7,10 @@ from scipy.stats import truncnorm
 from surprise import Dataset, Reader
 from surprise.model_selection import RandomizedSearchCV
 
-from customSurpriseClasses import JumpStartKFolds, DefaultlessSVD
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
+from customSurpriseClasses import JumpStartKFolds, DefaultlessSVD
 from mysite import settings
 from mysite import secret_keys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
@@ -318,7 +318,8 @@ def tune_update_all_recs():
     update_all_book_club_recs()
 
 
-def update_one_users_recs(user_id, top_n=None, urgent=False):
+def update_one_users_recs(user_id, top_n=None, bottom_n=None, 
+        urgent=False, cold_start=False):
     alchemyEngine = create_engine(db_conn_string)
     conn = alchemyEngine.connect()
 
@@ -345,13 +346,12 @@ def update_one_users_recs(user_id, top_n=None, urgent=False):
         WHERE r.rating IS NOT NULL
         AND u.virtual = FALSE;
         """, conn)
-
     reader = Reader(rating_scale=(1, 10))
     data = Dataset.load_from_df(df, reader)
 
     svd_model.fit(data.build_full_trainset())
 
-    uid = svd_model.trainset.to_inner_iid(user_id)
+    uid = svd_model.trainset.to_inner_uid(user_id)
     all_books = [
         (b, svd_model.trainset.to_raw_iid(b)) \
         for b in svd_model.trainset.all_items()
@@ -365,13 +365,30 @@ def update_one_users_recs(user_id, top_n=None, urgent=False):
     """, [user_id])
 
     predictions = []
-    for iid, title_id in all_books:
-        prediction = svd_model.predict(uid, iid, clip=False).est
-        predictions.append((prediction, title_id))
+    if not cold_start:
+        for iid, title_id in all_books:
+            prediction = svd_model.predict(uid, iid, clip=False).est
+            predictions.append((prediction, title_id))
+    else:
+        cold_start_ids = set([ i[0] for i in conn.execute("""
+            SELECT id
+            FROM recsys_books
+            WHERE cold_start_rank IS NOT NULL
+            AND cold_start_rank <= 150
+            """)])
 
-    if top_n:
+        for iid, title_id in all_books:
+            if title_id not in cold_start_ids:
+                continue
+            prediction = svd_model.predict(uid, iid, clip=False).est
+            predictions.append((prediction, title_id))
+
+
+    if top_n or bottom_n:
         predictions.sort(reverse=True)
-        predictions = predictions[0:top_n]
+
+        predictions = predictions[0:(top_n or 0)] + \
+            predictions[(-bottom_n if bottom_n else len(predictions)):]
 
     for (prediction, title_id) in predictions:
         conn.execute("""

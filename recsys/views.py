@@ -1,4 +1,8 @@
-from django.shortcuts import get_object_or_404, render
+import os, sys
+from datetime import datetime
+from itertools import chain
+
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,14 +12,16 @@ from django.db.models.functions import Cast, MD5
 from django.core.paginator import Paginator
 from django.utils import timezone
 
-from datetime import datetime
-from itertools import chain
-
 from .models import Books, More_Images, Contents, Translations, \
     Words, Rating, Isbns
 
 from .search_functions import unaccent, general_book_search, \
     joined_to_ratings, select_bookrow_values
+
+# add tuning package to path
+path = os.path.join(os.path.dirname(__file__), os.pardir, "tuning")
+sys.path.append(path)
+from tune_update_methods import update_one_users_recs
 
 class HomeView(generic.ListView):
     template_name = 'recsys/home.html'
@@ -284,8 +290,7 @@ class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
     model = Books
     paginate_by = 20
     login_url = '/login/'
-    redirect_field_name = 'redirect_to'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['in_ratings_tab'] = True
@@ -332,7 +337,6 @@ class RecommendationsView(LoginRequiredMixin, generic.ListView):
     model = Books
     paginate_by = 10
     login_url = '/login/'
-    redirect_field_name = 'redirect_to'
 
     def post(self, request):
         error_text = update_rating(request)
@@ -353,7 +357,6 @@ class AbstractColdStartView(LoginRequiredMixin, generic.ListView):
     model = Books
     paginate_by = 10
     login_url = '/login/'
-    redirect_field_name = 'redirect_to'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -362,13 +365,28 @@ class AbstractColdStartView(LoginRequiredMixin, generic.ListView):
         return context
 
     def post(self, request):
-        error_text = update_rating(request)
-        return self.get(request, error_text=error_text)
+        if "done" in request.POST:
+            self.method_on_done(request.user.id)
+            return redirect(self.next_page)
+        else:
+            error_text = update_rating(request)
+            return self.get(request, error_text=error_text)
+
+    # to be overwritten in child classes
+    def method_on_done(self, user_id):
+        pass
 
 
 class FirstRatingsView(AbstractColdStartView):
     template_name = 'recsys/firstratings.html'
+    next_page = '/secondratings/'
 
+    # The first cold-start page shows a selection of popular books 
+    # in the order predetermined by the cold_start_rank, which was set
+    # during the database migration. It includes both highly awarded 
+    # novels and the most commonly viewed novels on isfd.org. Filter out
+    # books that don't already have two ratings, since this will be 
+    # unhelpful in generating recommendations. 
     def get_queryset(self):
         ratings = self.request.user.rating_set.select_related('book') \
         .filter(book__cold_start_rank__isnull=False) \
@@ -383,23 +401,46 @@ class FirstRatingsView(AbstractColdStartView):
         return select_ratings_row_values(ratings) \
             .order_by('book__cold_start_rank', 'id')[:160]
 
+    # Get both the top 15 and bottom 15 recommendations. This will give
+    # the user opportunities to give both high and low ratings, and will
+    # may help correct the model's most extreme conclusions about the 
+    # user's taste.
+    def method_on_done(self, user_id):
+        update_one_users_recs(user_id, top_n=15, bottom_n=15, 
+            urgent=True, cold_start=True
+        )
+
 
 class SecondRatingsView(AbstractColdStartView):
     template_name = 'recsys/secondratings.html'
+    next_page = '/recommendations/'
 
+    # The books need to be sorted in an immutable order so they don't 
+    # get shuffled when the user gives a rating and the page is reloaded.
+    # However, it should also be pseudo-random to avoid grouping high-rated
+    # or low-rated books, or sorting by age or another factor.
+    # For this reason, the MD5 checksum of the book id is used. 
     def get_queryset(self):
         ratings = self.request.user.rating_set.select_related('book') \
             .filter(book__cold_start_rank__isnull=False, 
                 predicted_rating__isnull=False,
                 rating__isnull=True,
-                saved=False,
                 blocked=False
             ) \
             .annotate(
+                #
                 sort_val=MD5(Cast('book__id', output_field=CharField()))
             )
         return select_ratings_row_values(ratings) \
             .order_by('sort_val')[:20]
+
+    # The final cold start recommendations are limited to 120 simply
+    # because database inserts are one of the more time-consuming parts
+    # of the method and the page needs to be returned fast.
+    def method_on_done(self, user_id):
+        update_one_users_recs(
+            user_id, top_n=120,urgent=True, cold_start=True
+        )
 
 
 def select_ratings_row_values(ratings):
@@ -421,7 +462,6 @@ def update_rating(request):
     rating_title_id = request.POST.get('rating_title_id')
     save = bool(request.POST.get('save'))
     block = bool(request.POST.get('block'))
-    print(str(save) + str(block) + str(rating_title_id))
 
     if not request.user.is_authenticated:
         error_text = "You must be logged in to rate books."
@@ -429,7 +469,6 @@ def update_rating(request):
         new_rating = None
     else:
         try:
-            print("here2")
             new_rating = float(new_rating)
             if new_rating > 10 or new_rating < 1:
                 raise ValueError
@@ -444,7 +483,6 @@ def update_rating(request):
         except Rating.DoesNotExist:
             b = Books.objects.get(pk=rating_title_id)
             rating_obj = Rating(book=b, user=request.user)
-        print('here3')
         rating_obj.rating = new_rating
         rating_obj.saved = save
         rating_obj.blocked = block

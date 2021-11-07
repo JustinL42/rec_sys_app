@@ -146,6 +146,9 @@ li a {
 .submit_button_row {
   font-size: 28px;
 }
+.submit_button_form {
+  font-size: 32px;
+}
 .pagination {
   font-size: 24
 }
