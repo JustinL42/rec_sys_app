@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +160,18 @@ EMAIL_FILE_PATH = str(os.path.join(BASE_DIR, 'sent_emails'))
 # DEFAULT_FROM_EMAIL = 'Website Admin <noreply@example.com>'
 
 AUTH_USER_MODEL = 'recsys.User'
+
+Q_CLUSTER = {
+    "name": "recsys_cluster",
+    "orm": "default",
+    'workers': 1,
+    'recycle': 100,
+    'max_attempts': 1,
+    'timeout': 60*60*23,
+    'retry': 60*60*24,
+    'save_limit': 100,
+    'queue_limit': 5,
+    'catch_up': False,
+    # uncomment this to disable the scheduler
+    # 'scheduler': False,
+}

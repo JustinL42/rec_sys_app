@@ -7,7 +7,6 @@ from scipy.stats import truncnorm
 from surprise import Dataset, Reader
 from surprise.model_selection import RandomizedSearchCV
 
-
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 from customSurpriseClasses import JumpStartKFolds, DefaultlessSVD
@@ -30,7 +29,7 @@ db_conn_string = "postgresql+psycopg2://{}:{}@{}:{}/{}"\
 BX_BOOK_CLUB_ID = 7
 
 
-def tune_svd_model(n_iter=10, force=False):
+def tune_svd_model(n_iter=10, force=False, n_jobs=1):
     alchemyEngine = create_engine(db_conn_string)
     conn = alchemyEngine.connect()
 
@@ -150,15 +149,11 @@ def tune_svd_model(n_iter=10, force=False):
         measures=['rmse'], 
         cv=JumpStartKFolds(large_data=large_data),
         refit=False,
-        n_jobs=-2, 
-        random_state=param_distributions.get('random_state', [777])[0]
+        n_jobs=n_jobs,
     )
     rs.fit(small_data)
     best_model = rs.best_estimator['rmse']
     best_model.fit(data.build_full_trainset())
-
-    ##### ^^ confirm this ^^^ ###
-
 
     # Save the new model to the database
     model_obj = SVDModel()
@@ -175,7 +170,7 @@ def tune_svd_model(n_iter=10, force=False):
 
 def tune_n_times(n, n_iter=10):
     for i in range(n):
-        tune_svd_model(n_iter, force=True)
+        tune_svd_model(n_iter, force=True, n_jobs=1)
 
 
 def update_all_recs(num_ratings, last_rating):
@@ -183,25 +178,30 @@ def update_all_recs(num_ratings, last_rating):
     conn = alchemyEngine.connect()
 
     try:
-        svd_model = pickle.loads(conn.execute("""
-            SELECT model_bin
+        model_bin, ratings_updated = conn.execute("""
+            SELECT model_bin, ratings_updated
             FROM recsys_svdmodel
             WHERE ratings = %s
             AND last_rating = %s
             ORDER BY time_created DESC 
             LIMIT 1;
-            """, [num_ratings, last_rating]).fetchone()[0])
+            """, [num_ratings, last_rating]).fetchone()
     except TypeError:
         #TODO: log error "No SVD model found for the give ratings set"
-        print("No SVD model found for the give ratings set")
         conn.close()
-        return
+        return False
+
+    # Stop if this model has already been used to update the ratings
+    if ratings_updated:
+        conn.close()
+        return False
+
 
     real_users = conn.execute("""
         SELECT u.id
         FROM recsys_user AS u
         WHERE virtual = FALSE
-        AND NOT EXISTS 
+        AND NOT EXISTS
         (
             SELECT 1 
                 FROM recsys_book_club_members AS m
@@ -214,8 +214,9 @@ def update_all_recs(num_ratings, last_rating):
     conn.close()
 
     if not real_users:
-        return
+        return False
     real_user_set = set([u[0] for u in real_users])
+    svd_model = pickle.loads(model_bin)
     all_users = [
         (u, svd_model.trainset.to_raw_uid(u)) \
         for u in svd_model.trainset.all_users() \
@@ -227,76 +228,90 @@ def update_all_recs(num_ratings, last_rating):
     ]
 
     for uid, user_id in all_users:
-        conn = alchemyEngine.connect()
+        from datetime import datetime
+        # Set all current predictions to null before the update
+        with alchemyEngine.connect().execution_options(
+            autocommit=False) as conn:
+
+            conn.execute("""
+            UPDATE recsys_rating  
+            SET predicted_rating = NULL
+            WHERE user_id = %s;
+            """, [user_id])
+
+            for iid, title_id in all_books:
+                prediction = svd_model.predict(uid, iid, clip=False).est
+
+                conn.execute("""
+                    INSERT INTO recsys_rating 
+                    (book_id, user_id, predicted_rating, 
+                        saved, blocked, last_updated)
+                    VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
+                    ON CONFLICT (book_id, user_id)
+                    DO UPDATE SET predicted_rating = %s
+                """, [title_id, user_id, prediction, prediction])
+
+
+    conn = alchemyEngine.connect()
+    conn.execute("""
+        UPDATE recsys_svdmodel
+        SET ratings_updated = TRUE
+        WHERE ratings = %s
+        AND last_rating = %s;
+    """, [num_ratings, last_rating])
+    return True
+
+
+def update_one_book_club_recs(book_club_id):
+    alchemyEngine = create_engine(db_conn_string)
+    with alchemyEngine.connect().execution_options(
+        autocommit=False) as conn:
+
+        df = pd.read_sql("""
+            SELECT r.book_id, 
+                AVG(COALESCE(
+                    r.rating, r.predicted_rating)) as avg_rating 
+            FROM recsys_rating AS r
+            JOIN recsys_user AS u ON u.id = r.user_id
+            JOIN recsys_book_club_members AS m ON m.user_id = u.id
+            JOIN recsys_book_club AS c ON c.id = m.book_club_id
+            WHERE c.id = %s
+            AND (
+                r.predicted_rating IS NOT NULL
+                OR r.rating IS NOT NULL
+            )
+            AND u.virtual = FALSE
+            GROUP BY r.book_id
+            HAVING COUNT(r.user_id) > 1;
+            """, conn, params=[book_club_id])
+
+        virtual_member_id = conn.execute("""
+            SELECT virtual_member_id
+            FROM recsys_book_club
+            WHERE id = %s; 
+            """, [book_club_id]).fetchone()[0]
+
+        if not virtual_member_id:
+            #TODO: log this error
+            return
 
         # Set all current predictions to null before the update
         conn.execute("""
-        UPDATE recsys_rating  
-        SET predicted_rating = NULL
-        WHERE user_id = %s;
-        """, [user_id])
+            DELETE
+            FROM recsys_rating
+            WHERE user_id = %s;
+            """, [virtual_member_id])
 
-        for iid, title_id in all_books:
-            prediction = svd_model.predict(uid, iid, clip=False).est
-
+        for _, row in df.iterrows():
             conn.execute("""
                 INSERT INTO recsys_rating 
                 (book_id, user_id, predicted_rating, 
                     saved, blocked, last_updated)
                 VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
                 ON CONFLICT (book_id, user_id)
-                DO UPDATE SET predicted_rating = %s
-            """, [title_id, user_id, prediction, prediction])
-        conn.close()
-
-
-def update_one_book_club_recs(book_club_id):
-    alchemyEngine = create_engine(db_conn_string)
-    conn = alchemyEngine.connect()
-    df = pd.read_sql("""
-        SELECT r.book_id, 
-            AVG(COALESCE(r.rating, r.predicted_rating)) as avg_rating 
-        FROM recsys_rating AS r
-        JOIN recsys_user AS u ON u.id = r.user_id
-        JOIN recsys_book_club_members AS m ON m.user_id = u.id
-        JOIN recsys_book_club AS c ON c.id = m.book_club_id
-        WHERE c.id = %s
-        AND (
-            r.predicted_rating IS NOT NULL
-            OR r.rating IS NOT NULL
-        )
-        AND u.virtual = FALSE
-        GROUP BY r.book_id
-        HAVING COUNT(r.user_id) > 1;
-        """, conn, params=[book_club_id])
-
-    virtual_member_id = conn.execute("""
-        SELECT virtual_member_id
-        FROM recsys_book_club
-        WHERE id = %s; 
-        """, [book_club_id]).fetchone()[0]
-
-    if not virtual_member_id:
-        #TODO: log this error
-        return
-
-    # Set all current predictions to null before the update
-    conn.execute("""
-        DELETE
-        FROM recsys_rating
-        WHERE user_id = %s;
-        """, [virtual_member_id])
-
-    for _, row in df.iterrows():
-        conn.execute("""
-            INSERT INTO recsys_rating 
-            (book_id, user_id, predicted_rating, 
-                saved, blocked, last_updated)
-            VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP);
-        """, [int(row['book_id']), 
-            virtual_member_id, row['avg_rating']])
-
-    conn.close()
+                DO UPDATE SET predicted_rating = %s;
+            """, [int(row['book_id']), virtual_member_id, 
+                row['avg_rating'], row['avg_rating']])
 
 
 def update_all_book_club_recs():
@@ -313,13 +328,15 @@ def update_all_book_club_recs():
 
 
 def tune_update_all_recs():
-    ratings, last_rating = tune_svd_model()
-    update_all_recs(ratings, last_rating)
-    update_all_book_club_recs()
+    ratings, last_rating = tune_svd_model(n_jobs=1)
+    ratings_updated = update_all_recs(ratings, last_rating)
+    if ratings_updated:
+        update_all_book_club_recs()
 
 
 def update_one_users_recs(user_id, top_n=None, bottom_n=None, 
         urgent=False, cold_start=False):
+
     alchemyEngine = create_engine(db_conn_string)
     conn = alchemyEngine.connect()
 
@@ -333,7 +350,6 @@ def update_one_users_recs(user_id, top_n=None, bottom_n=None,
 
     except TypeError:
         #TODO: log error "No SVD models have been tuned yet"
-        print("No SVD model found for the give ratings set")
         conn.close()
         return
 

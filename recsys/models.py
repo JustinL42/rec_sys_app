@@ -286,6 +286,7 @@ class SVDModel(models.Model):
         Book_Club, null=True, default=None, db_constraint=False, 
         on_delete=models.DO_NOTHING
     )
+    ratings_updated=models.BooleanField(default=False)
     params_bin = models.BinaryField()
     model_bin = models.BinaryField()
 
