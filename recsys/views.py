@@ -353,33 +353,10 @@ class RecommendationsView(LoginRequiredMixin, generic.ListView):
             .order_by('-predicted_rating', '-year', 'id')
 
 
-class AbstractColdStartView(LoginRequiredMixin, generic.ListView):
-    model = Books
-    paginate_by = 10
+class FirstRatingsView(LoginRequiredMixin, generic.View):
     login_url = '/login/'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['rating_count'] = self.request.user.rating_set.\
-            select_related('book').filter(rating__isnull=False).count()
-        return context
-
-    def post(self, request):
-        if "done" in request.POST:
-            self.method_on_done(request.user.id)
-            return redirect(self.next_page)
-        else:
-            error_text = update_rating(request)
-            return self.get(request, error_text=error_text)
-
-    # to be overwritten in child classes
-    def method_on_done(self, user_id):
-        pass
-
-
-class FirstRatingsView(AbstractColdStartView):
-    template_name = 'recsys/firstratings.html'
-    next_page = '/secondratings/'
+    paginate_by = 8
+    book_limit = 160
 
     # The first cold-start page shows a selection of popular books 
     # in the order predetermined by the cold_start_rank, which was set
@@ -387,33 +364,69 @@ class FirstRatingsView(AbstractColdStartView):
     # novels and the most commonly viewed novels on isfd.org. Filter out
     # books that don't already have two ratings, since this will be 
     # unhelpful in generating recommendations. 
-    def get_queryset(self):
-        ratings = self.request.user.rating_set.select_related('book') \
-        .filter(book__cold_start_rank__isnull=False) \
-        .annotate(
-            multiple_ratings_exist=Exists(Rating.objects \
-                .filter(rating__isnull=False) \
-                .values('book_id') \
-                .annotate(num_ratings=Count('book_id')) \
-                .filter(num_ratings__gt=1) \
-                .filter(book_id=OuterRef('book_id')))
-        ).filter(multiple_ratings_exist=True)
-        return select_ratings_row_values(ratings) \
-            .order_by('book__cold_start_rank', 'id')[:160]
+    def get(self, request, error_text=None):
+        page_num = self.request.GET.get('page', 1)
+        books = Books.objects\
+            .filter(cold_start_rank__isnull=False) \
+            .annotate(multiple_ratings_exist=Exists(
+                Rating.objects \
+                    .filter(rating__isnull=False) \
+                    .values('book_id') \
+                    .annotate(num_ratings=Count('book_id')) \
+                    .filter(num_ratings__gt=1) \
+                    .filter(book_id=OuterRef('id'))
+                )
+            )\
+            .filter(multiple_ratings_exist=True) \
+            .order_by('cold_start_rank', 'id')[:self.book_limit]
+        books = joined_to_ratings(
+            select_bookrow_values(books), request.user.id)
 
-    # Get both the top 15 and bottom 15 recommendations. This will give
-    # the user opportunities to give both high and low ratings, and will
-    # may help correct the model's most extreme conclusions about the 
-    # user's taste.
-    def method_on_done(self, user_id):
-        update_one_users_recs(user_id, top_n=15, bottom_n=15, 
-            urgent=True, cold_start=True
+        paginator = Paginator(books, self.paginate_by)
+        page_obj = paginator.page(page_num)
+        rating_count = self.request.user.rating_set.\
+            select_related('book').filter(rating__isnull=False).count()
+
+        template_data = dict(
+            books = page_obj.object_list,
+            paginator = paginator,
+            page_obj = paginator.get_page(page_num),
+            is_paginated = len(books) > self.paginate_by,
+            error_text=error_text,
+            rating_count=rating_count
         )
 
+        return render(request, 
 
-class SecondRatingsView(AbstractColdStartView):
+            "recsys/firstratings.html", template_data)
+
+    def post(self, request):
+        if "done" not in request.POST:
+            error_text = update_rating(request)
+            return self.get(request, error_text=error_text)
+        else:
+            # Get both the top 12 and bottom 12 recommendations. This will 
+            # give the user opportunities to give both high and low ratings, 
+            # and will may help correct the model's most extreme guesses
+            # about the user's taste.
+            update_one_users_recs(request.user.id, 
+                top_n=12, bottom_n=12, urgent=True, cold_start=True)
+            return redirect('/secondratings/')
+
+
+class SecondRatingsView(LoginRequiredMixin, generic.ListView):
+    model = Books
+    paginate_by = 8
+    login_url = '/login/'
     template_name = 'recsys/secondratings.html'
-    next_page = '/recommendations/'
+    book_limit = 20
+    initial_rec_limit = 120
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rating_count'] = self.request.user.rating_set.\
+            select_related('book').filter(rating__isnull=False).count()
+        return context
 
     # The books need to be sorted in an immutable order so they don't 
     # get shuffled when the user gives a rating and the page is reloaded.
@@ -432,15 +445,20 @@ class SecondRatingsView(AbstractColdStartView):
                 sort_val=MD5(Cast('book__id', output_field=CharField()))
             )
         return select_ratings_row_values(ratings) \
-            .order_by('sort_val')[:20]
+            .order_by('sort_val')[:self.book_limit]
 
-    # The final cold start recommendations are limited to 120 simply
-    # because database inserts are one of the more time-consuming parts
-    # of the method and the page needs to be returned fast.
-    def method_on_done(self, user_id):
-        update_one_users_recs(
-            user_id, top_n=120,urgent=True, cold_start=True
-        )
+    def post(self, request):
+        if "done" not in request.POST:
+            error_text = update_rating(request)
+            return self.get(request, error_text=error_text)
+        else:
+            # The final cold start recommendations are limited to 120 simply
+            # because database inserts are one of the more time-consuming parts
+            # of the method and the page needs to be returned fast.
+            update_one_users_recs(request.user.id, 
+                top_n=self.initial_rec_limit, 
+                urgent=True, cold_start=True)
+            return redirect('/recommendations/')
 
 
 def select_ratings_row_values(ratings):
