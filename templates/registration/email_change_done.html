@@ -1,0 +1,8 @@
+{% extends "recsys/base.html" %}
+
+{% block title %}Email Address Changed{% endblock %}
+
+{% block content %}
+            <p>Email address successfully changed to "{{ new_email }}".</p>
+            <a href="{% url 'recsys:home' %}">Return to home page</a>
+{% endblock %}
