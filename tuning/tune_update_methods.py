@@ -125,7 +125,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
             # Since this is the first time tuning on this data, the
             # previous rmse shouldn't be used as a baseline and the 
             # best model should always be saved at the end
-            prev_rmse = 9999
+            prev_rmse = 9999    
 
     except TypeError:
         # There aren't any models for this data yet. 
@@ -252,8 +252,7 @@ def update_all_recs(num_ratings, last_rating):
     for uid, user_id in all_users:
         from datetime import datetime
         # Set all current predictions to null before the update
-        with alchemyEngine.connect().execution_options(
-            autocommit=False) as conn:
+        with alchemyEngine.connect() as conn:
 
             conn.execute("""
             UPDATE recsys_rating  
@@ -286,8 +285,7 @@ def update_all_recs(num_ratings, last_rating):
 
 def update_one_book_club_recs(book_club_id):
     alchemyEngine = create_engine(db_conn_string)
-    with alchemyEngine.connect().execution_options(
-        autocommit=False) as conn:
+    with alchemyEngine.connect() as conn:
 
         df = pd.read_sql("""
             SELECT r.book_id, 
