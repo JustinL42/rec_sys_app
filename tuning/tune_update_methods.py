@@ -100,17 +100,37 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
             return num_ratings, last_rating
 
     try:
-        last_params = pickle.loads(conn.execute("""
-            SELECT params_bin 
+        # If there are already models for this data set, get the params 
+        # with the best rmse. Otherwise, just get params from any model
+        # with the best rmse.
+
+        prev_svdmodel = conn.execute("""
+            SELECT params_bin, rmse, ratings, last_rating
             FROM recsys_svdmodel
-            WHERE ratings = %s
-            AND last_rating = %s
-            ORDER BY rmse, time_created DESC
+            ORDER BY CASE
+                WHEN ratings = %s 
+                AND last_rating = %s
+                THEN 0
+                ELSE 1
+            END, rmse, time_created DESC
             LIMIT 1;
-            """).fetchone()[0])
+            """, [num_ratings, last_rating]).fetchone()
+        
+        params_bin, prev_rmse, prev_num_ratings, prev_last_rating = \
+            prev_svdmodel
+        prev_params = pickle.loads(params_bin)
+
+        if num_ratings != prev_num_ratings or \
+            last_rating != prev_last_rating:
+            # Since this is the first time tuning on this data, the
+            # previous rmse shouldn't be used as a baseline and the 
+            # best model should always be saved at the end
+            prev_rmse = 9999
 
     except TypeError:
-        last_params = {
+        # There aren't any models for this data yet. 
+        # Start with these params instead
+        prev_params = {
             'random_state': 777,
             'biased': True,
             'n_factors': 30,
@@ -124,11 +144,12 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
             'reg_pu': 0.5,
             'reg_qi': 0.25
         }
+        prev_rmse = 9999
 
     conn.close()
 
     param_distributions = {}
-    for param, value in last_params.items():
+    for param, value in prev_params.items():
         if param in ['biased', 'random_state']:
             param_distributions[param] = [value]
         elif param in ['n_factors', 'n_epochs']:
@@ -152,18 +173,19 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         n_jobs=n_jobs,
     )
     rs.fit(small_data)
-    best_model = rs.best_estimator['rmse']
-    best_model.fit(data.build_full_trainset())
+    if rs.best_score['rmse'] < prev_rmse:
+        best_model = rs.best_estimator['rmse']
+        best_model.fit(data.build_full_trainset())
 
-    # Save the new model to the database
-    model_obj = SVDModel()
-    model_obj.ratings = num_ratings
-    model_obj.last_rating = last_rating
-    model_obj.factors = rs.best_params['rmse']['n_factors']
-    model_obj.rmse = rs.best_score['rmse']
-    model_obj.params_bin = pickle.dumps(rs.best_params['rmse'])
-    model_obj.model_bin = pickle.dumps(best_model)
-    model_obj.save()
+        # Save the new model to the database
+        model_obj = SVDModel()
+        model_obj.ratings = num_ratings
+        model_obj.last_rating = last_rating
+        model_obj.factors = rs.best_params['rmse']['n_factors']
+        model_obj.rmse = rs.best_score['rmse']
+        model_obj.params_bin = pickle.dumps(rs.best_params['rmse'])
+        model_obj.model_bin = pickle.dumps(best_model)
+        model_obj.save()
 
     return num_ratings, last_rating
 
