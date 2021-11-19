@@ -147,6 +147,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         prev_rmse = 9999
 
     conn.close()
+    print(prev_rmse)
 
     param_distributions = {}
     for param, value in prev_params.items():
@@ -157,7 +158,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
                 [max(0, value - 5), value, value + 5]
         else:
             param_distributions[param] = truncnorm(
-                loc=value, scale=(.1 * value), a=0, b=(1000 * value)
+                loc=value, scale=(.15 * value), a=0, b=(1000 * value)
             )
 
     reader = Reader(rating_scale=(1, 10))
@@ -173,7 +174,9 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         n_jobs=n_jobs,
     )
     rs.fit(small_data)
+    print("best rmse: " + str(rs.best_score))
     if rs.best_score['rmse'] < prev_rmse:
+        print("A new record")
         best_model = rs.best_estimator['rmse']
         best_model.fit(data.build_full_trainset())
 
