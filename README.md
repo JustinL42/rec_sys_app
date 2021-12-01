@@ -1,12 +1,14 @@
-# Recommendation System for Book Clubs
+# rec_sys_app - the source code for BookClub.Guide
 
-Currently online at:
+[BookClub.Guide](https://www.bookclub.guide) is a recommendation system Django web app where readers and book clubs can get recommendations on books they might enjoy. Using a database derived from the [Internet Speculative Fiction Database's](http://www.isfdb.org) regularly-updated snapshots, users can give ratings to nearly any sci-fi/fantasy book available in English. These ratings are are used to help find recommendations for the user, as well as for other users with similar taste.
 
-https://bookclub.guide
+Some of the motivations for this project include:
 
-A web app for users to browse and rate books from the science-fiction, fantasy, and speculative fiction genres. The current site is under development and signups aren't currently available to the public. Non-signed in visitors can still search the catalog, which is derived from the isfdb.org data (see my isfdb_migration repository). 
+* Most large recommendation systems for books such as Goodreads are owned by Amazon or other companies that sell books. They are incentivized to recommend books that you are likely to buy, which may not be the same thing as books you are likely to enjoy.
+* Book clubs need to choose books that will appeal to the group overall, rather than just some members. A feature of this project (still under development) would suggest books based on the average the members' predicted ratings. 
 
-Current development is focused on adding a recommendation system to recommend new books to individual users, and groups of users reading together in book clubs. This would use the Surprise python library to run the SVD algorith on submitted user ratings, as well as public book rating data sets like Book Crossings. A prototype of this is in my earlier book_club_rec_system repository.
+The algorithm used to generate recommendations is a [collaborative filtering](https://en.wikipedia.org/wiki/Collaborative_filtering), [matrix factorization](https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)) model. Specifically, this is the [SVD algorithm](https://surprise.readthedocs.io/en/stable/matrix_factorization.html#surprise.prediction_algorithms.matrix_factorization.SVD) from the [Surprise](http://surpriselib.com/) python package, with some customizations. 
 
-Copyright 2021 Justin Lavoie.
-All rights reserved.
+The [Book Crossings](http://www2.informatik.uni-freiburg.de/~cziegler/BX/) ratings data set was used jump start the model-tuning. The data isn't an ideal fit for this application for a number of reasons. Because of this, the algorithm's evaluation function was modified so that only the accuracy of predictions for the site's real users (not Book Crossings ratings) was used to guide the tuning of the model (see  tuning/tune_update_methods.py). 
+
+The setup process for this app isn't currently documented. One necessary step is to download and migrate the latest ISFDB.org MySQL database into the app's Postgres database. See the [isfdb_migration](https://github.com/JustinL42/isfdb_migration) repository for more information about that.
