@@ -3,7 +3,6 @@ recsys/static/recsys/images/isfdb/*
 sent_emails/*
 aws
 recsys.sublime-workspace
-recsys/migrations/*
 mysite/secret_keys.py
 data/book_crossing/*
 data/custom/*
@@ -15,3 +14,4 @@ sync_user_tables.sh
 *.pickle
 *.dump
 TODO.txt
+.env
