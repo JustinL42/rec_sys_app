@@ -33,7 +33,7 @@ REAL_BOOK_CLUB_ID = 8
 
 print("Connecting to db and loading data into memory...")
 alchemyEngine = create_engine(
-    'postgresql+psycopg2://postgres:@:5434/recsysdev')
+    'postgresql+psycopg2://postgres:@:5432/recsysdev')
 conn = alchemyEngine.connect()
 
 small_df = pd.read_sql("""

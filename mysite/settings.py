@@ -104,7 +104,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'recsysdev',
             'USER': 'postgres',
-            'PORT': '5434',
+            'PORT': '5432',
         }
     }
 

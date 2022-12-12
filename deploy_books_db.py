@@ -3,7 +3,7 @@
 import psycopg2
 
 dest_db_name = "recsyslive"
-dest_db_conn_string = "port=5434 dbname={} user=postgres".format(dest_db_name)
+dest_db_conn_string = "port=5432 dbname={} user=postgres".format(dest_db_name)
 
 
 dest_conn = psycopg2.connect(dest_db_conn_string)

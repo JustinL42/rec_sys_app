@@ -1,6 +1,6 @@
 #!/bin/bash
 
-psql -p 5434 -U postgres -d recsysdev -c "
+psql -p 5432 -U postgres -d recsysdev -c "
 DELETE FROM recsys_meeting;
 DELETE FROM recsys_dataproblem;
 DELETE FROM recsys_book_club;
@@ -16,7 +16,7 @@ DELETE FROM django_admin_log;
 DELETE FROM django_content_type;
 "
 
-/usr/lib/postgresql/13/bin/pg_restore --verbose -p 5434 -U postgres --data-only -d recsysdev $(ls -t backup/*.dump | head -1)
+/usr/lib/postgresql/13/bin/pg_restore --verbose -p 5432 -U postgres --data-only -d recsysdev $(ls -t backup/*.dump | head -1)
 
-psql -p 5434 -U postgres -d recsysdev -c 'SELECT book_id FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
-# psql -p 5434 -U postgres -d recsysdev -c 'DELETE FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
+psql -p 5432 -U postgres -d recsysdev -c 'SELECT book_id FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
+# psql -p 5432 -U postgres -d recsysdev -c 'DELETE FROM recsys_rating WHERE NOT EXISTS (SELECT 1 FROM recsys_books WHERE id = recsys_rating.book_id);'
