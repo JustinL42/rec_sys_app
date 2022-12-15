@@ -1,4 +1,3 @@
-# /bin/python
 import gdown
 import os
 import pathlib
@@ -29,7 +28,7 @@ with tempfile.TemporaryDirectory() as down_dir:
         print("Download links not found.")
         sys.exit(1)
 
-    for link in links[:2]:
+    for link in links:
         try:
             filename = gdown.download(link, fuzzy=True)
         except Exception as exp:
