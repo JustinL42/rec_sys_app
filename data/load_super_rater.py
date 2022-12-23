@@ -9,10 +9,7 @@ import re
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 
-from mysite import settings
-from mysite import secret_keys
 from data.super_rater.title_handling import titles_to_skip, title_override
-
 
 # On a dry run, print the book found for the title 
 # and do everything except actually inserting the data into
@@ -22,13 +19,17 @@ ORIGINAL_MIN = 1
 ORIGINAL_MAX = 13
 conversion = lambda r : max(1, min(10, r*3/4 + 1/4))
 
-db_name = settings.DATABASES['default'].get('NAME', 'recsysdev')
-db_port = settings.DATABASES['default'].get('PORT', '5432')
-db_user = settings.DATABASES['default'].get('USER', 'postgres')
-db_password = settings.DATABASES['default'].get('PASSWORD', ' ')
-db_host = settings.DATABASES['default'].get('HOST', ' ')
-db_conn_string = "dbname={} port={} user={} password= {} host={} "\
-    .format(db_name, db_port, db_user, db_password, db_host)
+# Get per-environment settings from the config files.
+CONFIG_DIR = Path(BASE_DIR, "config")
+CONFIG_FILES = [Path(CONFIG_DIR, f) for f in os.listdir(CONFIG_DIR)]
+ENV = os.environ.get("ENV", "DEFAULT")
+config_parser = configparser.ConfigParser()
+config_parser.read(CONFIG_FILES)
+config = config_parser[ENV]
+
+db_conn_string = f"dbname={config['NAME']} port={config['PORT']} " + \
+    f"user={config['USER']} password= {config['PASSWORD']} " + \
+    f"host={config['HOST']} "
 
 data_dir = os.path.dirname(os.path.realpath(__file__))
 rows = []
@@ -226,7 +227,7 @@ try:
 
 
             last_name = ""
-            password = secret_keys.custom_user_hash
+            password = config["custom_user_hash"]
             is_active = False
             is_superuser = False
             is_staff = False

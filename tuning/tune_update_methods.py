@@ -11,7 +11,6 @@ path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 from customSurpriseClasses import JumpStartKFolds, DefaultlessSVD
 from mysite import settings
-from mysite import secret_keys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 import django
 django.setup()

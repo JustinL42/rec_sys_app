@@ -1,27 +1,29 @@
 #!/usr/bin/python3
 import os, sys
 from datetime import datetime
+from pathlib import Path
+import configparser
 import pandas as pd
 import psycopg2
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 
-from mysite import settings
-from mysite import secret_keys
-
-
 # On a dry run, print the book found for the title 
 # and do everything except actually inserting the data into
 DRY_RUN = False
 
-db_name = settings.DATABASES['default'].get('NAME', 'recsysdev')
-db_port = settings.DATABASES['default'].get('PORT', '5432')
-db_user = settings.DATABASES['default'].get('USER', 'postgres')
-db_password = settings.DATABASES['default'].get('PASSWORD', ' ')
-db_host = settings.DATABASES['default'].get('HOST', ' ')
-db_conn_string = "dbname={} port={} user={} password= {} host={} "\
-    .format(db_name, db_port, db_user, db_password, db_host)
+# Get per-environment settings from the config files.
+CONFIG_DIR = Path(BASE_DIR, "config")
+CONFIG_FILES = [Path(CONFIG_DIR, f) for f in os.listdir(CONFIG_DIR)]
+ENV = os.environ.get("ENV", "DEFAULT")
+config_parser = configparser.ConfigParser()
+config_parser.read(CONFIG_FILES)
+config = config_parser[ENV]
+
+db_conn_string = f"dbname={config['NAME']} port={config['PORT']} " + \
+    f"user={config['USER']} password= {config['PASSWORD']} " + \
+    f"host={config['HOST']} "
 
 
 conn = psycopg2.connect(db_conn_string)
@@ -32,7 +34,7 @@ try:
             username = "isfdb_ratings_virtual"
             first_name = "virtual"
             last_name = "isfdb_ratings"
-            password = secret_keys.custom_user_hash
+            password = config["custom_user_hash"]
             is_active = False
             is_superuser = False
             is_staff = False

@@ -1,24 +1,26 @@
 #!/usr/bin/python3
 import os, sys, csv, zipfile
+from pathlib import Path
 from urllib import request
+import configparser
 import psycopg2
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 
-from mysite import settings
-from mysite import secret_keys
-
 INCONSISTENT_ISBN_VIRTUAL_TITLE = 73
 
+# Get per-environment settings from the config files.
+CONFIG_DIR = Path(BASE_DIR, "config")
+CONFIG_FILES = [Path(CONFIG_DIR, f) for f in os.listdir(CONFIG_DIR)]
+ENV = os.environ.get("ENV", "DEFAULT")
+config_parser = configparser.ConfigParser()
+config_parser.read(CONFIG_FILES)
+config = config_parser[ENV]
 
-db_name = settings.DATABASES['default'].get('NAME', 'recsysdev')
-db_port = settings.DATABASES['default'].get('PORT', '5432')
-db_user = settings.DATABASES['default'].get('USER', 'postgres')
-db_password = settings.DATABASES['default'].get('PASSWORD', ' ')
-db_host = settings.DATABASES['default'].get('HOST', ' ')
-db_conn_string = "dbname={} port={} user={} password= {} host={} "\
-    .format(db_name, db_port, db_user, db_password, db_host)
+db_conn_string = f"dbname={config['NAME']} port={config['PORT']} " + \
+    f"user={config['USER']} password= {config['PASSWORD']} " + \
+    f"host={config['HOST']} "
 
 path_to_bx_data = os.path.join("data", "book_crossing")
 path_to_zip = os.path.join(path_to_bx_data, "BX-CSV-Dump.zip")
@@ -109,7 +111,7 @@ try:
                 next(u_reader, None)
 
                 last_name = "BookCrossing"
-                password = secret_keys.bx_user_hash
+                password = config["bx_user_hash"]
                 is_active = False
                 is_superuser = False
                 is_staff = False

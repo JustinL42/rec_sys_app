@@ -1,62 +1,40 @@
 #!/bin/bash
 
-# SETTINGS
-
-DB_PORT=5432
-DB_USER=postgres
+# Get settings from config files:
+export $(python scripts/print_config.py )
 
 # Number of jobs to use. Default is all but one.
-N_JOBS=$(nproc --ignore=1)
+if ! [[ -v $n_deploy_jobs ]]; then
+	n_deploy_jobs=$(nproc --ignore=1)
 
-# Update these hostnames to the ones used on your environments:
-DEV_HOSTNAME=t420s
-LIVE_HOSTNAME=nuc
-
-# Determine the application db name.
-DEV_DB_NAME=recsysdev
-LIVE_DB_NAME=recsyslive
-case $(hostname) in
-	$DEV_HOSTNAME)
-		APP_DB=$DEV_DB_NAME
-		;;
-	$LIVE_HOSTNAME)
-		APP_DB=$LIVE_DB_NAME
-		;;
-	*)
-		echo -e "\nHostname not recognized."
-		echo -e "Did you set the *_HOSTNAME variables in the script?"
-		echo DEPLOY FAILED
-		;;
-esac
-
-echo -e "\nDumping $APP_DB db to /tmp/recsysold..."
+echo -e "\nDumping $db_name db to /tmp/recsysold..."
 rm -rf /tmp/recsysold 2> /dev/null
 pg_dump \
-	$APP_DB \
+	$db_name \
 	--file=/tmp/recsysold \
 	--format=directory \
-	--jobs=$N_JOBS \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--jobs=$n_deploy_jobs \
+	--port=$db_port \
+	--username=$db_user \
 	|| { echo DEPLOY FAILED; exit 1;}
 
 echo -e "\nBacking up /tmp/recsysold to recsysold db..."
-dropdb recsysold --if-exists --username=$DB_USER
-createdb recsysold --template=$APP_DB --username=$DB_USER
+dropdb recsysold --if-exists --username=$db_user
+createdb recsysold --template=$db_name --username=$db_user
 pg_restore \
 	/tmp/recsysold \
 	--dbname=recsysold \
 	--clean \
-	--jobs=$N_JOBS \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--jobs=$n_deploy_jobs \
+	--port=$db_port \
+	--username=$db_user \
 	|| { echo DEPLOY FAILED; exit 1;}
 
 echo -e "\nCreating db extensions..."
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="
 		CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
 		CREATE EXTENSION IF NOT EXISTS unaccent;
@@ -65,9 +43,9 @@ psql \
 
 echo -e "\nDrop any staged book table from previous deploy... "
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="
 		DROP TABLE IF EXISTS isbns CASCADE;
 		DROP TABLE IF EXISTS translations CASCADE;
@@ -77,12 +55,11 @@ psql \
 		DROP TABLE IF EXISTS books CASCADE;
 	" > /dev/null
 
-echo -e "\nDropping old $APP_DB tables..."
-
+echo -e "\nDropping old $db_name tables..."
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="
 		DROP TABLE IF EXISTS recsys_isbns;
 		DROP TABLE IF EXISTS recsys_translations;
@@ -92,22 +69,22 @@ psql \
 		DROP TABLE IF EXISTS recsys_books;
 	" || { echo DEPLOY FAILED; exit 1;}
 
-echo -e "\nWriting new version of book tables to $APP_DB..."
+echo -e "\nWriting new version of book tables to $db_name..."
 pg_restore \
 	/tmp/recsysetl \
-	--dbname=$APP_DB \
+	--dbname=$db_name \
 	--clean \
 	--if-exists \
-	--jobs=$N_JOBS \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--jobs=$n_deploy_jobs \
+	--port=$db_port \
+	--username=$db_user \
 	|| { echo DEPLOY FAILED; exit 1;}
 
 echo -e "\nChanging table names to the ones Django expects..."
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="
 		ALTER TABLE books RENAME TO recsys_books;
 		ALTER TABLE isbns RENAME TO recsys_isbns;
@@ -119,9 +96,9 @@ psql \
 
 echo -e "\nChanging column names to the ones Django expects..."
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="
 		ALTER TABLE recsys_books RENAME COLUMN title_id to id;
 		ALTER TABLE recsys_translations RENAME COLUMN title_id to id;
@@ -129,18 +106,18 @@ psql \
 
 echo -e "\nAnalyzing..."
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="ANALYZE"
 
 echo -e "\nDEPLOY SUCCEEDED"
 
 echo -e "\nChecking for orphaned ratings..."
 psql \
-	--dbname=$APP_DB \
-	--port=$DB_PORT \
-	--username=$DB_USER \
+	--dbname=$db_name \
+	--port=$db_port \
+	--username=$db_user \
 	--command="
 		SELECT DISTINCT book_id 
 		FROM recsys_rating 
