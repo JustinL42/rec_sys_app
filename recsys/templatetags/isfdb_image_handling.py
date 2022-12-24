@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter
 def localize_isfdb_image_url(img_url):
     if not img_url:
@@ -15,9 +16,6 @@ def localize_isfdb_image_url(img_url):
     return img_url
 
 
-@register.inclusion_tag('recsys/book_row_item.html', takes_context=True )
+@register.inclusion_tag("recsys/book_row_item.html", takes_context=True)
 def book_row_item(context, book):
-    return {
-        'book': book,
-        'user': context['user']
-    }
+    return {"book": book, "user": context["user"]}

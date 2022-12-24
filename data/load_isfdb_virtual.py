@@ -9,7 +9,7 @@ import psycopg2
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 
-# On a dry run, print the book found for the title 
+# On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
 DRY_RUN = False
 
@@ -21,9 +21,11 @@ config_parser = configparser.ConfigParser()
 config_parser.read(CONFIG_FILES)
 config = config_parser[ENV]
 
-db_conn_string = f"dbname={config['NAME']} port={config['PORT']} " + \
-    f"user={config['USER']} password= {config['PASSWORD']} " + \
-    f"host={config['HOST']} "
+db_conn_string = (
+    f"dbname={config['NAME']} port={config['PORT']} "
+    + f"user={config['USER']} password= {config['PASSWORD']} "
+    + f"host={config['HOST']} "
+)
 
 
 conn = psycopg2.connect(db_conn_string)
@@ -38,10 +40,11 @@ try:
             is_active = False
             is_superuser = False
             is_staff = False
-            email = ''
+            email = ""
             virtual = True
             if not DRY_RUN:
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO recsys_user 
                     (username, first_name, last_name, password, 
                         email, is_active, is_superuser, is_staff,
@@ -54,38 +57,60 @@ try:
                         virtual = EXCLUDED.virtual,
                         date_joined = EXCLUDED.date_joined
                     RETURNING ID;
-                """, (username, first_name, last_name, password, 
-                        email, is_active, is_superuser, is_staff, 
-                        datetime.now(), virtual)
+                """,
+                    (
+                        username,
+                        first_name,
+                        last_name,
+                        password,
+                        email,
+                        is_active,
+                        is_superuser,
+                        is_staff,
+                        datetime.now(),
+                        virtual,
+                    ),
                 )
                 user_id = cur.fetchone()[0]
 
-                cur.execute("""
+                cur.execute(
+                    """
                     DELETE
                     FROM recsys_rating
                     WHERE user_id = %s
-                """, (user_id,)
+                """,
+                    (user_id,),
                 )
 
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT id, isfdb_rating
                 FROM recsys_books
                 WHERE isfdb_rating IS NOT NULL
                 ORDER BY isfdb_rating;
-            """)
+            """
+            )
             results = cur.fetchall()
 
             saved = False
             blocked = False
             for title_id, rating in results:
                 if not DRY_RUN:
-                    cur.execute("""
+                    cur.execute(
+                        """
                         INSERT INTO recsys_rating 
                         (rating, saved, blocked, last_updated, 
                             book_id, user_id)
                         VALUES (%s, %s, %s, %s, %s, %s)
-                    """, (rating, saved, blocked, datetime.now(), 
-                            title_id, user_id)
+                    """,
+                        (
+                            rating,
+                            saved,
+                            blocked,
+                            datetime.now(),
+                            title_id,
+                            user_id,
+                        ),
                     )
 
 except Exception as e:
