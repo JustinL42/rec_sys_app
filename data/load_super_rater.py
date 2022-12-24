@@ -1,15 +1,17 @@
 #!/usr/bin/python3
-import os, sys
-from datetime import datetime
+import os
+import re
+import sys
 from collections import defaultdict
+from datetime import datetime
+
 import pandas as pd
 import psycopg2
-import re
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 
-from data.super_rater.title_handling import titles_to_skip, title_override
+from data.super_rater.title_handling import title_override, titles_to_skip
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into

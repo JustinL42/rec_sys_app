@@ -5,16 +5,15 @@ Prototype code for tuning parameters and
 estimating ratings for book-user pairs.
 """
 
-import os, sys
-from surprise import SVD
-from surprise import Dataset, Reader
-from surprise.model_selection import GridSearchCV
-from surprise import dump
+import os
 import pickle
-from customSurpriseClasses import JumpStartKFolds
+import sys
 
-from sqlalchemy import create_engine
 import pandas as pd
+from customSurpriseClasses import JumpStartKFolds
+from sqlalchemy import create_engine
+from surprise import SVD, Dataset, Reader, dump
+from surprise.model_selection import GridSearchCV
 
 
 class DefaultlessSVD(SVD):
@@ -29,7 +28,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 import django
 
 django.setup()
-from recsys.models import SVDModel, Book_Club
+from recsys.models import Book_Club, SVDModel
 
 REAL_BOOK_CLUB_ID = 8
 

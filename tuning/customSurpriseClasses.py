@@ -1,15 +1,12 @@
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from itertools import chain
 from math import ceil, floor
+
 import numpy as np
 from surprise import SVD
-from surprise.utils import get_rng
 from surprise.model_selection import KFold
+from surprise.utils import get_rng
 
 
 class DefaultlessSVD(SVD):

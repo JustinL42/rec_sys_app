@@ -1,11 +1,12 @@
 import re
-from django.views.generic import View, CreateView
-from django.views.generic.base import TemplateView
-from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model, authenticate, login
+
+from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.validators import validate_email, ValidationError
 from django.contrib.auth.password_validation import validate_password
+from django.core.validators import ValidationError, validate_email
+from django.shortcuts import redirect, render
+from django.views.generic import CreateView, View
+from django.views.generic.base import TemplateView
 
 User = get_user_model()
 

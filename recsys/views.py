@@ -1,40 +1,32 @@
-import os, sys
+import os
+import sys
 from datetime import datetime
 from itertools import chain
 
-from django.shortcuts import get_object_or_404, render, redirect
-from django.views import generic
-from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.core.paginator import Paginator
 from django.db.models import (
-    F,
-    Value,
-    FilteredRelation,
-    Q,
-    OuterRef,
+    CharField,
     Count,
     Exists,
-    CharField,
+    F,
+    FilteredRelation,
+    OuterRef,
+    Q,
+    Value,
 )
-from django.db.models.functions import Cast, MD5
-from django.core.paginator import Paginator
+from django.db.models.functions import MD5, Cast
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views import generic
 
-from .models import (
-    Books,
-    More_Images,
-    Contents,
-    Translations,
-    Words,
-    Rating,
-    Isbns,
-)
-
+from .models import Books, Contents, Isbns, More_Images, Rating, Translations, Words
 from .search_functions import (
-    unaccent,
     general_book_search,
     joined_to_ratings,
     select_bookrow_values,
+    unaccent,
 )
 
 # add tuning package to path

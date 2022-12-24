@@ -1,22 +1,24 @@
-import os, sys
+import os
 import pickle
+import sys
 
-from sqlalchemy import create_engine
 import pandas as pd
 from scipy.stats import truncnorm
+from sqlalchemy import create_engine
 from surprise import Dataset, Reader
 from surprise.model_selection import RandomizedSearchCV
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
-from customSurpriseClasses import JumpStartKFolds, DefaultlessSVD
+from customSurpriseClasses import DefaultlessSVD, JumpStartKFolds
+
 from mysite import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 import django
 
 django.setup()
-from recsys.models import SVDModel, Book_Club
+from recsys.models import Book_Club, SVDModel
 
 db_user = settings.DATABASES["default"].get("USER", "postgres")
 db_password = settings.DATABASES["default"].get("PASSWORD", " ")

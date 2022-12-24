@@ -1,8 +1,12 @@
 #!/usr/bin/python3
-import os, sys, csv, zipfile
+import configparser
+import csv
+import os
+import sys
+import zipfile
 from pathlib import Path
 from urllib import request
-import configparser
+
 import psycopg2
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)

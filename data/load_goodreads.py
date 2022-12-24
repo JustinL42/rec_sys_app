@@ -1,14 +1,15 @@
 #!/usr/bin/python3
-import os, sys
+import os
+import sys
 from datetime import datetime
+
 import pandas as pd
 import psycopg2
 
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 
-from mysite import settings
-from mysite import secret_keys
+from mysite import secret_keys, settings
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into

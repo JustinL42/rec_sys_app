@@ -1,14 +1,13 @@
-import gdown
 import os
 import pathlib
 import shutil
 import sys
 import tarfile
 import tempfile
-
-from lxml import etree
 from urllib.request import urlopen
 
+import gdown
+from lxml import etree
 
 ISFDB_IMG_DIR = "/home/owner/rec_sys_app/recsys/static/recsys/images/isfdb/"
 ISFDB_DOWNLOAD_PAGE = "https://isfdb.org/wiki/index.php/ISFDB_Downloads"

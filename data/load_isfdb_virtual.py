@@ -1,8 +1,10 @@
 #!/usr/bin/python3
-import os, sys
+import configparser
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
-import configparser
+
 import pandas as pd
 import psycopg2
 
