@@ -5,12 +5,11 @@ import os
 import sys
 import zipfile
 from pathlib import Path
-from urllib import request
 
 import psycopg2
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(BASE_DIR)
 
 INCONSISTENT_ISBN_VIRTUAL_TITLE = 73
 
@@ -139,9 +138,9 @@ try:
 
                     cur.execute(
                         """
-                        INSERT INTO recsys_user 
-                        (username, first_name, last_name, password, email, 
-                            location, age, is_active, is_superuser, 
+                        INSERT INTO recsys_user
+                        (username, first_name, last_name, password, email,
+                            location, age, is_active, is_superuser,
                             is_staff, date_joined, virtual)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (username)
@@ -175,13 +174,13 @@ try:
             age = None
             cur.execute(
                 """
-                INSERT INTO recsys_user 
-                (username, first_name, last_name, password, email, location, 
+                INSERT INTO recsys_user
+                (username, first_name, last_name, password, email, location,
                 age, is_active, is_superuser, is_staff, date_joined, virtual)
-                VALUES (%s, %s, %s, %s, %s, %s, 
+                VALUES (%s, %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (username) 
-                DO UPDATE 
+                ON CONFLICT (username)
+                DO UPDATE
                 SET first_name = EXCLUDED.first_name,
                     virtual = EXCLUDED.virtual
                 RETURNING ID;
@@ -224,7 +223,7 @@ try:
                 )
             cur.execute(
                 """
-                DELETE 
+                DELETE
                 FROM recsys_book_club
                 WHERE name = %s;
                 """,
@@ -339,8 +338,8 @@ try:
 
                     cur.execute(
                         """
-                        INSERT INTO recsys_rating 
-                        (rating, saved, blocked, last_updated, 
+                        INSERT INTO recsys_rating
+                        (rating, saved, blocked, last_updated,
                             book_id, user_id, original_book_id)
                         VALUES (%s, %s, %s, %s, %s, %s, %s);
                     """,

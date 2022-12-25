@@ -1,24 +1,19 @@
 import os
 import pickle
-import sys
 
+import django
 import pandas as pd
 from scipy.stats import truncnorm
 from sqlalchemy import create_engine
 from surprise import Dataset, Reader
 from surprise.model_selection import RandomizedSearchCV
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
-from customSurpriseClasses import DefaultlessSVD, JumpStartKFolds
-
 from mysite import settings
+from recsys.models import SVDModel
+from tuning.customSurpriseClasses import DefaultlessSVD, JumpStartKFolds
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
-import django
-
 django.setup()
-from recsys.models import Book_Club, SVDModel
 
 db_user = settings.DATABASES["default"].get("USER", "postgres")
 db_password = settings.DATABASES["default"].get("PASSWORD", " ")
@@ -42,9 +37,9 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         SELECT r.user_id, r.book_id, r.rating
         FROM recsys_rating as r
         JOIN recsys_user as u ON u.id = r.user_id
-        WHERE NOT EXISTS 
+        WHERE NOT EXISTS
         (
-          SELECT 1 
+          SELECT 1
             FROM recsys_book_club_members AS m
             JOIN recsys_book_club AS c ON c.id = m.book_club_id
             WHERE c.id = %s
@@ -59,7 +54,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
 
     large_df = pd.read_sql(
         """
-        SELECT r.user_id, r.book_id, r.rating 
+        SELECT r.user_id, r.book_id, r.rating
         FROM recsys_rating as r
         JOIN recsys_user as u ON u.id = r.user_id
         JOIN recsys_book_club_members as m ON m.user_id = u.id
@@ -77,10 +72,10 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
 
     last_rating = conn.execute(
         """
-        SELECT id 
+        SELECT id
         FROM recsys_rating
         where rating IS NOT NULL
-        ORDER BY last_updated DESC 
+        ORDER BY last_updated DESC
         LIMIT 1;
         """
     ).fetchone()[0]
@@ -89,11 +84,11 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
     # tune_svd_model was run
     svd_timestamps = conn.execute(
         """
-        SELECT time_created 
+        SELECT time_created
         FROM recsys_svdmodel
         WHERE ratings = %s
         AND last_rating = %s
-        ORDER BY time_created DESC 
+        ORDER BY time_created DESC
         LIMIT 1;
         """,
         [num_ratings, last_rating],
@@ -102,7 +97,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
     if not force and svd_timestamps:
         last_rating_timestamp = conn.execute(
             """
-            SELECT last_updated 
+            SELECT last_updated
             FROM recsys_rating
             WHERE rating IS NOT NULL
             ORDER BY last_updated DESC
@@ -130,7 +125,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
             SELECT params_bin, rmse, ratings, last_rating
             FROM recsys_svdmodel
             ORDER BY CASE
-                WHEN ratings = %s 
+                WHEN ratings = %s
                 AND last_rating = %s
                 THEN 0
                 ELSE 1
@@ -237,7 +232,7 @@ def update_all_recs(num_ratings, last_rating):
             FROM recsys_svdmodel
             WHERE ratings = %s
             AND last_rating = %s
-            ORDER BY time_created DESC 
+            ORDER BY time_created DESC
             LIMIT 1;
             """,
             [num_ratings, last_rating],
@@ -259,7 +254,7 @@ def update_all_recs(num_ratings, last_rating):
         WHERE virtual = FALSE
         AND NOT EXISTS
         (
-            SELECT 1 
+            SELECT 1
                 FROM recsys_book_club_members AS m
                 JOIN recsys_book_club AS c ON c.id = m.book_club_id
                 WHERE c.id = %s
@@ -286,14 +281,12 @@ def update_all_recs(num_ratings, last_rating):
     ]
 
     for uid, user_id in all_users:
-        from datetime import datetime
-
         # Set all current predictions to null before the update
         with alchemyEngine.connect() as conn:
 
             conn.execute(
                 """
-            UPDATE recsys_rating  
+            UPDATE recsys_rating
             SET predicted_rating = NULL
             WHERE user_id = %s;
             """,
@@ -305,8 +298,8 @@ def update_all_recs(num_ratings, last_rating):
 
                 conn.execute(
                     """
-                    INSERT INTO recsys_rating 
-                    (book_id, user_id, predicted_rating, 
+                    INSERT INTO recsys_ratin
+                    (book_id, user_id, predicted_rating,
                         saved, blocked, last_updated)
                     VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
                     ON CONFLICT (book_id, user_id)
@@ -334,9 +327,9 @@ def update_one_book_club_recs(book_club_id):
 
         df = pd.read_sql(
             """
-            SELECT r.book_id, 
+            SELECT r.book_id,
                 AVG(COALESCE(
-                    r.rating, r.predicted_rating)) as avg_rating 
+                    r.rating, r.predicted_rating)) as avg_rating
             FROM recsys_rating AS r
             JOIN recsys_user AS u ON u.id = r.user_id
             JOIN recsys_book_club_members AS m ON m.user_id = u.id
@@ -358,7 +351,7 @@ def update_one_book_club_recs(book_club_id):
             """
             SELECT virtual_member_id
             FROM recsys_book_club
-            WHERE id = %s; 
+            WHERE id = %s;
             """,
             [book_club_id],
         ).fetchone()[0]
@@ -380,8 +373,8 @@ def update_one_book_club_recs(book_club_id):
         for _, row in df.iterrows():
             conn.execute(
                 """
-                INSERT INTO recsys_rating 
-                (book_id, user_id, predicted_rating, 
+                INSERT INTO recsys_rating
+                (book_id, user_id, predicted_rating,
                     saved, blocked, last_updated)
                 VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
                 ON CONFLICT (book_id, user_id)
@@ -429,7 +422,7 @@ def update_one_users_recs(
         svd_model = pickle.loads(
             conn.execute(
                 """
-            SELECT model_bin 
+            SELECT model_bin
             FROM recsys_svdmodel
             ORDER BY time_created DESC
             LIMIT 1;
@@ -446,7 +439,7 @@ def update_one_users_recs(
         svd_model.n_epochs = max(10, int(svd_model.n_epochs / 2))
     df = pd.read_sql(
         """
-        SELECT r.user_id, r.book_id, r.rating 
+        SELECT r.user_id, r.book_id, r.rating
         FROM recsys_rating AS r
         JOIN recsys_user AS u ON u.id = r.user_id
         WHERE r.rating IS NOT NULL
@@ -505,15 +498,15 @@ def update_one_users_recs(
         predictions.sort(reverse=True)
 
         predictions = (
-            predictions[0 : (top_n or 0)]
+            predictions[0 : top_n or 0]
             + predictions[(-bottom_n if bottom_n else len(predictions)) :]
         )
 
     for (prediction, title_id) in predictions:
         conn.execute(
             """
-            INSERT INTO recsys_rating 
-            (book_id, user_id, predicted_rating, 
+            INSERT INTO recsys_rating
+            (book_id, user_id, predicted_rating,
                 saved, blocked, last_updated)
             VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
             ON CONFLICT (book_id, user_id)

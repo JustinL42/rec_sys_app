@@ -11,7 +11,7 @@ def localize_isfdb_image_url(img_url):
         try:
             image_loc = img_url.split("/images/")[1]
             return "/static/recsys/images/isfdb/" + image_loc
-        except:
+        except IndexError:
             return "/static/recsys/images/default_book_image.svg"
     return img_url
 

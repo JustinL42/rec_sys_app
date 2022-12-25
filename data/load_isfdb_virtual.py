@@ -5,11 +5,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import pandas as pd
 import psycopg2
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(BASE_DIR)
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
@@ -47,13 +46,13 @@ try:
             if not DRY_RUN:
                 cur.execute(
                     """
-                    INSERT INTO recsys_user 
-                    (username, first_name, last_name, password, 
+                    INSERT INTO recsys_user
+                    (username, first_name, last_name, password,
                         email, is_active, is_superuser, is_staff,
                         date_joined, virtual)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (username) 
-                    DO UPDATE 
+                    ON CONFLICT (username)
+                    DO UPDATE
                     SET first_name = EXCLUDED.first_name,
                         last_name = EXCLUDED.last_name,
                         virtual = EXCLUDED.virtual,
@@ -100,8 +99,8 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        INSERT INTO recsys_rating 
-                        (rating, saved, blocked, last_updated, 
+                        INSERT INTO recsys_rating
+                        (rating, saved, blocked, last_updated,
                             book_id, user_id)
                         VALUES (%s, %s, %s, %s, %s, %s)
                     """,

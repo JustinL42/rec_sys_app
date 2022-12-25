@@ -267,7 +267,7 @@ class Rating(models.Model):
         ]
 
     def __str__(self):
-        if self.rating != None:
+        if self.rating is not None:
             return (
                 self.user.first_name
                 + " rates "

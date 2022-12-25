@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-Prototype code for tuning parameters and 
+Prototype code for tuning parameters and
 estimating ratings for book-user pairs.
 """
 
@@ -9,11 +9,13 @@ import os
 import pickle
 import sys
 
+import django
 import pandas as pd
-from customSurpriseClasses import JumpStartKFolds
 from sqlalchemy import create_engine
-from surprise import SVD, Dataset, Reader, dump
+from surprise import SVD, Dataset, Reader
 from surprise.model_selection import GridSearchCV
+
+from recsys.models import Book_Club, SVDModel
 
 
 class DefaultlessSVD(SVD):
@@ -25,10 +27,8 @@ class DefaultlessSVD(SVD):
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
-import django
 
 django.setup()
-from recsys.models import Book_Club, SVDModel
 
 REAL_BOOK_CLUB_ID = 8
 
@@ -53,7 +53,7 @@ small_df = pd.read_sql(
 
 large_df = pd.read_sql(
     """
-    SELECT r.user_id, r.book_id, r.rating 
+    SELECT r.user_id, r.book_id, r.rating
     FROM recsys_rating as r
     JOIN recsys_user as u ON u.id = r.user_id
     LEFT JOIN recsys_book_club_members as m ON m.user_id = u.id
@@ -75,20 +75,20 @@ df = pd.read_sql(
 
 last_rating = conn.execute(
     """
-    SELECT id 
-    FROM recsys_rating 
-    ORDER BY id DESC 
+    SELECT id
+    FROM recsys_rating
+    ORDER BY id DESC
     LIMIT 1;
     """
 ).fetchone()[0]
 
 rmse_to_beat = conn.execute(
     """
-    SELECT rmse 
+    SELECT rmse
     FROM recsys_svdmodel
     WHERE ratings = %s
     AND last_rating = %s
-    ORDER BY rmse ASC, time_created DESC 
+    ORDER BY rmse ASC, time_created DESC
     LIMIT 1;
     """,
     [len(df), last_rating],
@@ -101,7 +101,7 @@ else:
 
 params_to_beat = conn.execute(
     """
-    SELECT params_bin 
+    SELECT params_bin
     FROM recsys_svdmodel
     WHERE ratings = %s
     AND last_rating = %s
@@ -232,7 +232,7 @@ model_obj.save()
 conn = alchemyEngine.connect()
 conn.execute(
     """
-    UPDATE recsys_rating  
+    UPDATE recsys_rating
     SET predicted_rating = NULL
     WHERE ID = %s;
     """,
@@ -242,9 +242,9 @@ conn.execute(
 for row_id, (title_id, title, prediction) in r_df.iterrows():
     conn.execute(
         """
-        INSERT INTO recsys_rating 
+        INSERT INTO recsys_rating
             (book_id, user_id, predicted_rating, saved, blocked, last_updated)
-        VALUES 
+        VALUES
             (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)
         ON CONFLICT (book_id, user_id)
         DO UPDATE SET predicted_rating = %s

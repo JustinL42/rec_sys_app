@@ -8,8 +8,8 @@ from pathlib import Path
 import pandas as pd
 import psycopg2
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(BASE_DIR)
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
@@ -95,18 +95,18 @@ try:
                     """
                     SELECT id, title, year, authors
                     FROM recsys_books
-                    WHERE general_search @@ 
+                    WHERE general_search @@
                         websearch_to_tsquery('isfdb_title_tsc', %s )
-                    ORDER BY 
-                        CASE 
-                            WHEN (LOWER(title) = %s) THEN 1 
-                            ELSE 2 
+                    ORDER BY
+                        CASE
+                            WHEN (LOWER(title) = %s) THEN 1
+                            ELSE 2
                         END ASC,
                         editions DESC,
-                        ts_rank_cd(general_search, 
+                        ts_rank_cd(general_search,
                             websearch_to_tsquery('isfdb_title_tsc', %s
-                        ), 8) DESC, 
-                        id ASC; 
+                        ), 8) DESC,
+                        id ASC;
                     """,
                     (title_lower, title_lower, title_lower),
                 )
@@ -137,8 +137,8 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        INSERT INTO recsys_user 
-                        (username, first_name, last_name, password, 
+                        INSERT INTO recsys_user
+                        (username, first_name, last_name, password,
                             email, is_active, is_superuser,
                             is_staff, date_joined, virtual)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -189,7 +189,7 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        DELETE 
+                        DELETE
                         FROM recsys_meeting
                         WHERE book_id = %s
                         AND book_club_id = %s;
@@ -216,9 +216,9 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        INSERT INTO recsys_rating 
-                        (original_rating, original_min, original_max, 
-                            original_book_id, rating, saved, blocked, 
+                        INSERT INTO recsys_rating
+                        (original_rating, original_min, original_max,
+                            original_book_id, rating, saved, blocked,
                             last_updated, book_id, user_id)
                         SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, u.id
                         FROM recsys_user as u

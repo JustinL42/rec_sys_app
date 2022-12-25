@@ -6,10 +6,10 @@ from datetime import datetime
 import pandas as pd
 import psycopg2
 
+from mysite import settings
+
 path = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(path)
-
-from mysite import secret_keys, settings
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
@@ -20,7 +20,6 @@ USERNAME = "5013"
 INCONSISTENT_ISBN_VIRTUAL_TITLE = 73
 ORIGINAL_MIN = 1
 ORIGINAL_MAX = 5
-conversion = lambda r: max(1, min(10, r * 2 - 0.5))
 
 db_name = settings.DATABASES["default"].get("NAME", "recsysdev")
 db_port = settings.DATABASES["default"].get("PORT", "5432")
@@ -33,6 +32,11 @@ db_conn_string = "dbname={} port={} user={} password= {} host={} ".format(
 
 data_dir = os.path.dirname(os.path.realpath(__file__))
 filename = os.path.join(data_dir, FILE)
+
+
+def conversion(rating):
+    return max(1, min(10, rating * 2 - 0.5))
+
 
 gr_df = pd.read_csv(filename, sep=",", quotechar='"')
 gr_df = gr_df[gr_df["My Rating"] != 0]
@@ -98,8 +102,8 @@ try:
                     if OVERWRITE_EXISTING:
                         cur.execute(
                             """
-                            INSERT INTO recsys_rating 
-                            (rating, saved, blocked, last_updated, 
+                            INSERT INTO recsys_rating
+                            (rating, saved, blocked, last_updated,
                                 book_id, user_id, original_book_id,
                                 original_rating, original_min, original_max)
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -124,8 +128,8 @@ try:
                     else:
                         cur.execute(
                             """
-                            INSERT INTO recsys_rating 
-                            (rating, saved, blocked, last_updated, 
+                            INSERT INTO recsys_rating
+                            (rating, saved, blocked, last_updated,
                                 book_id, user_id, original_book_id,
                                 original_rating, original_min, original_max)
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)

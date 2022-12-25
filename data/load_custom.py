@@ -8,8 +8,8 @@ from pathlib import Path
 import pandas as pd
 import psycopg2
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(BASE_DIR)
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
@@ -56,10 +56,12 @@ df.loc[(df.Name == "Mike") | (df.Name == "Michael"), "Name"] = "Mike N."
 # convert these to 1-10
 df["original_rating"] = df["Value"]
 df.Timestamp = pd.to_datetime(df.Timestamp)
-conversion = lambda r: max(1, min(10, (r * 3.5) + 5.5))
-df.loc[df.Timestamp < "1/21/20", "Value"] = df["Value"].map(conversion)
-conversion = lambda r: max(1, min(10, r * 2 - 0.5))
-df.loc[df.Timestamp >= "1/21/20", "Value"] = df["Value"].map(conversion)
+df.loc[df.Timestamp < "1/21/20", "Value"] = df["Value"].map(
+    lambda r: max(1, min(10, (r * 3.5) + 5.5))
+)
+df.loc[df.Timestamp >= "1/21/20", "Value"] = df["Value"].map(
+    lambda r: max(1, min(10, r * 2 - 0.5))
+)
 
 
 df["original_min"] = -1
@@ -102,18 +104,18 @@ try:
                     """
                     SELECT id, title, year, authors
                     FROM recsys_books
-                    WHERE general_search @@ 
+                    WHERE general_search @@
                         websearch_to_tsquery('isfdb_title_tsc', %s )
-                    ORDER BY 
-                        CASE 
-                            WHEN (LOWER(title) = %s) THEN 1 
-                            ELSE 2 
+                    ORDER BY
+                        CASE
+                            WHEN (LOWER(title) = %s) THEN 1
+                            ELSE 2
                         END ASC,
                         editions DESC,
-                        ts_rank_cd(general_search, 
+                        ts_rank_cd(general_search,
                             websearch_to_tsquery('isfdb_title_tsc', %s
-                        ), 8) DESC, 
-                        id ASC; 
+                        ), 8) DESC,
+                        id ASC;
                     """,
                     (title_lower, title_lower, title_lower),
                 )
@@ -149,9 +151,9 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        INSERT INTO recsys_user 
-                        (username, first_name, last_name, password, email, 
-                            is_active, is_superuser, 
+                        INSERT INTO recsys_user
+                        (username, first_name, last_name, password, email,
+                            is_active, is_superuser,
                             is_staff, date_joined, virtual)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (username)
@@ -186,13 +188,13 @@ try:
                 virtual = True
                 cur.execute(
                     """
-                    INSERT INTO recsys_user 
+                    INSERT INTO recsys_user
                     (username, first_name, last_name, password, email,
-                        is_active, is_superuser, is_staff, 
+                        is_active, is_superuser, is_staff,
                         date_joined, virtual)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (username) 
-                    DO UPDATE 
+                    ON CONFLICT (username)
+                    DO UPDATE
                     SET first_name = EXCLUDED.first_name,
                         virtual = EXCLUDED.virtual
                     RETURNING ID;
@@ -241,7 +243,7 @@ try:
                     )
                 cur.execute(
                     """
-                    DELETE 
+                    DELETE
                     FROM recsys_book_club
                     WHERE name = %s;
                     """,
@@ -321,9 +323,9 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        INSERT INTO recsys_rating 
-                        (original_rating, original_min, original_max, 
-                            original_book_id, rating, saved, blocked, 
+                        INSERT INTO recsys_rating
+                        (original_rating, original_min, original_max,
+                            original_book_id, rating, saved, blocked,
                             last_updated, book_id, user_id)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """,

@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import ValidationError, validate_email
 from django.shortcuts import redirect, render
-from django.views.generic import CreateView, View
+from django.views.generic import View
 from django.views.generic.base import TemplateView
 
 User = get_user_model()
@@ -119,7 +119,7 @@ class SignUpView(View):
                     )
                 else:
                     login(request, user)
-            except Exception as e:
+            except:
                 error_list.append(
                     "Sorry, there was an unexpected error while "
                     + "creating your account. Please try again later"
@@ -151,8 +151,9 @@ class DisplayNameChangeView(LoginRequiredMixin, AbstractAccount):
         if not new_displayname:
             error_text = "You must provide a new display name."
         elif new_displayname == old_displayname:
-            error_text = 'Your display name already is "{}". Choose a different name.'.format(
-                new_displayname
+            error_text = (
+                f'Your display name already is "{new_displayname}".'
+                "Choose a different name."
             )
         elif len(new_displayname) > 60:
             error_text = "Display name must be 60 characters or less."
@@ -164,8 +165,8 @@ class DisplayNameChangeView(LoginRequiredMixin, AbstractAccount):
                 user.save()
             except:
                 error_text = (
-                    "Sorry, there was an unexpected error "
-                    + "while changing your display name. Please try again later."
+                    "Sorry, there was an unexpected error while changing your "
+                    "display name. Please try again later."
                 )
 
         if error_text:
@@ -208,10 +209,10 @@ class EmailChangeView(LoginRequiredMixin, AbstractAccount):
                 user = User.objects.get(username=request.user.username)
                 user.email = new_email
                 user.save()
-            except Exception as e:
+            except:
                 error_text = (
-                    "Sorry, there was an unexpected error "
-                    + "while changing your email address. Please try again later."
+                    "Sorry, there was an unexpected error while changing your "
+                    "email address. Please try again later."
                 )
 
         if error_text:
@@ -246,8 +247,9 @@ class UserNameChangeView(LoginRequiredMixin, AbstractAccount):
         elif not re.match("^[a-zA-Z0-9_]*$", new_username):
             error_text = "Username can only have ASCII letters, numbers, or _"
         elif new_username == old_username:
-            error_text = 'Your user name already is "{}". Choose a different name.'.format(
-                new_username
+            error_text = (
+                f'Your user name already is "{new_username}". '
+                "Choose a different name."
             )
         elif User.objects.filter(username__iexact=new_username).exists():
             error_text = 'The username "{}" is already taken'.format(

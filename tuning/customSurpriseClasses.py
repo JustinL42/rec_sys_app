@@ -1,7 +1,11 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 from itertools import chain
-from math import ceil, floor
 
 import numpy as np
 from surprise import SVD
@@ -61,7 +65,7 @@ class JumpStartKFolds(KFold):
     def __init__(
         self, large_data=None, n_splits=5, random_state=None, shuffle=True
     ):
-        if large_data == None:
+        if large_data is not None:
             raise ValueError(
                 "Must provide large_data parameter " "for JumpStartKFolds"
             )
@@ -86,7 +90,9 @@ class JumpStartKFolds(KFold):
             raise ValueError(
                 "Incorrect value for n_splits={0}. "
                 "Must be >=2 and less than the number "
-                "of ratings in small dataset.".format(len(data.raw_ratings))
+                "of ratings in small dataset.".format(
+                    len(small_data.raw_ratings)
+                )
             )
 
         small_indices = np.arange(len(small_data.raw_ratings))

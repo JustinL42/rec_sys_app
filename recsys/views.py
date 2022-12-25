@@ -1,38 +1,23 @@
-import os
-import sys
 from datetime import datetime
 from itertools import chain
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.core.paginator import Paginator
-from django.db.models import (
-    CharField,
-    Count,
-    Exists,
-    F,
-    FilteredRelation,
-    OuterRef,
-    Q,
-    Value,
-)
+from django.db.models import CharField, Count, Exists, F, OuterRef, Q
 from django.db.models.functions import MD5, Cast
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import generic
 
-from .models import Books, Contents, Isbns, More_Images, Rating, Translations, Words
+from tuning.tune_update_methods import update_one_users_recs
+
+from .models import Books, Isbns, Rating, Words
 from .search_functions import (
     general_book_search,
     joined_to_ratings,
     select_bookrow_values,
     unaccent,
 )
-
-# add tuning package to path
-path = os.path.join(os.path.dirname(__file__), os.pardir, "tuning")
-sys.path.append(path)
-from tune_update_methods import update_one_users_recs
 
 
 class HomeView(generic.ListView):
@@ -236,7 +221,7 @@ class SearchResultsView(generic.View):
 
         if len(books) == 1:
             return book.get(self, request, books[0]["title_id"])
-        elif search == "" or search == None:
+        elif search == "" or search is None:
             search_errors.append({"text": "No search terms entered."})
         elif len(books) == 0:
 
@@ -275,7 +260,7 @@ class SearchResultsView(generic.View):
                     """
                     SELECT word, levenshtein(%s, word) AS distance
                     FROM recsys_words
-                    WHERE levenshtein_less_equal(%s, word, 2) <= 2 
+                    WHERE levenshtein_less_equal(%s, word, 2) <= 2
                     ORDER BY nentry_log DESC, distance
                     LIMIT 3;
                     """,
@@ -290,7 +275,7 @@ class SearchResultsView(generic.View):
                 alt = []
                 for alt_word in alt_words:
                     alt_search = "+".join(
-                        search_words[:i] + [alt_word] + search_words[i + 1 :]
+                        search_words[:i] + [alt_word] + search_words[(i + 1) :]
                     )
                     alt.append({"word": alt_word, "search": alt_search})
                 search_errors.append({"text": text, "alt": alt})
@@ -310,7 +295,9 @@ class SearchResultsView(generic.View):
                         books = joined_to_ratings(books, request.user.id)
                     search_errors.append(
                         {
-                            "text": "No book's data contains all the search terms."
+                            "text": (
+                                "No book's data contains all the search terms."
+                            )
                         }
                     )
                     text = 'Showing results for "<b>{}</b>".'.format(

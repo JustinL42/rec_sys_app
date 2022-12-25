@@ -1,17 +1,19 @@
 #!/usr/bin/python3
+import configparser
 import os
 import re
 import sys
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 import psycopg2
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
-
 from data.super_rater.title_handling import title_override, titles_to_skip
+
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(BASE_DIR)
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
@@ -19,7 +21,11 @@ DRY_RUN = False
 FILES = ["super_rater/SFRatings-N", "super_rater/SFRatings-AC"]
 ORIGINAL_MIN = 1
 ORIGINAL_MAX = 13
-conversion = lambda r: max(1, min(10, r * 3 / 4 + 1 / 4))
+
+
+def conversion(rating):
+    return max(1, min(10, rating * 3 / 4 + 1 / 4))
+
 
 # Get per-environment settings from the config files.
 CONFIG_DIR = Path(BASE_DIR, "config")
@@ -138,22 +144,22 @@ try:
 
                 cur.execute(
                     """
-                    SELECT id, unaccent(title), unaccent(authors), 
+                    SELECT id, unaccent(title), unaccent(authors),
                         year, book_type
                     FROM recsys_books
-                    WHERE general_search @@ 
+                    WHERE general_search @@
                         websearch_to_tsquery('isfdb_title_tsc', %s )
-                    ORDER BY 
-                        CASE 
+                    ORDER BY
+                        CASE
                             WHEN (LOWER(unaccent(title)) = LOWER(%s))
-                                AND (LOWER(unaccent(authors)) = LOWER(%s)) 
+                                AND (LOWER(unaccent(authors)) = LOWER(%s))
                                     THEN (2 + editions)
                             WHEN (LOWER(unaccent(title)) = LOWER(%s)) THEN 1
                             ELSE 0
                         END DESC,
-                        ts_rank_cd(general_search, 
+                        ts_rank_cd(general_search,
                             websearch_to_tsquery('isfdb_title_tsc', %s
-                        ), 8) DESC, 
+                        ), 8) DESC,
                         editions DESC,
                         id ASC;
                 """,
@@ -269,13 +275,13 @@ try:
             if not DRY_RUN:
                 cur.execute(
                     """
-                    INSERT INTO recsys_user 
+                    INSERT INTO recsys_user
                     (username, first_name, last_name, password, email,
-                        is_active, is_superuser, is_staff, 
+                        is_active, is_superuser, is_staff,
                         date_joined, virtual)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (username) 
-                    DO UPDATE 
+                    ON CONFLICT (username)
+                    DO UPDATE
                     SET first_name = EXCLUDED.first_name,
                         date_joined = EXCLUDED.date_joined
                     RETURNING ID;
@@ -316,8 +322,8 @@ try:
                 if not DRY_RUN:
                     cur.execute(
                         """
-                        INSERT INTO recsys_rating 
-                        (rating, saved, blocked, last_updated, 
+                        INSERT INTO recsys_rating
+                        (rating, saved, blocked, last_updated,
                             book_id, user_id, original_book_id,
                             original_rating, original_min, original_max)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)

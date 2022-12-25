@@ -1,22 +1,12 @@
 from django.contrib.postgres.aggregates import BoolAnd
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db import connection
-from django.db.models import (
-    Avg,
-    Case,
-    CharField,
-    F,
-    FilteredRelation,
-    Func,
-    Q,
-    Value,
-    When,
-)
+from django.db.models import Avg, Case, CharField, F, Q, Value, When
 from django.db.models.functions import Lower
 
-CharField.register_lookup(Lower)
+from .models import Books
 
-from .models import Books, Isbns, Words
+CharField.register_lookup(Lower)
 
 
 # remove any character accent using the same method
