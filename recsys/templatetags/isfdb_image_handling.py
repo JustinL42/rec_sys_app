@@ -7,7 +7,7 @@ register = template.Library()
 def localize_isfdb_image_url(img_url):
     if not img_url:
         return "/static/recsys/images/default_book_image.svg"
-    elif "isfdb.org" in img_url:
+    if "isfdb.org" in img_url:
         try:
             image_loc = img_url.split("/images/")[1]
             return "/static/recsys/images/isfdb/" + image_loc

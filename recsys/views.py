@@ -93,15 +93,14 @@ class HomeView(generic.ListView):
             return highly_rated[:num_books]
 
         # return a queryset that alternates between the two catagories
-        return [
-            b
-            for b in chain.from_iterable(
+        return list(
+            chain.from_iterable(
                 zip(
                     highly_rated[: num_books // 2],
                     recent_award_winners[: num_books // 2],
                 )
             )
-        ]
+        )
 
 
 def isbn10_to_13(isbn10):
@@ -221,7 +220,7 @@ class SearchResultsView(generic.View):
 
         if len(books) == 1:
             return book.get(self, request, books[0]["title_id"])
-        elif search == "" or search is None:
+        if search == "" or search is None:
             search_errors.append({"text": "No search terms entered."})
         elif len(books) == 0:
 
@@ -266,7 +265,7 @@ class SearchResultsView(generic.View):
                     """,
                     (search_word, search_word),
                 )
-                text = 'No results for "<b>{}</b>"'.format(search_word)
+                text = f'No results for "<b>{search_word}</b>"'
                 alt_words = [w.word for w in alt_word_query]
                 if not alt_words:
                     search_errors.append({"text": text})
@@ -282,13 +281,13 @@ class SearchResultsView(generic.View):
 
             if new_search:
                 new_search_str = " ".join(new_search)
-                text = 'Showing results for "<b>{}</b>"'.format(new_search_str)
+                text = f'Showing results for "<b>{new_search_str}</b>"'
                 books = general_book_search(new_search_str)
                 if request.user.is_authenticated:
                     books = joined_to_ratings(books, request.user.id)
                 if len(books) == 1:
                     return book.get(self, request, books[0]["title_id"])
-                elif len(books) == 0:
+                if len(books) == 0:
                     new_search_str = " OR ".join(new_search)
                     books = general_book_search(new_search_str)
                     if request.user.is_authenticated:
@@ -300,9 +299,7 @@ class SearchResultsView(generic.View):
                             )
                         }
                     )
-                    text = 'Showing results for "<b>{}</b>".'.format(
-                        new_search_str
-                    )
+                    text = f'Showing results for "<b>{new_search_str}</b>".'
                 search_errors.append({"text": text})
 
             if len(books) == 0:
@@ -466,19 +463,19 @@ class FirstRatingsView(LoginRequiredMixin, generic.View):
         if "done" not in request.POST:
             error_text = update_rating(request)
             return self.get(request, error_text=error_text)
-        else:
-            # Get both the top 12 and bottom 12 recommendations. This will
-            # give the user opportunities to give both high and low ratings,
-            # and will may help correct the model's most extreme guesses
-            # about the user's taste.
-            update_one_users_recs(
-                request.user.id,
-                top_n=12,
-                bottom_n=12,
-                urgent=True,
-                cold_start=True,
-            )
-            return redirect("/secondratings/")
+
+        # Get both the top 12 and bottom 12 recommendations. This will
+        # give the user opportunities to give both high and low ratings,
+        # and will may help correct the model's most extreme guesses
+        # about the user's taste.
+        update_one_users_recs(
+            request.user.id,
+            top_n=12,
+            bottom_n=12,
+            urgent=True,
+            cold_start=True,
+        )
+        return redirect("/secondratings/")
 
 
 class SecondRatingsView(LoginRequiredMixin, generic.ListView):
@@ -525,17 +522,17 @@ class SecondRatingsView(LoginRequiredMixin, generic.ListView):
         if "done" not in request.POST:
             error_text = update_rating(request)
             return self.get(request, error_text=error_text)
-        else:
-            # The final cold start recommendations are limited to 120 simply
-            # because database inserts are one of the more time-consuming parts
-            # of the method and the page needs to be returned fast.
-            update_one_users_recs(
-                request.user.id,
-                top_n=self.initial_rec_limit,
-                urgent=True,
-                cold_start=True,
-            )
-            return redirect("/recommendations/")
+
+        # The final cold start recommendations are limited to 120 simply
+        # because database inserts are one of the more time-consuming parts
+        # of the method and the page needs to be returned fast.
+        update_one_users_recs(
+            request.user.id,
+            top_n=self.initial_rec_limit,
+            urgent=True,
+            cold_start=True,
+        )
+        return redirect("/recommendations/")
 
 
 def select_ratings_row_values(ratings):
@@ -587,8 +584,8 @@ def update_rating(request):
                 book=rating_title_id, user=request.user.id
             )
         except Rating.DoesNotExist:
-            b = Books.objects.get(pk=rating_title_id)
-            rating_obj = Rating(book=b, user=request.user)
+            book_obj = Books.objects.get(pk=rating_title_id)
+            rating_obj = Rating(book=book_obj, user=request.user)
         rating_obj.rating = new_rating
         rating_obj.saved = save
         rating_obj.blocked = block

@@ -125,7 +125,7 @@ try:
                         print(results[0])
                     title_dict[title] = results[0][0]
                 else:
-                    print('No results for "{}"'.format(title))
+                    print(f'No results for "{title}"')
 
             print("Loading user data...")
             last_name = ""

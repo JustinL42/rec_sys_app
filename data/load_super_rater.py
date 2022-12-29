@@ -90,7 +90,7 @@ try:
                         author_full_name = author_names[0]
                     author_list.append(author_full_name)
                 author_str = ", ".join(author_list)
-                author_set = set([a.lower() for a in author_list])
+                author_set = {a.lower() for a in author_list}
 
                 try:
                     title_id = title_override[title]
@@ -114,8 +114,7 @@ try:
                         if author_str == "Robert Silverberg, Marta Randall":
                             count["titles_skipped"] += 1
                             continue
-                        else:
-                            title_id = title_id[0]
+                        title_id = title_id[0]
 
                     # put title_id in list if it isn't already:
                     try:
@@ -128,9 +127,7 @@ try:
                             one_title_id, ([], None, set())
                         )
                         rating_list.append(rating)
-                        original_id_set.add(
-                            '"{}" by {}'.format(title, author_str)
-                        )
+                        original_id_set.add(f'"{title}" by {author_str}')
                         ratings_dict[one_title_id] = (
                             rating_list,
                             index,
@@ -188,7 +185,7 @@ try:
                     r_id, ([], None, set())
                 )
                 rating_list.append(rating)
-                original_id_set.add('"{}" by {}'.format(title, author_str))
+                original_id_set.add(f'"{title}" by {author_str}')
                 ratings_dict[r_id] = (rating_list, index, original_id_set)
 
                 exact_title_match = r_title.lower() == title.lower()
@@ -199,7 +196,7 @@ try:
                         # not manually verified, but assumed correct.
                         count["unique_exact_title_and_author"] += 1
                         continue
-                    elif exact_title_match:
+                    if exact_title_match:
                         # All these cases are verified to be correct
                         category = "unique_exact_title"
                     else:
@@ -227,10 +224,9 @@ try:
                 for secondary_result in results[1:]:
                     if title.lower() == secondary_result[
                         1
-                    ].lower() and author_set == set(
-                        [a for a in secondary_result[2].lower().split(", ")]
-                    ):
-
+                    ].lower() and author_set == {
+                        a for a in secondary_result[2].lower().split(", ")
+                    }:
                         only_exact = False
                         break
 
@@ -348,7 +344,7 @@ finally:
     conn.close()
 
 for category, total in sorted(count.items(), key=lambda i: -i[1]):
-    print("{}: {}".format(category, total))
+    print(f"{category}: {total}")
 
 needs_review.to_clipboard()
 

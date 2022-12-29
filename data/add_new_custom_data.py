@@ -63,17 +63,14 @@ name_key = pd.read_csv(name_key_file)
 last_alias = int(
     max(name_key[name_key["Numeric Alias"] < "A"]["Numeric Alias"])
 )
-member_dict = dict(
-    [
-        (x[1]["Name"].lower(), x[1]["Numeric Alias"])
-        for x in name_key.iterrows()
-    ]
-)
+member_dict = {
+    x[1]["Name"].lower(): x[1]["Numeric Alias"] for x in name_key.iterrows()
+}
 name_series = df.name.drop_duplicates()
 
 if os.path.exists(opt_out_list_file):
     with open(opt_out_list_file) as file:
-        opt_out_set = set([row.strip().lower() for row in file.readlines()])
+        opt_out_set = {row.strip().lower() for row in file.readlines()}
 else:
     opt_out_set = set()
 
@@ -116,7 +113,7 @@ try:
                         print(results[0])
                     title_dict[title] = results[0][0]
                 else:
-                    print('No results for "{}"'.format(title))
+                    print(f'No results for "{title}"')
 
             last_name = ""
             password = config["custom_user_hash"]
@@ -175,12 +172,12 @@ try:
                     )
 
                     print(
-                        "\n{},{}".format(name, username),
+                        f"\n{name},{username}",
                         file=open(name_key_file, "a"),
                         end="",
                     )
                 else:
-                    print("Add to name_key: {},{}".format(name, username))
+                    print(f"Add to name_key: {name},{username}")
 
             # Add meetings for each book in the list.
             # For idempotency, delete any old entry first.

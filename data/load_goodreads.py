@@ -26,8 +26,9 @@ db_port = settings.DATABASES["default"].get("PORT", "5432")
 db_user = settings.DATABASES["default"].get("USER", "postgres")
 db_password = settings.DATABASES["default"].get("PASSWORD", " ")
 db_host = settings.DATABASES["default"].get("HOST", " ")
-db_conn_string = "dbname={} port={} user={} password= {} host={} ".format(
-    db_name, db_port, db_user, db_password, db_host
+db_conn_string = (
+    f"dbname={db_name} port={db_port} user={db_user} password= {db_password} "
+    f"host={db_host} "
 )
 
 data_dir = os.path.dirname(os.path.realpath(__file__))
@@ -59,7 +60,7 @@ try:
             )
             user_id = cur.fetchone()[0]
             if not user_id:
-                raise Exception("No user for username: {}".format(USERNAME))
+                raise Exception(f"No user for username: {USERNAME}")
 
             for i, row in gr_df.iterrows():
 
@@ -80,7 +81,7 @@ try:
                 book_id = cur.fetchone()
                 if not book_id:
                     continue
-                elif book_id[0] == INCONSISTENT_ISBN_VIRTUAL_TITLE:
+                if book_id[0] == INCONSISTENT_ISBN_VIRTUAL_TITLE:
                     inconsistent_isbns.add(isbn)
                     continue
 

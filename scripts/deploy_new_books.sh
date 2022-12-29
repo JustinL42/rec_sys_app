@@ -6,6 +6,7 @@ export $(python scripts/print_config.py )
 # Number of jobs to use. Default is all but one.
 if ! [[ -v $n_deploy_jobs ]]; then
 	n_deploy_jobs=$(nproc --ignore=1)
+fi
 
 echo -e "\nDumping $db_name db to /tmp/recsysold..."
 rm -rf /tmp/recsysold 2> /dev/null

@@ -9,7 +9,10 @@ from urllib.request import urlopen
 import gdown
 from lxml import etree
 
-ISFDB_IMG_DIR = "/home/owner/rec_sys_app/recsys/static/recsys/images/isfdb/"
+ISFDB_IMG_DIR = pathlib.Path(
+    pathlib.Path(__file__).resolve().parent.parent,
+    "recsys/static/recsys/images/isfdb"
+)
 ISFDB_DOWNLOAD_PAGE = "https://isfdb.org/wiki/index.php/ISFDB_Downloads"
 IMG_LINKS_XPATH = (
     "//*[@id='Image_Backups']//parent::h3//following-sibling::ul[1]"

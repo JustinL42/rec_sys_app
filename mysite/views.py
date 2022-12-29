@@ -63,9 +63,7 @@ class SignUpView(View):
                 "Username can only have ASCII letters, numbers, or _"
             )
         elif User.objects.filter(username__iexact=username).exists():
-            error_list.append(
-                'The username "{}" is already taken'.format(username)
-            )
+            error_list.append(f'The username "{username}" is already taken')
 
         if len(displayname) > 60:
             error_list.append("Display name must be 60 characters or less.")
@@ -193,7 +191,7 @@ class EmailChangeView(LoginRequiredMixin, AbstractAccount):
         if not new_email:
             error_text = "You must provide a new email address."
         elif new_email == old_email:
-            error_text = 'Your email already is "{}"'.format(new_email)
+            error_text = f'Your email already is "{new_email}"'
         elif len(new_email) > 60:
             error_text = "The email address must be 60 characters or less."
         elif User.objects.filter(email__iexact=new_email).exists():
@@ -252,9 +250,7 @@ class UserNameChangeView(LoginRequiredMixin, AbstractAccount):
                 "Choose a different name."
             )
         elif User.objects.filter(username__iexact=new_username).exists():
-            error_text = 'The username "{}" is already taken'.format(
-                new_username
-            )
+            error_text = f'The username "{new_username}" is already taken'
 
         if not error_text:
             try:

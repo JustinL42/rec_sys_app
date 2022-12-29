@@ -70,16 +70,14 @@ if not filesUnzipped:
 
 # convert csv to utf-8, remove problem characters:
 os.system(
-    "iconv -f ISO_8859-16 -t utf-8 {} > {}".format(
-        os.path.join(path_to_bx_data, "BX-Users.csv"),
-        os.path.join(path_to_bx_data, "utf-users.csv"),
-    )
+    "iconv -f ISO_8859-16 -t utf-8 "
+    f"{os.path.join(path_to_bx_data, 'BX-Users.csv')} > "
+    f"{os.path.join(path_to_bx_data, 'utf-users.csv')}"
 )
 os.system(
-    "iconv -f ISO_8859-16 -t utf-8 {} > {}".format(
-        os.path.join(path_to_bx_data, "BX-Book-Ratings.csv"),
-        os.path.join(path_to_bx_data, "utf-ratings.csv"),
-    )
+    "iconv -f ISO_8859-16 -t utf-8 "
+    f"{os.path.join(path_to_bx_data, 'BX-Book-Ratings.csv')} > "
+    f"{os.path.join(path_to_bx_data, 'utf-ratings.csv')}"
 )
 
 # The isbn table will be used to map most isbns to title_ids. However,
@@ -300,7 +298,7 @@ try:
                     book_id = cur.fetchone()
                     if not book_id:
                         continue
-                    elif book_id[0] == INCONSISTENT_ISBN_VIRTUAL_TITLE:
+                    if book_id[0] == INCONSISTENT_ISBN_VIRTUAL_TITLE:
                         try:
                             book_id = [bx_title_dict[isbn]]
                         except KeyError:

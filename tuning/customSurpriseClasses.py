@@ -67,7 +67,7 @@ class JumpStartKFolds(KFold):
     ):
         if large_data is not None:
             raise ValueError(
-                "Must provide large_data parameter " "for JumpStartKFolds"
+                "Must provide large_data parameter for JumpStartKFolds"
             )
 
         self.large_data = large_data
@@ -83,16 +83,14 @@ class JumpStartKFolds(KFold):
         ):
 
             raise ValueError(
-                "Rating scales of large and small data " "sets must match"
+                "Rating scales of large and small data sets must match"
             )
-
         if self.n_splits > len(small_data.raw_ratings) or self.n_splits < 2:
             raise ValueError(
-                "Incorrect value for n_splits={0}. "
+                "Incorrect value for "
+                f"n_splits={len(small_data.raw_ratings)}. "
                 "Must be >=2 and less than the number "
-                "of ratings in small dataset.".format(
-                    len(small_data.raw_ratings)
-                )
+                "of ratings in small dataset."
             )
 
         small_indices = np.arange(len(small_data.raw_ratings))

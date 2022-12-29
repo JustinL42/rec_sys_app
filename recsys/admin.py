@@ -47,7 +47,7 @@ class WordsAdmin(admin.ModelAdmin):
 
 
 class CustomUserAdmin(UserAdmin):
-    fieldsets = [f for f in UserAdmin.fieldsets] + [
+    fieldsets = list(UserAdmin.fieldsets) + [
         ["Custom Fields", {"fields": ("virtual",)}]
     ]
 

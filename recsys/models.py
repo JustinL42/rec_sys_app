@@ -4,7 +4,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.utils import timezone
 
-#       BOOK-RELATED MODELS
+# BOOK-RELATED MODELS
 
 
 class Books(models.Model):
@@ -79,9 +79,7 @@ class Contents(models.Model):
     }
 
     def __str__(self):
-        return "{}: {} contains {}".format(
-            self.id, self.book_title, self.content_title
-        )
+        return f"{self.id}: {self.book_title} contains {self.book_title}"
 
 
 class Isbns(models.Model):
@@ -267,16 +265,11 @@ class Rating(models.Model):
         ]
 
     def __str__(self):
-        if self.rating is not None:
-            return (
-                self.user.first_name
-                + " rates "
-                + str(self.rating)
-                + " to "
-                + self.book.title
-            )
-        else:
-            return self.user.first_name + " hasn't rated " + self.book.title
+        if self.rating is None:
+            return f"{self.user.first_name} hasn't rated {self.book.title}"
+        return (
+            f"{self.user.first_name} rates {self.rating} to {self.book.title}"
+        )
 
 
 class DataProblem(models.Model):

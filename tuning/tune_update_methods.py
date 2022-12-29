@@ -20,8 +20,9 @@ db_password = settings.DATABASES["default"].get("PASSWORD", " ")
 db_host = settings.DATABASES["default"].get("HOST", " ")
 db_port = settings.DATABASES["default"].get("PORT", "5432")
 db_name = settings.DATABASES["default"].get("NAME", "recsysdev")
-db_conn_string = "postgresql+psycopg2://{}:{}@{}:{}/{}".format(
-    db_user, db_password, db_host, db_port, db_name
+db_conn_string = (
+    f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/"
+    f"{db_name}"
 )
 
 # The id of the Book Crossing "book club", who aren't real users
@@ -268,7 +269,7 @@ def update_all_recs(num_ratings, last_rating):
 
     if not real_users:
         return False
-    real_user_set = set([u[0] for u in real_users])
+    real_user_set = {u[0] for u in real_users}
     svd_model = pickle.loads(model_bin)
     all_users = [
         (u, svd_model.trainset.to_raw_uid(u))
@@ -474,19 +475,17 @@ def update_one_users_recs(
             prediction = svd_model.predict(uid, iid, clip=False).est
             predictions.append((prediction, title_id))
     else:
-        cold_start_ids = set(
-            [
-                i[0]
-                for i in conn.execute(
-                    """
-            SELECT id
-            FROM recsys_books
-            WHERE cold_start_rank IS NOT NULL
-            AND cold_start_rank <= 150
-            """
-                )
-            ]
-        )
+        cold_start_ids = {
+            i[0]
+            for i in conn.execute(
+                """
+                SELECT id
+                FROM recsys_books
+                WHERE cold_start_rank IS NOT NULL
+                AND cold_start_rank <= 150
+                """
+            )
+        }
 
         for iid, title_id in all_books:
             if title_id not in cold_start_ids:
