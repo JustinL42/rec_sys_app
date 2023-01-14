@@ -34,9 +34,9 @@ config_parser.read(CONFIG_FILES)
 config = config_parser[ENV]
 
 db_conn_string = (
-    f"dbname={config['NAME']} port={config['PORT']} "
-    + f"user={config['USER']} password= {config['PASSWORD']} "
-    + f"host={config['HOST']} "
+    f"dbname={config['db_name']} port={config['db_port']} "
+    + f"user={config['db_user']} password= {config['db_password']} "
+    + f"host={config['db_host']} "
 )
 
 

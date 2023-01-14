@@ -1,15 +1,16 @@
 #!/usr/bin/python3
+import configparser
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 import psycopg2
 
-from mysite import settings
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(BASE_DIR)
 
-path = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(path)
 
 # On a dry run, print the book found for the title
 # and do everything except actually inserting the data into
@@ -21,14 +22,18 @@ INCONSISTENT_ISBN_VIRTUAL_TITLE = 73
 ORIGINAL_MIN = 1
 ORIGINAL_MAX = 5
 
-db_name = settings.DATABASES["default"].get("NAME", "recsysdev")
-db_port = settings.DATABASES["default"].get("PORT", "5432")
-db_user = settings.DATABASES["default"].get("USER", "postgres")
-db_password = settings.DATABASES["default"].get("PASSWORD", " ")
-db_host = settings.DATABASES["default"].get("HOST", " ")
+# Get per-environment settings from the config files.
+CONFIG_DIR = Path(BASE_DIR, "config")
+CONFIG_FILES = [Path(CONFIG_DIR, f) for f in os.listdir(CONFIG_DIR)]
+ENV = os.environ.get("ENV", "DEFAULT")
+config_parser = configparser.ConfigParser()
+config_parser.read(CONFIG_FILES)
+config = config_parser[ENV]
+
 db_conn_string = (
-    f"dbname={db_name} port={db_port} user={db_user} password= {db_password} "
-    f"host={db_host} "
+    f"dbname={config['db_name']} port={config['db_port']} "
+    + f"user={config['db_user']} password= {config['db_password']} "
+    + f"host={config['db_host']} "
 )
 
 data_dir = os.path.dirname(os.path.realpath(__file__))
