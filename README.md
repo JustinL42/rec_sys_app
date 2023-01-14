@@ -1,6 +1,9 @@
-# rec_sys_app - the source code for BookClub.Guide
+rec_sys_app - the source code for BookClub.Guide
+==========================
 
-[BookClub.Guide](https://www.bookclub.guide) is a recommendation system Django web app where readers and book clubs can get recommendations on books they might enjoy. Using a database derived from the [Internet Speculative Fiction Database's](http://www.isfdb.org) regularly-updated snapshots, users can give ratings to nearly any sci-fi/fantasy book available in English. These ratings are are used to help find recommendations for the user, as well as for other users with similar taste.
+![](https://user-images.githubusercontent.com/3272143/212499736-26e8f1d8-7730-4c27-9076-c9275e57d8f7.png)
+
+[BookClub.Guide](https://bookclub.guide) is a recommendation system Django web app where readers and book clubs can get recommendations on books they might enjoy. Using a database derived from the [Internet Speculative Fiction Database's](http://www.isfdb.org) regularly-updated snapshots, users can give ratings to nearly any sci-fi/fantasy book available in English. These ratings are are used to help find recommendations for the user, as well as for other users with similar taste.
 
 Some of the motivations for this project include:
 
@@ -9,6 +12,8 @@ Some of the motivations for this project include:
 
 The algorithm used to generate recommendations is a [collaborative filtering](https://en.wikipedia.org/wiki/Collaborative_filtering), [matrix factorization](https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)) model. Specifically, this is the [SVD algorithm](https://surprise.readthedocs.io/en/stable/matrix_factorization.html#surprise.prediction_algorithms.matrix_factorization.SVD) from the [Surprise](http://surpriselib.com/) python package, with some customizations. 
 
-The [Book Crossings](http://www2.informatik.uni-freiburg.de/~cziegler/BX/) ratings data set was used jump start the model-tuning. The data isn't an ideal fit for this application for a number of reasons. Because of this, the algorithm's evaluation function was modified so that only the accuracy of predictions for the site's real users (not Book Crossings ratings) was used to guide the tuning of the model (see  tuning/tune_update_methods.py). 
+The [Book Crossing](http://www2.informatik.uni-freiburg.de/~cziegler/BX/) ratings data set was used jump start the model-tuning. The data isn't an ideal fit for this application for a number of reasons. Because of this, the algorithm's evaluation function was modified so that only the accuracy of predictions for the site's real users (not Book Crossings ratings) was used to guide the tuning of the model.
 
-The setup process for this app isn't currently documented. One necessary step is to download and migrate the latest ISFDB.org MySQL database into the app's Postgres database. See the [isfdb_migration](https://github.com/JustinL42/isfdb_migration) repository for more information about that.
+## Installation
+
+See [INSTALLATION.md](INSTALLATION.md).
