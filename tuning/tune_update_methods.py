@@ -25,8 +25,8 @@ db_conn_string = (
     f"{db_name}"
 )
 
-# The id of the Book Crossing "book club", who aren't real users
-BX_BOOK_CLUB_ID = 7
+# The name of the Book Crossing "book club", who aren't real users
+BX_BOOK_CLUB_NAME = "Book Crossings Virtual Book Club"
 
 
 def tune_svd_model(n_iter=10, force=False, n_jobs=1):
@@ -43,14 +43,14 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
           SELECT 1
             FROM recsys_book_club_members AS m
             JOIN recsys_book_club AS c ON c.id = m.book_club_id
-            WHERE c.id = %s
+            WHERE c.name = %s
             AND m.user_id = u.id
         )
         AND u.virtual = FALSE
         AND r.rating IS NOT NULL;
         """,
         conn,
-        params=[BX_BOOK_CLUB_ID],
+        params=[BX_BOOK_CLUB_NAME],
     )
 
     large_df = pd.read_sql(
@@ -60,12 +60,12 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         JOIN recsys_user as u ON u.id = r.user_id
         JOIN recsys_book_club_members as m ON m.user_id = u.id
         JOIN recsys_book_club as c ON c.id = m.book_club_id
-        WHERE c.id = %s
+        WHERE c.name = %s
         AND rating is not NULL
         AND u.virtual = FALSE;
         """,
         conn,
-        params=[BX_BOOK_CLUB_ID],
+        params=[BX_BOOK_CLUB_NAME],
     )
 
     df = pd.concat([small_df, large_df])
@@ -258,11 +258,11 @@ def update_all_recs(num_ratings, last_rating):
             SELECT 1
                 FROM recsys_book_club_members AS m
                 JOIN recsys_book_club AS c ON c.id = m.book_club_id
-                WHERE c.id = %s
+                WHERE c.name = %s
                 AND m.user_id = u.id
         );
     """,
-        [BX_BOOK_CLUB_ID],
+        [BX_BOOK_CLUB_NAME],
     ).fetchall()
 
     conn.close()
@@ -299,7 +299,7 @@ def update_all_recs(num_ratings, last_rating):
 
                 conn.execute(
                     """
-                    INSERT INTO recsys_ratin
+                    INSERT INTO recsys_rating
                     (book_id, user_id, predicted_rating,
                         saved, blocked, last_updated)
                     VALUES (%s, %s, %s, FALSE, FALSE, CURRENT_TIMESTAMP)

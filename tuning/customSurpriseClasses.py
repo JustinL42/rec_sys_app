@@ -65,7 +65,7 @@ class JumpStartKFolds(KFold):
     def __init__(
         self, large_data=None, n_splits=5, random_state=None, shuffle=True
     ):
-        if large_data is not None:
+        if large_data is None:
             raise ValueError(
                 "Must provide large_data parameter for JumpStartKFolds"
             )

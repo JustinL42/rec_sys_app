@@ -45,14 +45,35 @@ line-length = 79
 [tool.isort]
 profile = "black"
 line_length = 79
-skip = [".git", ".env", "data", ".recsys/static", "recsys/migrations"]
+skip = [
+  ".git",
+  ".env",
+  "backup",
+  "data",
+  "recsys/static",
+  "recsys/migrations"
+]
 
 [tool.flake8]
 extend-ignore = ["E203", "W503"]
-exclude = [".git", ".env", "data", ".recsys/static", "recsys/migrations"]
+exclude = [
+  ".git",
+  ".env",
+  "backup",
+  "data",
+  "recsys/static",
+  "recsys/migrations"
+]
 
 [tool.pylint]
 load-plugins = "pylint_django"
 recursive = true
 disable = ["C0103","C0114","C0115","C0116","R0901","R0912","R0914","R0915"]
-ignore = [".env", ".git", "data", ".recsys/static", "recsys/migrations"]
+ignore = [
+  ".git",
+  ".env",
+  "backup",
+  "data",
+  "recsys/static",
+  "recsys/migrations"
+]
