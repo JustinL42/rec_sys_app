@@ -1,24 +1,27 @@
 {% extends "recsys/base.html" %}
 {% load isfdb_image_handling %}
 
-{% block title %}Home Page{% endblock %}
+{% block title %}BookClub.Guide{% endblock %}
 
 {% block content %}
-<p>Welcome to BookClub.Guide, a website where you can browse and give ratings to books from the science fiction, fantasy, and speculative fiction genres.</p>
+<br>
+<h1>Welcome to BookClub.Guide,</h1>
+<p>a website where you can browse and give ratings to science fiction and fantasy books.</p>
+<br>
 {% if user.is_authenticated %}
-  <p>Hi {{ user.first_name }}!
-    <br>Please <a href="{% url 'password_change' %}">change your password</a> if you haven't done so already.</p>
+  <p>Hi <span class=datum>{{ user.first_name }}</span>! You are logged in.</p>
 {% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
+  <p>You are not logged in. <a href="{% url 'login' %}">Click here</a> to log-in or sign up.</p>
 {% endif %}
+<br>
+<h3>Here are some random notable books:</h3>
 
-<table class=book_list_table>
+<!-- <table class=book_list_table>
 {% for book in object_list %}
     {% book_row_item book %}
 {% empty %}
 <p>No books are available.</p>
 {% endfor %}
-</table>
+</table> -->
 
 {% endblock %}

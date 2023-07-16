@@ -1,84 +1,68 @@
 {% load static %}
-
-<link rel="stylesheet" 
-    type="text/css" 
-    href="{% static 'recsys/style.css' %}">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-  <title>
-    {% block title %}
-    {% endblock %}
-  </title>
-  <link rel="icon" type="image/png"
-        href="{% static 'recsys/images/favicon.ico' %}"/>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'recsys/style.css' %}" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" 
+    type="image/png" 
+    href="{% static 'recsys/images/favicon.ico' %}"
+    />
 </head>
 
 <body>
-<header>
-    <table class='header_row'>
-        <tr>
-            <td >
-                <a href="/" alt="Bookclub.guide home page link">BookClub<br>.Guide</a>
-            </td>
-            <td class='{% if in_ratings_tab %}header_row_highlighted{% endif %}'>
-                <a href="{% url 'recsys:ratings' %}">
-                <a href="{% url 'recsys:ratings' %}">My<br>Ratings</a>
-            </td>
-            <td class='{% if "/recommendations" in request.path %}header_row_highlighted{% endif %}'>
-                <a href="{% url 'recsys:recommendations' %}">
-                <a href="{% url 'recsys:recommendations' %}">Recommen-<br>dations</a>
-            </td>
-            <td class='{% if in_account_tab %}header_row_highlighted{% endif %}'>
-                <a href="{% url 'account' %}">My<br>Account</a>
-            </td>
-            <td class='{% if "/login" in request.path %}header_row_highlighted{% endif %}'>
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">Log<br>Out</a>
-            {% else %}
-                <a href="{% url 'login' %}">Log In /<br>Sign Up</a>
-            {% endif %}
-            </td>
-        </tr>
-    </table>
-    {% if in_ratings_tab %}
-    <table class='header_row'>
-        <tr>
-            <td class='{% if request.path == "/ratings/" %}header_row_highlighted{% endif %}'>
-                <a href="{% url 'recsys:ratings' %}">Ratings ({{rating_count}})</a>
-            </td>
-            <td class='{% if request.path == "/saved/" %}header_row_highlighted{% endif %}'>
-                <a href="{% url 'recsys:saved' %}">
-                <a href="{% url 'recsys:saved' %}">Saved ({{saved_count}})</a>
-            </td>            
-            <td class='{% if request.path == "/blocked/" %}header_row_highlighted{% endif %}'>
-                <a href="{% url 'recsys:blocked' %}">
-                <a href="{% url 'recsys:blocked' %}">Blocked ({{blocked_count}})</a>
-            </td>
-        </tr>
-    </table>
-    {% endif %}
-    <form action="{% url 'recsys:search_results' %}" 
-        method="get">
-        <table class="search_bar_table">
-            <tr>
-                <th>
-                    <input class="general_search_bar"
-                        type="text" 
-                        name="search"
-                        placeholder="Search by title, author, series, or ISBN"
-                        value="{{request.GET.search}}"
-                        {% if not in_account_tab %}autofocus{% endif %} >
-                </th>
-                <th>
-                    <input type="submit" value="Search">
-                </th>
-            </tr>
-        </table>
-    </form>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="/" alt="Home Page">BookClub.Guide</a>
+            </div>
+            <ul class="nav-links">
+
+                <!-- USING CHECKBOX HACK -->
+                <input type="checkbox" id="checkbox_toggle" />
+                <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+
+                <!-- NAVIGATION MENUS -->
+                <div class="menu">
+                    <li><a href="{% url 'recsys:ratings' %}">My Ratings</a></li>
+                    <li><a href="{% url 'recsys:recommendations' %}"
+                        >Recommendations</a>
+                    </li>
+                    <li><a href="{% url 'account' %}">Account</a></li>
+<!--                     <li><a href="{% url 'account' %}">Blog</a></li>
+                    <li><a href="{% url 'account' %}">About</a></li> -->
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}">Log&nbsp;In&nbsp;/ Sign&nbsp;Up</a></li>
+                    {% endif %}
+                </div>
+            </ul>
+        </nav>
+        <form action="{% url 'recsys:search_results' %}" 
+        method="get"    
+        class="search_bar">
+        <input
+        type="text" 
+        name="search"
+        placeholder="Search by title, author, series, or ISBN"
+        value="{{request.GET.search}}"
+        {% if not in_account_tab %}autofocus{% endif %} 
+        />
+        <input type="submit" value="Search">
+    </form>        
 </header>
-<div class="center">
-{% block content %}
-{% endblock %}
-<footer><br><br><br>The bibliographic data on this website is sourced from <a href="http://www.isfdb.org" target="_blank">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution</a> license. The source data is currently available <a href="http://www.isfdb.org/wiki/index.php/ISFDB_Downloads" target="_blank">here.</a></footer>
+<div class=page_body>
+    {% block content %}
+    {% endblock %}    
+<footer>
+    <br><br><br>The bibliographic data on this website is sourced from <a href="http://www.isfdb.org" target="_blank">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution</a> license. The source data is currently available <a href="http://www.isfdb.org/wiki/index.php/ISFDB_Downloads" target="_blank">here.</a>
+</footer>
 </div>
 </body>
+
+</html>

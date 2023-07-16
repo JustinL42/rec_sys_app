@@ -1,160 +1,274 @@
+/* UTILITIES */
+
+:root {
+    --theme-blue:#336791;
+    --accent-blue:DodgerBlue;
+    --alt-blue:CadetBlue;
+
+    --theme-grey:LightSlateGray;
+    --accent-grey:LightGray;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/open-sans-regular.woff2' %}) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/open-sans-bold.woff2' %}) format('woff2');
+}
+
+/*@font-face {
+  font-display: swap;
+  font-family: 'Gentium';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/gentium-regular.woff2' %}) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Gentium';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/gentium-bold.woff2' %}) format('woff2');
+}*/
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Avenir, Corbel, sans-serif;
+  font-family: Open Sans, Avenir, Corbel, DejaVu Sans, sans-serif;
+  font-weight: 400;
 }
-body p {
-  font-size: 24px;
+
+header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background-color: white;
 }
-body h1 {
-  font-size: 40px;
-}
-body h2 {
-  font-size: 32px;
-}
-body h3 {
-  font-size: 26px;
-}
-li a {
-    color: black;
-}
-.general_search_bar {
-  width: 100%;
-}
-.search_bar_table {
-  width: 100%;
-}
-.search_bar_table input {
-  width: 100%;
-  height: 60;
-  font-size: 28px;
-}
-.header_row {
-  background-color: #042F66;
-  width: 100%;
-  height: 60;
-  border: 1px solid black;
-  border-collapse: collapse;
-}
-.header_row  td {
-  border: 2px solid black;
-  border-collapse: collapse;
-  width: 20%;
-}
-.header_row  a {
-  color: white;
-  font-weight: bold;
-  font-size: 24px;
-  display: block;
+
+a {
   text-decoration: none;
 }
-.header_row_highlighted {
-  background-color: #b0e0e6;
-}
-.header_row_highlighted  a {
-  color: black;
 
+li {
+  list-style: none;
 }
-.center {
-    margin: auto;
-    width: 80%;
-    padding: 10px;
-}
-.short_book_data {
-    text-align: left;
-    vertical-align: top;
-    font-weight: normal;
-}
-.short_book_data a {
-    color: black;
-    font-weight: bold;
-}
-.cover_image {
-  max-width: 200px;
-  max-height: 300px;
-}
-.thumbnail_cover {
-    max-width: 120px;
-    max-height: 180px;
-}
-.book_list_table {
-  width: 100%
-}
-.award_mark {
-  background-color: green;
-  color: white;
-}
-.jvnya_mark{
-  background-color: purple;
-  color: white;
-}
-.tr_table  {
-  border: 1px solid black;
-  border-collapse: collapse;
-}
-.tr_table th, 
-.tr_table td {
-  border: 1px solid black;
-  text-align: left;
-}
-.tr_table * {
-  color: black;
-  font-size: 24px;
-  font-weight: normal;
-}
-.change_password_table * {
-  vertical-align: top;
-}
-.external_db_link a {
-  color: black;
-}
+
 .datum  {
-  font-weight: bold;
+  font-weight: 700;
 }
-.rating_form_table * {
-  font-size: 24px;
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background-color:  var(--theme-blue);
+  color: white;
 }
-.rating_input_book {
-  font-size: 32px;
-  width: 200px;
-  text-align: center;
+
+.nav-links a {
+  color: white;
+  vertical-align: middle;
 }
-.rating_input_row {
-  font-size: 28px;
-  width: 100px;
-  text-align: center;
+
+.logo {
+  font-size: 30px;
+  font-weight: 700
 }
-.error {
-  font-size: 24px;
+
+.logo a {
+  color: white;
 }
-.book_checkbox_row {
-  height: 30;
-}
-.book_checkbox_row td {
-  display: inline-block;
-}
-.book_rating_row td {
-  display: inline-block;
-}
-.check_box {
-  transform : scale(2.2);
-}
-.check_box_label {
+
+.menu {
+  display: flex;
+  gap: 1em;
   font-size: 18px;
 }
-.submit_button_book {
-  font-size: 32px;
+
+.menu li:hover {
+  background-color: var(--accent-blue);
+  border-radius: 5px;
+  transition: 0.3s ease;
 }
-.submit_button_row {
-  font-size: 28px;
+
+.menu li {
+  padding: 5px 14px;
+  vertical-align: middle;
 }
-.submit_button_form {
-  font-size: 32px;
+
+.services {
+  position: relative; 
 }
-.pagination {
-  font-size: 24
+
+.dropdown {
+  background-color: var(--alt-blue);
+  padding: 1em 0;
+  position: absolute;
+  display: none;
+  border-radius: 8px;
+  top: 35px;
 }
-.book_row_item {
-  width: 85vw;
-  max-width: 1000px;
-  border: 2px solid black;
-  border-radius: 10px;
+
+.dropdown li + li {
+  margin-top: 10px;
+}
+
+.dropdown li {
+  padding: 0.5em 1em;
+  width: 8em;
+  text-align: center;
+}
+
+.dropdown li:hover {
+  background-color: var(--accent-blue);
+}
+
+.services:hover .dropdown {
+  display: block;
+}
+
+/* Responsive navbar checkbox hack */
+input[type=checkbox] {
+  display: none;
+}
+
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  user-select: none;
+}
+
+.search_bar input[type=text] {
+  height: 100%;
+  width: 80%;
+  height: 45px;
+  font-size: 22px;
+  background-color: white;
+  background-image: url('images/magnifying_glass.svg');
+  background-position: 0.2em center;
+  background-size: 30px;
+  background-repeat: no-repeat;
+  padding: 12px 20px 12px 40px;
+}
+
+.search_bar input[type=submit] {
+  min-width: 20%;
+  float: right;
+  font-size: 24px;
+  height: 45px;
+  background-color: var(--accent-grey);
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: var(--theme-grey);
+  color: white;
+}
+
+.page_body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60em;
+    max-width: 100%;
+}
+
+footer {
+  font-size: 0.80em;
+}
+
+/* Media Queries */
+@media (max-width: 1000px) {
+  .logo {
+    font-size: 20px;
+  }
+  .menu {
+    display: flex;
+    gap: 1em;
+    font-size: 16px;
+  }
+  .navbar {
+    padding: 15px;
+  }
+}
+
+
+@media (max-width: 870px) {
+  .navbar {
+    padding: 10px;
+  }
+
+ .menu {
+    display:none;
+    position: absolute;
+    background-color: var(--theme-blue);
+    right: 0;
+    left: 0;
+    text-align: center;
+    padding: 14px 0;
+    font-size: 20px;
+  }
+
+  .menu li:hover {
+    display: inline-block;
+    background-color:var(--accent-blue);
+    transition: 0.3s ease;
+  }
+
+  .menu li + li {
+    margin-top: 12px;
+  }
+
+  input[type=checkbox]:checked ~ .menu {
+    display: block;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .dropdown {
+    left: 50%;
+    top: 30px;
+    transform: translateX(35%);
+  }
+
+  .dropdown li:hover {
+    background-color: var(--accent-blue);
+  }
+
+  .search_bar input[type=text] {
+    height: 33px;
+    font-size: 14px;
+    background-size: 20px;
+    padding: 12px 15px 12px 25px;
+  }
+
+  .search_bar input[type=submit] {
+    height: 35px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+
+
 }
