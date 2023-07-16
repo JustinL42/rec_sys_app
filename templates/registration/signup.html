@@ -1,25 +1,36 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Signup{% endblock %}
-
+{% block title %}BCG|Signup{% endblock %}
 {% block content %}
+<br>
 <h1>Signup</h1>
+<br>
 {% for error in error_list %}
 <li style="color:crimson">{{ error|safe }}</li>
 {% endfor %}
 <form action="{% url 'signup' %}" method="POST">
   {% csrf_token %}
-  <p>Username<span style="color:crimson">*</span>: <input type="text" name="username" {% if username %}value="{{username}}"{% endif %}></p>
-  <p>Display Name<span style="color:crimson">*</span>: <input type="text" name="displayname" {% if displayname %}value="{{displayname}}"{% endif %}></p>
-  <li>This name will only be visible to you and other members of your book club(s).</li>
-  <li>It doesn't need to be your real name, full name, or unique, but choose a name that will help others recognize you.</li>
-  <p>Email<span style="color:crimson">*</span>: <input type="text" name="email" {% if email %}value="{{email}}"{% endif %}></p>
-  <p>Password<span style="color:crimson">*</span>: <input type="password" name="password1"></p>
-    <li>Your password can’t be too similar to your other personal information.</li>
-    <li>Your password must contain between 8 and 128 characters.</li>
-    <li>Your password can’t be a commonly used password.</li>
-    <li>Your password can’t be entirely numeric.</li>
-  <p>Confirm Password<span style="color:crimson">*</span>: <input type="password" name="password2"></p>
+  <div class="fieldWrapper">
+    <label>Username<span style="color:crimson">*</span>:</label>
+    <input type="text" name="username" {% if username %}value="{{username}}"{% endif %}>
+    <label>Display Name<span style="color:crimson">*</span>:</label>
+    <p>This name will only be visible to you and other members of your book club(s).</p>
+    <p>It doesn't need to be your real name, full name, or unique, but choose a name that will help others recognize you.</p>
+    <input type="text" name="displayname" 
+      {% if displayname %}value="{{displayname}}"{% endif %}
+    >
+    <label>Email<span style="color:crimson">*</span>:</label>
+    <input type="text" name="email" {% if email %}value="{{email}}"{% endif %}>
+    <label>Password<span style="color:crimson">*</span>:</label>
+    <input type="password" name="password1">
+    <label>Confirm Password<span style="color:crimson">*</span>:</label>
+    <p>Your password can’t be too similar to your other personal information.</p>
+    <p>Your password must contain between 8 and 128 characters.</p>
+    <p>Your password can’t be a commonly used password.</p>
+    <p>Your password can’t be entirely numeric.</p>
+    <input type="password" name="password2">
+  </div>
+  <p><span style="color:crimson">*</span>Required</p>
+  <br>
   <input type="submit" value="Create User">
 </form>
 {% endblock %}

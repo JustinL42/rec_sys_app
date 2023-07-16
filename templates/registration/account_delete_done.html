@@ -1,7 +1,5 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Account Deleted{% endblock %}
-
+{% block title %}BCG|Account Deleted{% endblock %}
 {% block content %}
     <p>The account for "{{ deleted_user }}" has been deleted successfully.</p>
     <a href="{% url 'recsys:home' %}">Return to home page</a>

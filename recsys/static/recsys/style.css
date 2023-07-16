@@ -72,6 +72,41 @@ li {
   font-weight: 700;
 }
 
+.fieldWrapper > *{
+  display: block;
+}
+
+.fieldWrapper input[type=text],input[type=password] {
+  width: 100%;
+  max-width: 40em;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.fieldWrapper label {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+input[type=submit] {
+  min-width: 10em;
+  font-size: 24px;
+  height: 45px;
+  background-color: var(--accent-grey);
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: var(--theme-grey);
+  color: white;
+}
+
 .navbar {
   display: flex;
   align-items: center;
@@ -155,6 +190,7 @@ input[type=checkbox] {
   user-select: none;
 }
 
+
 .search_bar input[type=text] {
   height: 100%;
   width: 80%;
@@ -171,18 +207,6 @@ input[type=checkbox] {
 .search_bar input[type=submit] {
   min-width: 20%;
   float: right;
-  font-size: 24px;
-  height: 45px;
-  background-color: var(--accent-grey);
-  color: black;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit]:hover {
-  background-color: var(--theme-grey);
-  color: white;
 }
 
 .page_body {
@@ -190,6 +214,7 @@ input[type=submit]:hover {
     margin-right: auto;
     width: 60em;
     max-width: 100%;
+    padding: 6px;
 }
 
 footer {

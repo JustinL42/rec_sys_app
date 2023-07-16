@@ -1,8 +1,6 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Display Name Changed{% endblock %}
-
+{% block title %}BCG|Display Name Changed{% endblock %}
 {% block content %}
-            <p>Display Name successfully changed to "{{ new_displayname }}".</p>
-            <a href="{% url 'recsys:home' %}">Return to home page</a>
+<p>Display Name successfully changed to "{{ new_displayname }}".</p>
+<a href="{% url 'recsys:home' %}">Return to home page</a>
 {% endblock %}

@@ -1,8 +1,6 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Username Changed{% endblock %}
-
+{% block title %}BCG|Username Changed{% endblock %}
 {% block content %}
-            <p>Username successfully changed to "{{ new_username }}".</p>
-            <a href="{% url 'recsys:home' %}">Return to home page</a>
+<p>Username successfully changed to "{{ new_username }}".</p>
+<a href="{% url 'recsys:home' %}">Return to home page</a>
 {% endblock %}

@@ -1,27 +1,22 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Username Change{% endblock %}
-
+{% block title %}BCG|Change Username{% endblock %}
 {% block content %}
-	<h1>Change Username</h1>
-    <p>Choose the name you use to log into the site. It needs to be unique, and can't include any whitespaces.</p>
-	{% if error_text %}
-	<li>{{ error_text }}</li>
-	{% endif %}
-    <form action="{% url 'username_change' %}" method="POST">
-    	{% csrf_token %}
-        <table>
-            <tr>
-                <th>
-                    <input type="text" 
-                        name="new_username"
-                        value="{{request.POST.new_username}}"
-                        autofocus >
-                </th>
-                <th>
-                    <input type="submit" value="Submit">
-                </th>
-            </tr>
-        </table>
-    </form>
+<br>
+<h1>Change your username</h1>
+<br>
+<p>Choose the name you would like to use to log into the site. It needs to be unique, and can't include any whitespaces.</p>
+<p>Your current username is <span class="datum">{{ user.username }}</span>.</p>
+{% if error_text %}
+<li>{{ error_text }}</li>
+{% endif %}
+<form action="{% url 'username_change' %}" method="POST">
+   {% csrf_token %}
+   <div class="fieldWrapper">
+    <input type="text" 
+    name="new_username"
+    value="{{request.POST.new_username}}"
+    autofocus >
+    <input type="submit" value="Submit">
+</div>
+</form>
 {% endblock %}

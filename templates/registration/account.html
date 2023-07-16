@@ -1,12 +1,21 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}My Account{% endblock %}
-
+{% block title %}BCG|My Account{% endblock %}
 {% block content %}
+	<br>
 	<h1>My Account</h1>
-    <p>Username: <span class="datum">{{ user.username }}</span>&nbsp;&nbsp;<a href="{% url 'username_change' %}">(change username)</a></p>
-    <p>Email Address: <span class="datum">{{ user.email }}</span>&nbsp;&nbsp;<a href="{% url 'email_change' %}">(change email address)</a></p>
-    <p>Password: <span class="datum">***</span>&nbsp;&nbsp;<a href="{% url 'password_change' %}">(change password)</a></p>
-    <p>Display Name: <span class="datum">{{ user.first_name }}</span>&nbsp;&nbsp;<a href="{% url 'displayname_change' %}">(change display name)</a></p>
-    <p>Delete Account: <a href="{% url 'account_delete' %}">(click for more information)</a></p>
+	<br>
+    <p>Username: <span class="datum">{{ user.username }}</span></p>
+    <a href="{% url 'username_change' %}">(change username)</a>
+    <br><br>
+    <p>Email Address: <span class="datum">{{ user.email }}</span></p>
+    <a href="{% url 'email_change' %}">(change email address)</a>
+    <br><br>
+    <p>Password: <span class="datum">***</span></p>
+    <a href="{% url 'password_change' %}">(change password)</a>
+    <br><br>
+    <p>Display Name: <span class="datum">{{ user.first_name }}</span></p>
+    <a href="{% url 'displayname_change' %}">(change display name)</a>
+    <br><br>
+    <p>Delete Account:</p>
+    <a href="{% url 'account_delete' %}">(click for more information)</a>
 {% endblock %}

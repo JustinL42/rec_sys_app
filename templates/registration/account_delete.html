@@ -1,27 +1,21 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Username Change{% endblock %}
-
+{% block title %}BCG|Delete Account{% endblock %}
 {% block content %}
+<br>
 <h1>Delete Account</h1>
-    <p>Are you sure you want to delete the account with the user name "<b>{{ user.username }}</b>"? This will also delete all your ratings and it can't be undone.</p>
-    <p>To permanently delete the account, type the user name in the box below and click the Delete button</p>
-    {% if error_text %}
-    <li>{{ error_text|safe }}</li>
-    {% endif %}
-    <form action="{% url 'account_delete' %}" method="POST">
-    	{% csrf_token %}
-        <table>
-            <tr>
-                <th>
-                    <input type="text" 
-                        name="username"
-                        value="{{request.POST.username}}">
-                </th>
-                <th>
-                    <input type="submit" value="Delete">
-                </th>
-            </tr>
-        </table>
-    </form>
+<br>
+<p>Are you sure you want to delete the account with the user name "<span class=datum>{{ user.username }}</span>"? This will also delete all your ratings and it can't be undone.</p>
+<p>To permanently delete the account, type the user name in the box below and click the Delete button</p>
+{% if error_text %}
+<li>{{ error_text|safe }}</li>
+{% endif %}
+<form action="{% url 'account_delete' %}" method="POST">
+ {% csrf_token %}
+ <div class="fieldWrapper">
+     <input type="text" 
+     name="username"
+     value="{{request.POST.username}}">
+ </div>
+ <input type="submit" value="Delete">
+</form>
 {% endblock %}

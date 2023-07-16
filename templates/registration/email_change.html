@@ -1,26 +1,20 @@
 {% extends "recsys/base.html" %}
-
-{% block title %}Email Address Change{% endblock %}
-
+{% block title %}BCG|Change Email Address{% endblock %}
 {% block content %}
-	<h1>Change your email address</h1>
-	{% if error_text %}
-	<li>{{ error_text }}</li>
-	{% endif %}
-    <form action="{% url 'email_change' %}" method="POST">
-    	{% csrf_token %}
-        <table>
-            <tr>
-                <th>
-                    <input type="text" 
-                        name="new_email"
-                        value="{{request.POST.new_email}}"
-                        autofocus >
-                </th>
-                <th>
-                    <input type="submit" value="Submit">
-                </th>
-            </tr>
-        </table>
-    </form>
+<br>
+<h1>Change your email address</h1>
+<br>
+{% if error_text %}
+<li>{{ error_text }}</li>
+{% endif %}
+<form action="{% url 'email_change' %}" method="POST">
+   {% csrf_token %}
+   <div class="fieldWrapper">
+    <input type="text" 
+    name="new_email"
+    value="{{request.POST.new_email}}"
+    autofocus >
+    <input type="submit" value="Submit">
+</div>
+</form>
 {% endblock %}
