@@ -9,19 +9,19 @@
 <p>a website where you can browse and give ratings to science fiction and fantasy books.</p>
 <br>
 {% if user.is_authenticated %}
-  <p>Hi <span class=datum>{{ user.first_name }}</span>! You are logged in.</p>
+<p>Hi <span class=datum>{{ user.first_name }}</span>! You are logged in.</p>
 {% else %}
-  <p>You are not logged in. <a href="{% url 'login' %}">Click here</a> to log-in or sign up.</p>
+<p>You are not logged in. <a href="{% url 'login' %}">Click here</a> to log-in or sign up.</p>
 {% endif %}
 <br>
 <h3>Here are some random notable books:</h3>
 
-<!-- <table class=book_list_table>
-{% for book in object_list %}
-    {% book_row_item book %}
-{% empty %}
-<p>No books are available.</p>
-{% endfor %}
-</table> -->
+<div class=book_list>
+	{% for book in object_list %}
+	{% book_row_item book %}
+	{% empty %}
+	<p>No books are available now. Try again later.</p>
+	{% endfor %}
+</div>
 
 {% endblock %}
