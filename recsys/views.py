@@ -43,7 +43,7 @@ class HomeView(generic.ListView):
                 "wikipedia",
                 title_id=F("id"),
             )
-            .filter(isfdb_rating__gte=8)
+            .filter(isfdb_rating__gte=8, cover_image__isnull=False)
             .order_by("?")
         )
 
@@ -63,7 +63,10 @@ class HomeView(generic.ListView):
                 title_id=F("id"),
             )
             .filter(
-                year__gte=five_years_ago, award_winner=True, juvenile=False
+                year__gte=five_years_ago,
+                award_winner=True,
+                juvenile=False,
+                cover_image__isnull=False,
             )
             .order_by("?")
         )

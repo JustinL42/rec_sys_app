@@ -16,11 +16,9 @@
 	{% if not object_list %}
 	<p>There was a problem loading the list of books. Visit the <a href="{% url 'recsys:recommendations' %}">Recommendations</a> page or try again later</p>
 	{% else %}
-    <table class=book_list_table>
         {% for book in object_list %}
             {% book_row_item book %}
         {% endfor %}
-    </table>
     {% endif %}
 
 <br>

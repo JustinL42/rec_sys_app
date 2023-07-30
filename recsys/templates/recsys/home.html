@@ -4,7 +4,6 @@
 {% block title %}BookClub.Guide{% endblock %}
 
 {% block content %}
-<br>
 <h1>Welcome to BookClub.Guide,</h1>
 <p>a website where you can browse and give ratings to science fiction and fantasy books.</p>
 <br>
@@ -14,7 +13,7 @@
 <p>You are not logged in. <a href="{% url 'login' %}">Click here</a> to log-in or sign up.</p>
 {% endif %}
 <br>
-<h3>Here are some random notable books:</h3>
+<h3>Here are some random noteworthy books:</h3>
 
 <div class=book_list>
 	{% for book in object_list %}

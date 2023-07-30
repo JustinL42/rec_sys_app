@@ -24,11 +24,9 @@
     <li class='error'>Couldn't update rating: {{error_text}}</li>
 {% endif %}
 
-<table class=book_list_table>
-    {% for book in books %}
-        {% book_row_item book %}
-    {% endfor %}
-</table>
+{% for book in books %}
+    {% book_row_item book %}
+{% endfor %}
 
 {% if page_obj.paginator.num_pages > 1 %}
 <br>

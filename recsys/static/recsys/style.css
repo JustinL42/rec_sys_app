@@ -42,12 +42,18 @@ header {
   background-color: white;
 }
 
-a {
+header a {
   text-decoration: none;
 }
 
-li {
+header li {
   list-style: none;
+}
+
+.page_body a {
+  color: black;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 .datum  {
@@ -73,15 +79,21 @@ li {
   font-weight: 700;
 }
 
-input[type=submit] {
+input[type=submit]:not(.submit_button_row){
   min-width: 10em;
   font-size: 24px;
   height: 45px;
   background-color: var(--accent-grey);
   color: black;
-  border: none;
+  border-color: black;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.submit_button_row {
+  width: 7em;
+  height: 1.75em;
+
 }
 
 input[type=submit]:hover {
@@ -161,7 +173,7 @@ input[type=submit]:hover {
 }
 
 /* Responsive navbar checkbox hack */
-input[type=checkbox] {
+header input[type=checkbox] {
   display: none;
 }
 
@@ -204,11 +216,10 @@ input[type=checkbox] {
 
 footer {
   font-size: 0.80em;
+  padding-top: 24px;
+  padding-bottom: 12px;
 }
 
-.book_title {
-  font-weight: 700;
-}
 
 /*Book Row Item*/
 
@@ -225,7 +236,7 @@ footer {
   border-width: 2px;
   border-radius: 5px;
   margin: 5px 0px 5px 0px;
-  padding: 4px 4px 4px 4px;
+  padding: 4px 4px 4px 16px;
 }
 
 .img_data_and_rating {
@@ -235,33 +246,72 @@ footer {
   height: 30vh;
 }
 
-.rating_boxes {
-  /*width: 30%;*/
-  background-color: green;
-  flex: 15%;
+.rating_box {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-size: 110%;
+  margin: 2px;
+}
+
+.rating_form {
+  display: flex;
+  flex-direction: column;
+}
+
+.rating_form div>input[type=number] {
+  width: 5em;
+  font-size: 120%;
+  text-align: center;
+}
+
+.rating_checkbox {
+  display: flex;
+  flex-direction: row;
+  text-align: middle;
+}
+
+.rating_checkbox div>input[type=checkbox]{
+  margin-left: 0.25em;
+  margin-right: 0.3em;
+}
+
+.rating_checkbox div>input[type=submit]{
+  width: 5em;
 }
 
 
 .img_and_data {
   display: flex;
   flex-direction: row;
-  /*width: 70%;*/
-  flex: 85%;
+  flex: 10;
+  overflow-y: hide;
 }
 
-.thumbnail {
+.thumbnail_link {
   display: flex;
   flex: 30%;
-  background-color: cyan;
   overflow: hide;
+  padding-left: 20px;
   background-repeat: no-repeat;
   background-size: contain;
+  background-position: right;
 }
 
 .row_metadata {
   flex: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 5px;
 }
 
+.book_row_title, .book_row_title_long  {
+  font-size: 110%;
+  font-weight: 700;
+}
+
+/* Badges and external Links */
 .icons_and_links {
   display: flex;
   flex-direction: row;
@@ -269,6 +319,25 @@ footer {
   justify-content: space-around;
 }
 
+.icons_and_links div {
+  font-size: 75%;
+}
+
+.won_award_badge {
+  color: white;
+  font-weight: 700;
+  background-color: var(--theme-blue);
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.jvnya_badge {
+  color: white;
+  font-weight: 700;
+  background-color: var(--alt-blue);
+  border-radius: 5px;
+  padding: 2px;
+}
 
 
 /* Media Queries */
@@ -284,6 +353,7 @@ footer {
   .navbar {
     padding: 15px;
   }
+
 }
 
 
@@ -349,6 +419,35 @@ footer {
     height: 25vh;
   }
 
+  .row_metadata_main p:not(.book_row_title) {
+    font-size: 85%;
+  }
+
+  .book_row_title_long {
+    font-size: 90%;
+  }
+
+  .rating_form {
+    flex-direction: row;
+    font-size: 80%;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .rating_form {
+    align-items: center;
+  }
+
+}
 
 
+/* Pagination */
+
+.pagination {
+  font-size: 120%;
+  text-align: center;
+}
+
+.pagination a {
+  font-weight: 700;
 }

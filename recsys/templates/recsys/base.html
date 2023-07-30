@@ -47,7 +47,6 @@
         name="search"
         placeholder="Search by title, author, series, or ISBN"
         value="{{request.GET.search}}"
-        {% if not in_account_tab %}autofocus{% endif %} 
         />
         <input type="submit" value="Search">
     </form>        
@@ -56,8 +55,7 @@
     {% block content %}
     {% endblock %}    
 <footer>
-    <br><br><br>The bibliographic data on this website is sourced from <a href="http://www.isfdb.org" target="_blank">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution</a> license. The source data is currently available <a href="http://www.isfdb.org/wiki/index.php/ISFDB_Downloads" target="_blank">here.</a>
-    <br><br>
+    The bibliographic data on this website is sourced from <a href="http://www.isfdb.org" target="_blank">isfdb.org</a>. It is being used under the terms of a <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution</a> license. The source data is currently available <a href="http://www.isfdb.org/wiki/index.php/ISFDB_Downloads" target="_blank">here.</a>
 </footer>
 </div>
 </body>

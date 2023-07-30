@@ -1,59 +1,106 @@
 {% load isfdb_image_handling %}
 
 <div class="book_row_item">
-    <div><h4>
-        <a href="{% url 'recsys:book' book.title_id %}">{{ book.title }}</a>
-        ({{ book.year|default:"date unknown" }})
-    </h4></div>
     <div class="img_data_and_rating">
-        <div class="rating_boxes">rating</div>
+        {% if user.is_authenticated %}
+            <div class="rating_box">
+                <form class="rating_form" action="{{ request.get_full_path }}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden"name="rating_title_id" value="{{book.title_id}}"/>
+                    <div>My Rating: </div>
+                    <div>
+                        <input label="book_rating"
+                            type="number"
+                            step="any"
+                            min=1
+                            max=10
+                            autocomplete="off"
+                            name="new_rating"
+                            placeholder="{% if not book.rating_score %}Rating{% endif %}"
+                            value="{% if book.rating_score %}{{ book.rating_score }}{% endif %}">
+                    </div>
+                    <div class="rating_checkbox">
+                        <div>
+                            <input type="checkbox"
+                                id="save_{{book.title_id}}" 
+                                name="save" 
+                                {% if book.rating_saved %}checked{% endif %}>
+                        </div>
+                        <div>
+                            <label for="save_{{book.title_id}}">
+                                <span class="check_box_label">Saved</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="rating_checkbox">
+                        <div>
+                            <input type="checkbox" 
+                                id="block_{{book.title_id}}"
+                                name="block"
+                                {% if book.rating_blocked %}checked{% endif %}>
+                        </div>
+                        <div>
+                            <label for="block_{{book.title_id}}">
+                                <span class="check_box_label">Blocked</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <input class="submit_button_row" type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
+        {% endif %}
         <div class="img_and_data">
-            <a class="thumbnail" 
+            <a class="thumbnail_link" 
                 href="{% url 'recsys:book' book.title_id %}"
                 style="background-image: url({{ book.cover_image|localize_isfdb_image_url }});"
                 alt="book cover and link for {{ book.title }}">
-<!--                 <a href="{% url 'recsys:book' book.title_id %}">
-                    <img src="{{ book.cover_image|localize_isfdb_image_url }}" 
-                        alt="book cover for {{ book.title }}"/>
-                </a> -->
             </a>
             <div class="row_metadata">
-                <p>by {{book.authors}}</p>
-                <p>
-                    {{ book.book_type|title }}{% if book.pages %}, {{ book.pages }} p.{% endif %}
-                </p>
-                <p>{{ book.series_str_1|default:"" }}</p>
+                <div class="row_metadata_main">
+                    <p 
+                        {% if book.title|length >= 40 %}
+                            class="book_row_title_long"
+                        {% else %}
+                            class="book_row_title"
+                        {% endif %}
+                        {% if book.title|length >= 90 %}
+                            title="{{ book.title }}"
+                        {% endif %}
+                        ><a href="{% url 'recsys:book' book.title_id %}">{{ book.title|truncatechars_html:90 }}</a> ({{ book.year|default:"date unknown" }})</p>
+                    <p>by <span class="datum">{{ book.authors|truncatechars_html:110 }}</span></p>
+                    <p>
+                        {{ book.book_type|title }}{% if book.pages %}, <span class="datum">{{ book.pages }}</span> pages{% endif %}
+                    </p>
+                    <p>{{ book.series_str_1|default:"" }}</p>
+                </div>
                 <div class="icons_and_links">
-                    <div>won award</div>
-                    <div>JVN/YA</div>
-                    <div>Wikipedia&#128279;</div>
-<!--                     <div>ISFDB&#128279;</div>
-                    <div>ISFDB&#128279;</div>
-                    <div>ISFDB&#128279;</div>
- -->                </div>
-<!--                 <p>
-                    {% if book.award_winner %}
-                        <mark class='award_mark'
-                            title="This book won an award">
-                            won award
-                        </mark>
-                    {% endif %}
-                    {% if book.juvenile %}
-                        <mark class='jvnya_mark' 
-                            title="juvenile or young adult literature">
-                            JVN / YA
-                        </mark>
-                    {% endif %}
-                    {% if book.wikipedia %}
-                        <a href="{{ book.wikipedia }}" target="_blank">
-                            Wikipedia&#128279;
-                        </a> 
-                    {% endif %}
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.title_id }}" 
-                        target="_blank">
-                        ISFDB&#128279;
-                    </a>
-                </p> -->
+                    <div class="won_award_badge"
+                        title="This book won an award"
+                        {% if not book.award_winner %}
+                            style="visibility: hidden"
+                        {% endif %}
+                        >won award</div>
+                    <div class="jvnya_badge" 
+                        title="This book is juvenile or young adult fiction"
+                        {% if not book.juvenile %}
+                            style="visibility: hidden"
+                        {% endif %}
+                        >JVN/YA</div>
+                    <div class="wiki_link"
+                        title="Open book's Wikipedia page"
+                        {% if not book.wikipedia %}
+                            style="visibility: hidden"
+                        {% endif %}>
+                        <a href="{{ book.wikipedia|default:'#' }}" target="_blank">&#128279;Wikipedia</a>
+                    </div>
+                    <div class="isfdb_link"
+                        title="Open book's Internet Speculative Fiction Database page">
+                        <a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ book.title_id }}" 
+                            target="_blank">&#128279;ISFDB</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

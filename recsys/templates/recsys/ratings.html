@@ -7,18 +7,17 @@
 
 <h1>My Ratings</h1>
     <p>The books you have already rated will appear here. The ratings you give will affect the recommendations created for you and other users. Books you've already rated won't appear in your recommendations, since you have probably already read them. You can remove your rating from a book by removing the number from the form and clicking "Submit". You can also save or block a book you've rated, which doesn't affect your recommendations.</p>
+    <br>
     {% if error_text %}
-        <br>
         <li class='error'>Couldn't update rating: {{error_text}}</li>
     {% endif %}
 	{% if not object_list %}
 	<p>You haven't rated any books yet.</p>
 	{% else %}
-    <table class=book_list_table>
         {% for book in object_list %}
             {% book_row_item book %}
         {% endfor %}
-    </table>
+
     {% endif %}
 
 {% if page_obj.paginator.num_pages > 1 %}

@@ -14,11 +14,9 @@
 	{% if not object_list %}
 	<p>You don't currently have any recommendations. <a href="/firstratings/">Click here to start generating recommendations!</a></p>
 	{% else %}
-    <table class=book_list_table>
-        {% for book in object_list %}
-            {% book_row_item book %}
-        {% endfor %}
-    </table>
+    {% for book in object_list %}
+        {% book_row_item book %}
+    {% endfor %}
     {% endif %}
 
 {# TODO: move paginator to its own template #}

@@ -136,22 +136,18 @@
 
 {% if contents %}
     <h2>Title{{contents|pluralize:"s"}}  contained in this book:</h2>
-    <table>
     <p>Each item can be rated independently of the book it is contained in. This book might also include short stories that aren't included here. See the ISFDB entry for a ful listing of the contents.</p>
     {% for book in contents %}
         {% book_row_item book %}
     {% endfor %}
-    </table>
 {% endif %}
 
 {% if containers %}
     <h2>This title can be found in {{containers|pluralize:"this,these"}} book{{containers|pluralize:"s"}}:</h2>
     <p>This book can be rated independently of the books it is contained in.</p>
-    <table>
     {% for book in containers %}
         {% book_row_item book %}
     {% endfor %}
-    </table>
 {% endif %}
 
 {% if more_images %}

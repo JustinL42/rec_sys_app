@@ -7,18 +7,16 @@
 
 <h1>My Blocked Books</h1>
     <p>Blocked books won't appear in your recommendations. They will still appear in searches and other lists. You may want to block a book you know you aren't interested in, but don't want to give a rating to. This has no effect on your recommendations. You can also save or rate a book you've blocked. You can un-block a book by unchecking the "Blocked" check box and clicking "Submit".</p>
+    <br>
     {% if error_text %}
-        <br>
         <li class='error'>Couldn't update rating: {{error_text}}</li>
     {% endif %}
 	{% if not object_list %}
 	<p>You haven't blocked any books yet.</p>
 	{% else %}
-    <table class=book_list_table>
-        {% for book in object_list %}
-            {% book_row_item book %}
-        {% endfor %}
-    </table>
+    {% for book in object_list %}
+        {% book_row_item book %}
+    {% endfor %}
     {% endif %}
 
 {% if page_obj.paginator.num_pages > 1 %}
