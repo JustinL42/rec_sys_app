@@ -1,3 +1,5 @@
+import os
+import sys
 from datetime import datetime
 from itertools import chain
 
@@ -9,8 +11,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import generic
 
-from tuning.tune_update_methods import update_one_users_recs
-
 from .models import Books, Isbns, Rating, Words
 from .search_functions import (
     general_book_search,
@@ -18,6 +18,11 @@ from .search_functions import (
     select_bookrow_values,
     unaccent,
 )
+
+# add tuning package to path
+path = os.path.join(os.path.dirname(__file__), os.pardir, "tuning")
+sys.path.append(path)
+from tune_update_methods import update_one_users_recs
 
 
 class HomeView(generic.ListView):
