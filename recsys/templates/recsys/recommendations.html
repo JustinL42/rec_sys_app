@@ -1,25 +1,24 @@
 {% extends "recsys/base.html" %}
 {% load isfdb_image_handling %}
 
-{% block title %}Recommendations{% endblock %}
+{% block title %}BCG|Recommendations{% endblock %}
 
 {% block content %}
 
 <h1>Recommendations</h1>
-    <p>Here are your current top recommendations. Rate more books to improve the quality of the recommendations.</p>
-    {% if error_text %}
-        <br>
-        <li class='error'>Couldn't update rating: {{error_text}}</li>
-    {% endif %}
 	{% if not object_list %}
-	<p>You don't currently have any recommendations. <a href="/firstratings/">Click here to start generating recommendations!</a></p>
+        <p>You don't currently have any recommendations. <a href="/firstratings/">Click here to start generating recommendations!</a></p>
 	{% else %}
-    {% for book in object_list %}
-        {% book_row_item book %}
-    {% endfor %}
+        <p>Here are your current top recommendations. Rate more books to improve the quality of the recommendations.</p>
+        {% if error_text %}
+            <br>
+            <li class='error'>Couldn't update rating: {{error_text}}</li>
+        {% endif %}
+        {% for book in object_list %}
+            {% book_row_item book %}
+        {% endfor %}
     {% endif %}
 
-{# TODO: move paginator to its own template #}
 {% if page_obj.paginator.num_pages > 1 %}
 <br>
 <div class="pagination">

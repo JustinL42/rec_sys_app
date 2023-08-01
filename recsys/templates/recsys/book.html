@@ -1,164 +1,197 @@
 {% extends "recsys/base.html" %}
 {% load isfdb_image_handling %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}BCG|{{ title }}{% endblock %}
 
 {% block content %}
-
-<h1>{{ title }} ({{ year|default:"date uknown" }})</h1>
-<h3>by {{ authors|default:"uknown author" }}</h3>
-{% if user.is_authenticated %}
-    <form action="{% url 'recsys:book' title_id%}" 
-        method="POST">
-        {% csrf_token %}
-        <table class="rating_form_table">
-            {% if error_text %}
-            <tr>
-                <li>{{ error_text }}</li>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>
-                    <table>
-                        <tr class="book_rating_row">
-                            <td>Your<br>rating:</td>
-                            <td>
-                                <input type="hidden" 
-                                    name="rating_title_id" 
-                                    value="{{title_id}}" />
-                                <input class="rating_input_book"
-                                    label="book_rating"
-                                    type="number"
-                                    step="any"
-                                    min="1"
-                                    max="10" 
-                                    name="new_rating"
-                                    autocomplete="off" 
-                                    placeholder="{% if not rating %}No rating yet{% endif %}"
-                                    value="{% if rating %}{{ rating }}{% endif %}">
-                            </td>
-
-                            <td>
-                                Scale:<br>1-10
-                            </td>
-                        </tr>
-                        <tr class="book_checkbox_row">
-                            <td>
-                                <input class="check_box" type="checkbox" id="save" name="save" {% if rating_saved %}checked{% endif %}>
-                            </td>
-                            <td>
-                                <label class="book_checkbox_row_label" for="save">&nbsp;Saved&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                            </td>
-                            <td>
-                                <input class="check_box" width="10px" type="checkbox" id="block" name="block" {% if rating_blocked %}checked{% endif %}>
-                            </td>
-                            <td>
-                                <label class="book_checkbox_row_label" for="save">&nbsp;Blocked</label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <input class="submit_button_book" type="submit" value="Submit">
-                </td>
-            </tr>
-        </table>
-    </form>
-{% else %}
-  <p>Log-in to rate this book</p>
-{% endif %}
-<table>
-    <tr>
-        <th>
-            <a href="{{ cover_image|localize_isfdb_image_url }}">
-            <img class="cover_image" 
-                src="{{ cover_image|localize_isfdb_image_url }}" 
-                alt="book cover for {{ title }}">
-            </a>
-        </th>
-        <th class="short_book_data">
-            <p>{{ book_type|title }}, 
-                {{ pages|default:"Unknown number of" }} pages<br>
-            {% if series_str_1 %}
-                {{ series_str_1 }}<br>
-                {% if series_str_2 %}
-                    {{ series_str_2 }}<br>
-                {% endif %}
-            {% endif %}<br>
-            Editions published: <span class="datum">{{ editions }}</span><br>
-            {% if alt_titles %}
-                Alternate Titles: <span class="datum">{{ alt_titles }}</span><br>
-            {% endif %}
-            {% if isfdb_rating %}
-                Rating on ISFDB: <span class="datum">{{ isfdb_rating }}</span><br>
-            {% endif %}
-            Won Awards: <span class="datum">{{ award_winner }}</span><br>
-            Juvenile / YA: <span class="datum">{{ juvenile }}</span><br>
-            External Links: 
-                {% if wikipedia %}
-                <a href="{{ wikipedia }}" target="_blank">Wikipedia</a>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                {% endif %}
-                <a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ title_id }}" target="_blank">ISFDB</a><br>
-            ISBN: <span class="datum">{{ isbn }}</span></p>
-        </th>
-    <tr>
-</table>
-{% if inconsistent %}
-    <p>WARNING: This entry was created by merging two or more records for books that are mostly the same, but may have some differences in contents. This can happen a novel is re-published with additional material or short fiction, or an anthology is republished with a different set of stories, but the same ISBN is reused. If you give this book a rating, keep in mind that you may have read a different book than other people who have given this book a rating, and this could confuse the rating systems if the contents are actually very different. Look at the "Alternate Titles" field and "More Images" to help decide if the contents are generally the same. The "Contents" section should show all novels and novellas (but not short stories) included in all the merged records. </p>
-{% endif %}
-
-{% if original_lang != 'English' or note or not stand_alone%}
-    <p>Notes:</p>
-    {% if not stand_alone %}
-        <p>This title isn't available as a stand-alone book. See the "Contained in" section to see which volumes it was published in.</p>
+<h1
+    {% if title|length >= 300 %}
+        class="book_page_title_xxlong"
+    {% elif title|length >= 150 %}
+        class="book_page_title_xlong"
+    {% elif title|length >= 50 %}
+        class="book_page_title_long"
+    {% else %}
+        class="book_page_title"
     {% endif %}
-    {% if original_lang != 'English' %}
-        <p>This is book is a translation from <span class="datum">{{ original_lang }}</span> of the original book <span class="datum"><i>{{ original_title }}</i></span> ({{ original_year }}).</p>
-        {% if translations %}
-            <h2>Translations:</h2>
-            <table width="auto" class="tr_table">
-                <tr><th>Year</th><th>Title</th><th>Notes</th></tr>
-                {% for tr in translations %}
-                    <tr><th>{{ tr.year|default:"date unknown" }}</th><th>{{ tr.title }}</th><th>{{ tr.note|safe }}</th></tr>
-                {% endfor %}
-            </table>
+    >{{ title }} ({{ year|default:"date uknown" }})
+</h1>
+<p 
+    {% if authors|length >= 300 %}
+        class="book_page_authors_xxlong"
+    {% elif authors|length >= 150 %}
+        class="book_page_authors_xlong"
+    {% elif authors|length >= 50 %}
+        class="book_page_authors_long"
+    {% else %}
+        class="book_page_authors"
+    {% endif %}
+    >by <span class="datum">{{ authors|default:"uknown author" }}</span>
+</p>
+<div class="book_image_and_metadata">
+    <a class="book_image_link"
+        href="{{ cover_image|localize_isfdb_image_url }}"
+        style="background-image: url({{ cover_image|localize_isfdb_image_url }});"
+        alt="Cover image for '{{ title }}'">
+    </a>
+    <div class="book_metadata">
+        <div>
+            {{ book_type|title }}, {%if pages %}<span class="datum">{{ pages}}</span>{% else %}Unknown number of{% endif %} pages
+        </div>
+        {% if series_str_1 %}
+            <div>
+                <div>{{ series_str_1 }}</div>
+                {% if series_str_2 %}
+                    <div>{{ series_str_2 }}</div>
+                {% endif %}
+            </div>
         {% endif %}
-    {% elif note %}
-        <p>{{ note|safe }}</p>
+        <div>Editions published: <span class="datum">{{ editions }}</span></div>
+        {% if alt_titles %}
+            <div>Alternate Titles: <span class="datum">{{ alt_titles }}</span></div>
+        {% endif %}
+        {% if isfdb_rating %}
+            <div>Rating on ISFDB: <span class="datum">{{ isfdb_rating|floatformat:2 }}</span></div>
+        {% endif %}
+        <div>Won Awards: <span class="datum">{% if award_winner %}Yes{% else %}No{% endif %}</span></div>
+        <div>Juvenile / YA: <span class="datum">{% if juvenile %}Yes{% else %}No{% endif %}</span></div>
+        <div><span>External Links: </span>
+            {% if wikipedia %}
+            <a href="{{ wikipedia }}" target="_blank"
+                title="Open book's Wikipedia page"
+                >&#128279;Wikipedia
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            {% endif %}
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ title_id }}"
+                target="_blank"
+                title="Open book's Internet Speculative Fiction Database page"
+                >&#128279;ISFDB</a>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+    <div class="book_rating_box">
+        <form class="book_rating_form" action="{% url 'recsys:book' title_id%}" method="POST">
+            {% csrf_token %}
+            {% if error_text %}
+                <tr>
+                    <li>{{ error_text }}</li>
+                </tr>
+            {% endif %}
+            <input type="hidden"name="rating_title_id" value="{{ title_id }}"/>
+            <div>My Rating:  <input label="book_rating"
+                type="number"
+                step="any"
+                min=1
+                max=10
+                autocomplete="off"
+                name="new_rating"
+                placeholder="{% if not book.rating_score %}Rating{% endif %}"
+                value="{% if rating %}{{ rating }}{% endif %}">
+            </div>
+            <div class="rating_checkbox">
+                <div>
+                    <input type="checkbox"
+                        id="save_{{book.title_id}}"
+                        name="save"
+                        {% if rating_saved %}checked{% endif %}>
+                </div>
+                <div>
+                    <label for="save_{{book.title_id}}">
+                        <span class="check_box_label">Saved</span>
+                    </label>
+                </div>
+            </div>
+            <div class="rating_checkbox">
+                <div>
+                    <input type="checkbox"
+                        id="block_{{book.title_id}}"
+                        name="block"
+                        {% if rating_blocked %}checked{% endif %}>
+                </div>
+                <div>
+                    <label for="block_{{book.title_id}}">
+                        <span class="check_box_label">Blocked</span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <input class="submit_button_row" type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+{% endif %}
+
+{% if inconsistent %}
+    <h2 class="book_notes">Important Note</h2>
+    <p>This entry was created by merging two or more records for books that are mostly the same, but may have some differences in contents. This can happen a novel is re-published with additional material or short fiction, or an anthology is republished with a different set of stories, but the same ISBN is reused. If you give this book a rating, keep in mind that you may have read a different book than other people who have given this book a rating, and this could confuse the rating systems if the contents are actually very different. Look at the "Alternate Titles" field and "More Images" to help decide if the contents are generally the same. The "Contents" section should show all novels and novellas (but not short stories) included in all the merged records. </p>
+{% endif %}
+
+{% if not stand_alone or note %}
+    <h2 class="book_notes">Book Notes</h2>
+    <ul>
+        {% if not stand_alone %}
+            <li>This title may not be available as a stand-alone book.{% if containers %} See the "<a href="#containers">Containing this Title</a>" section to see which volumes it was published in.{% endif %}</li>
+        {% endif %}
+        {% if note %}
+            <li>{{ note|safe }}</li>
+        {% endif %}
+    </ul>
+{% endif %}
+
+{% if original_lang != 'English' %}
+    <h2 class="book_notes">Translation Notes</h2>
+    <p>This is book is a translation from <span class="datum">{{ original_lang }}</span> of the original title <span class="datum">{{ original_title }}</span> ({{ original_year|default:"date unknown" }}).</p>
+    {% if translations %}
+        <p>The following English translation{{translations|pluralize:"s"}} are known:
+        <table width="auto" class="tr_table">
+            <thead><tr><th>Year</th><th>Title</th><th>Notes</th></tr></thead>
+            <tbody>
+                {% for tr in translations %}
+                    <tr>
+                        <td>{{ tr.year|default:"date unknown" }}</td>
+                        <td>{{ tr.title }}</td>
+                        <td>{{ tr.note|safe }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
 {% endif %}
 
 {% if synopsis %}
-    <h2>Synopsis:</h2>
+    <h2 class="book_notes">Synopsis</h2>
     <p>{{ synopsis|safe }}</p>
 {% endif %}
 
 {% if contents %}
-    <h2>Title{{contents|pluralize:"s"}}  contained in this book:</h2>
-    <p>Each item can be rated independently of the book it is contained in. This book might also include short stories that aren't included here. See the ISFDB entry for a ful listing of the contents.</p>
+    <h2 class="book_notes">Book Contents</h2>
+    <p>The following title{{contents|pluralize:" is,s are"}} included in this volume. It may also include short fiction of 7,500 words or fewer, which aren't included on this site. See the <a href="http://www.isfdb.org/cgi-bin/title.cgi?{{ title_id }}" target="_blank">ISFDB entry</a> for a full listing of the contents. Each title can be rated independently of any books that contain it.</p>
     {% for book in contents %}
         {% book_row_item book %}
     {% endfor %}
 {% endif %}
 
 {% if containers %}
-    <h2>This title can be found in {{containers|pluralize:"this,these"}} book{{containers|pluralize:"s"}}:</h2>
-    <p>This book can be rated independently of the books it is contained in.</p>
+    <h2 id="containers" class="book_notes">{{containers|pluralize:"The Book,Books"}} Containing this Title</h2>
+    <p>{% if stand_alone %}In addition to its stand-alone volume, t{% else %}T{% endif %}his title was published in the follow book{{containers|pluralize:"s"}}. It can be rated independently of any volume{{containers|pluralize:"s"}} containing it.</p>
     {% for book in containers %}
         {% book_row_item book %}
     {% endfor %}
 {% endif %}
 
 {% if more_images %}
-    <h2>More Cover Images:</h2>
-    {% for cover in more_images %}
-        <a href="{{ cover.image|localize_isfdb_image_url }}">
-        <img class="cover_image" 
-            src="{{ cover.image|localize_isfdb_image_url }}" 
-            alt="book cover for {{ title }}">
-        </a>
-    {% endfor %}
+    <h2 class="book_notes">More Cover Images</h2>
+    <div class="cover-gallery">
+        {% for cover in more_images %}
+            <a href="{{ cover.image|localize_isfdb_image_url }}"
+                style="background-image: url({{ cover.image|localize_isfdb_image_url }});"
+                alt="additional book cover for '{{ title }}'">
+            </a>
+        {% endfor %}
+    </div>
 {% endif %}
 
 {% endblock %}

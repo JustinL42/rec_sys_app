@@ -1,7 +1,7 @@
 :root {
-  --theme-blue:#336791;
-  --accent-blue:DodgerBlue;
-  --alt-blue:CadetBlue;
+  --theme-blue: #336791;
+  --accent-blue: DeepSkyBlue;
+  --alt-blue: CadetBlue;
 
   --theme-grey:LightSlateGray;
   --accent-grey:LightGray;
@@ -50,10 +50,16 @@ header li {
   list-style: none;
 }
 
+.page_body p:not(.book_row_item p) {
+  margin-bottom: .5em;
+}
+
 .page_body a {
   color: black;
-  margin-top: 12px;
-  margin-bottom: 12px;
+}
+
+.page_body li {
+  margin-left: 24px;
 }
 
 .datum  {
@@ -110,9 +116,19 @@ input[type=submit]:hover {
   color: white;
 }
 
+.navbar_two {
+  display: flex;
+  background-color:  var(--theme-blue);
+  color: white;
+}
+
 .nav-links a {
   color: white;
   vertical-align: middle;
+}
+
+.navbar_two ul {
+  width: 100%;
 }
 
 .logo {
@@ -130,14 +146,24 @@ input[type=submit]:hover {
   font-size: 18px;
 }
 
-.menu li:hover {
+.menu_two {
+  display: flex;
+  justify-content: space-around;
+}
+
+.menu li:hover,.menu_two li:hover {
   background-color: var(--accent-blue);
   border-radius: 5px;
-  transition: 0.3s ease;
+  transition: 0.2s ease;
 }
 
 .menu li {
   padding: 5px 14px;
+  vertical-align: middle;
+}
+
+.menu_two li {
+  padding: 0px 14px 5px 14px;
   vertical-align: middle;
 }
 
@@ -259,10 +285,26 @@ footer {
   flex-direction: column;
 }
 
-.rating_form div>input[type=number] {
+.book_rating_box {
+  margin-top: 5px;
+  font-size: 120%;
+}
+
+.rating_form div>input[type=number], .book_rating_form div>input[type=number] {
   width: 5em;
   font-size: 120%;
   text-align: center;
+}
+
+.book_rating_form {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  font-size: 120%;
+}
+
+.book_rating_box {
+  width: 100%;
 }
 
 .rating_checkbox {
@@ -276,10 +318,9 @@ footer {
   margin-right: 0.3em;
 }
 
-.rating_checkbox div>input[type=submit]{
+.rating_checkbox div>input[type=submit], .book_rating_checkbox div>input[type=submit]{
   width: 5em;
 }
-
 
 .img_and_data {
   display: flex;
@@ -295,7 +336,7 @@ footer {
   padding-left: 20px;
   background-repeat: no-repeat;
   background-size: contain;
-  background-position: right;
+  background-position: center;
 }
 
 .row_metadata {
@@ -334,7 +375,7 @@ footer {
 .jvnya_badge {
   color: white;
   font-weight: 700;
-  background-color: var(--alt-blue);
+  background-color: var(--accent-blue);
   border-radius: 5px;
   padding: 2px;
 }
@@ -438,6 +479,10 @@ footer {
     align-items: center;
   }
 
+  .book_rating_form {
+    font-size: 80%;
+  }
+
 }
 
 
@@ -450,4 +495,145 @@ footer {
 
 .pagination a {
   font-weight: 700;
+}
+
+
+/* Book Pages */
+
+.book_page_title {
+  font-size: 200%;
+  font-weight: 700;
+}
+.book_page_title_long {
+  font-size: 160%;
+  font-weight: 700;
+}
+.book_page_title_xlong {
+  font-size: 120%;
+  font-weight: 700;
+}
+.book_page_title_xxlong {
+  font-size: 80%;
+  font-weight: 700;
+}
+
+
+.book_page_authors {
+  font-size: 150%;
+}
+.book_page_authors_long {
+  font-size: 125%;}
+
+.book_page_authors_xlong {
+  font-size: 100%;
+}
+.book_page_authors_xxlong {
+  font-size: 75%;
+}
+
+.book_image_and_metadata {
+  display: flex;
+  flex-direction: row;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
+  border-radius: 5px;
+  width: 100%;
+  height: 50vh;
+}
+
+.book_image {
+  flex-grow: 1;
+}
+
+.book_image_link {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  flex-grow: 1;
+  margin: 4px;
+  min-width: 25vh;
+  max-width: 50vh;
+}
+
+.book_image img {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+  padding: 2px;
+}
+
+.book_metadata {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 10px 5px;
+  flex-grow: 1;
+}
+
+.book_notes {
+  margin-top: 0.8em;
+}
+
+.tr_table {
+  border-collapse: seperate;
+  border-spacing: 0;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  margin-bottom: 0.5em;
+}
+
+.tr_table th,td {
+  padding: 10px;
+  border-width: 0.5px;
+  border-style: solid;
+}
+
+.cover_gallery {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  height: 100px;
+}
+
+.cover_gallery div {
+  display: flex;
+  height: 50vh;
+  gap: 5px;
+}
+
+.cover_gallery div>a {
+  width: 100%;
+  height: 100%;
+  border-width: 1px;
+  border-style: solid;
+}
+
+
+.cover-gallery {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+}
+
+.cover-gallery > a {
+  width: 30%;
+  height: 35vh;
+  vertical-align: middle;
+  border-radius: 3px;
+  border-style: solid;
+  border-width: thin;
+  background-image: url('https://source.unsplash.com/VWcPlbHglYc');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.cover-gallery a:hover {
+  border-width: medium;
 }

@@ -5,14 +5,12 @@
 
 {% block content %}
 <h1>Welcome to BookClub.Guide,</h1>
-<p>a website where you can browse and give ratings to science fiction and fantasy books.</p>
-<br>
+<p>a website where you can browse and give ratings to science fiction and fantasy books. The site can you give you recommendations on what to read next by comparing your ratings to those of other users.</p>
 {% if user.is_authenticated %}
 <p>Hi <span class=datum>{{ user.first_name }}</span>! You are logged in.</p>
 {% else %}
 <p>You are not logged in. <a href="{% url 'login' %}">Click here</a> to log-in or sign up.</p>
 {% endif %}
-<br>
 <h3>Here are some random noteworthy books:</h3>
 
 <div class=book_list>

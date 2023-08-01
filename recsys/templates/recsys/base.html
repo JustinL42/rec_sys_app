@@ -8,10 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{% static 'recsys/style.css' %}" />
     <title>{% block title %}{% endblock %}</title>
-    <link rel="icon" 
-    type="image/png" 
-    href="{% static 'recsys/images/favicon.ico' %}"
-    />
+    <link rel="icon"
+        type="image/png"
+        href="{% static 'recsys/images/favicon-32.png' %}"
+        sizes="32x32">
+    <link rel="icon"
+        type="image/png"
+        href="{% static 'recsys/images/favicon-128.png' %}"
+        sizes="128x128">
+    <link rel="icon"
+        type="image/png"
+        href="{% static 'recsys/images/favicon-180.png' %}"
+        sizes="180x180">
+    <link rel="icon"
+        type="image/png"
+        href="{% static 'recsys/images/favicon-192.png' %}"
+        sizes="192x192">
 </head>
 
 <body>
@@ -29,16 +41,41 @@
                         >Recommendations</a>
                     </li>
                     <li><a href="{% url 'account' %}">Account</a></li>
-<!--                     <li><a href="{% url 'account' %}">Blog</a></li>
-                    <li><a href="{% url 'account' %}">About</a></li> -->
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'logout' %}">Log Out</a></li>
                     {% else %}
-                    <li><a href="{% url 'login' %}">Log&nbsp;In&nbsp;/ Sign&nbsp;Up</a></li>
+                    <li>
+                        <a href="{% url 'login' %}">
+                            Log&nbsp;In&nbsp;/ Sign&nbsp;Up
+                        </a>
+                    </li>
                     {% endif %}
                 </div>
             </ul>
         </nav>
+        {% if in_ratings_tab %}
+            <nav class="navbar_two">
+                <ul class="nav-links">
+                    <div class="menu_two">
+                        <li>
+                            <a href="{% url 'recsys:ratings' %}">
+                                Ratings ({{rating_count}})
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'recsys:saved' %}">
+                                Saved ({{saved_count}})
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'recsys:blocked' %}">
+                                Blocked ({{blocked_count}})
+                            </a>
+                        </li>
+                    </div>
+                </ul>
+            </nav>
+        {% endif %}
         <form action="{% url 'recsys:search_results' %}" 
         method="get"    
         class="search_bar">
