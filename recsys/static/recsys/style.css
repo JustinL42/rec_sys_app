@@ -270,6 +270,7 @@ footer {
   flex-direction: row;
   width: 100%;
   height: 30vh;
+  min-height: 8em;
 }
 
 .rating_box {
@@ -326,7 +327,7 @@ footer {
   display: flex;
   flex-direction: row;
   flex: 10;
-  overflow-y: hide;
+  overflow-y: auto;
 }
 
 .thumbnail_link {
