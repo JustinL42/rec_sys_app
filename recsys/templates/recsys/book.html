@@ -145,7 +145,7 @@
     <h2 class="book_notes">Translation Notes</h2>
     <p>This is book is a translation from <span class="datum">{{ original_lang }}</span> of the original title <span class="datum">{{ original_title }}</span> ({{ original_year|default:"date unknown" }}).</p>
     {% if translations %}
-        <p>The following English translation{{translations|pluralize:"s"}} are known:
+        <p>The following English translation{{translations|pluralize:" is,s are"}} known:
         <table width="auto" class="tr_table">
             <thead><tr><th>Year</th><th>Title</th><th>Notes</th></tr></thead>
             <tbody>
