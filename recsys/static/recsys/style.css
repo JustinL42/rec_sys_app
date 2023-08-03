@@ -54,6 +54,14 @@ header li {
   margin-bottom: .5em;
 }
 
+.page_body ul:not(.book_row_item p) {
+  margin-bottom: .5em;
+}
+
+.page_body h1 h2 h3 {
+  margin-top: .5em;
+}
+
 .page_body a {
   color: black;
 }
@@ -571,6 +579,7 @@ footer {
   justify-content: space-around;
   padding: 10px 5px;
   flex-grow: 1;
+  overflow-y: auto;
 }
 
 .book_notes {

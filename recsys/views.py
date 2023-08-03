@@ -601,3 +601,9 @@ def update_rating(request):
         rating_obj.save()
 
     return error_text
+
+
+class AboutView(generic.View):
+
+    def get(self, request):
+        return render(request, "recsys/about.html")

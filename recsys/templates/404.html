@@ -1,0 +1,10 @@
+{% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}BCG|Page not found{% endblock %}
+
+{% block content %}
+<h1>Page not found</h1>
+<p>Sorry, the page you requested can't be found. If you think this is an error, send an email to {{ "admin@bookclub.guide"|urlize }}.</p>
+<p><a href="/">Return to Home Page</a></p>
+{% endblock %}

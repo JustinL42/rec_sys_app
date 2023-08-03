@@ -23,4 +23,5 @@ urlpatterns = [
     ),
     path("blocked/", views.BlockedView.as_view(), name="blocked"),
     path("saved/", views.SavedView.as_view(), name="saved"),
+    path("about/", views.AboutView.as_view(), name="about"),
 ]

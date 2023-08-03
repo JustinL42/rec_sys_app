@@ -34,6 +34,8 @@ SECRET_KEY = config["django_secret_key"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.getboolean("debug")
 
+ADMIN_PAGE = config["admin_page"].lower()
+
 ALLOWED_HOSTS = config["allowed_hosts"].split(",")
 
 if config["csrf_trusted_origins"]:
