@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -23,5 +23,11 @@ urlpatterns = [
     ),
     path("blocked/", views.BlockedView.as_view(), name="blocked"),
     path("saved/", views.SavedView.as_view(), name="saved"),
+    re_path(r"^blog/$", views.BlogView.as_view(), name="blog"),
+    path(
+        "blog/<str:post_name>/",
+        views.BlogPostView.as_view(),
+        name="blog_post"
+    ),
     path("about/", views.AboutView.as_view(), name="about"),
 ]

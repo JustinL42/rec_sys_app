@@ -603,6 +603,18 @@ def update_rating(request):
     return error_text
 
 
+class BlogView(generic.View):
+
+    def get(self, request):
+        return render(request, "recsys/blog.html")
+
+
+class BlogPostView(generic.View):
+
+    def get(self, request, post_name):
+        return render(request, f"recsys/blog/{post_name}.html")
+
+
 class AboutView(generic.View):
 
     def get(self, request):

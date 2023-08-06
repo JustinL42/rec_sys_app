@@ -1,0 +1,25 @@
+{% extends "recsys/base.html" %}
+{% load isfdb_image_handling %}
+
+{% block title %}BCG|About{% endblock %}
+
+{% block content %}
+
+<h1>About</h1>
+<p>BookClub.Guide is a recommendation system web app where readers and book clubs can get recommendations on books they might enjoy. Using a database derived from the <a href="http://www.isfdb.org">Internet Speculative Fiction Database's</a> regularly-updated snapshots, users can give ratings to nearly any sci-fi/fantasy book available in English. These ratings are are used to help find recommendations for the user, as well as for other users with similar taste.</p>
+<p>To get started, <a href="{% url 'signup' %}">sign up</a> for a free account and give ratings to books you've read. The app will attempt to give you recommendations based on your initial ratings. Its recommendations will improve as you, and other users, provide more data. An account isn't needed to search for and browse the titles.</p>
+<p>Let me know about any problems or feedback by emailing be at {{ "admin@bookclub.guide"|urlize }}.</p>
+
+<h2>Why I made this site</h2>
+<p>While participating in a sci-fi/fantasy book club, I noticed that it was challenging for the group to choose books that most club members would be likely to enjoy. I wondered if recommendation system machine learning algorithms, like those used by Netflix or Amazon, might be useful for groups of people instead of just individuals. Although I originally envisioned the site as a tool for suggesting new titles to book clubs, and planned features for this purpose, that isn't currently a development priority. I found that just getting consistently good recommendations for individual readers was a challenge in itself due to a lack of sufficiently recent and suitable datasets to jump start the process. Despite this, developing BookClub.Guide has been a good opportunity to practice machine learning and web technologies, and I'm continuing to work on using new data sources to improve the quality of recommendations. Read about more technical details of site <a href="/blog/technical_overview">in this blog post</a></p>
+
+<h2>About me</h2>
+<p>I'm Justin Lavoie, a software and data engineer based in Boston.</p>
+<ul>
+  <li><a href="https://justinlavoie.net">Personal Website</a></li>
+  <li><a href="https://github.com/JustinL42">Github</a></li>
+  <li><a href="https://www.linkedin.com/in/justinlavoie">LinkedIn</a></li>
+  <li><a href="mailto:justin@justinlavoie.net">Email</a></li>
+</ul>
+
+{% endblock %}
