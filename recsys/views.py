@@ -251,7 +251,7 @@ class SearchResultsView(generic.View):
         return self.get(request, error_text=error_text)
 
     def get(self, request, error_text=None):
-        search = unaccent(self.request.GET.get("search").strip().lower())
+        search = unaccent(self.request.GET.get("search", "").strip().lower())
         search_errors = []
         if len(search) > 70:
             search_errors.append(
