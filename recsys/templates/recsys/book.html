@@ -4,6 +4,7 @@
 {% block title %}BCG|{{ title }}{% endblock %}
 
 {% block content %}
+<div id="br{{ title_id }}">
 <h1
     {% if title|length >= 300 %}
         class="book_page_title_xxlong"
@@ -117,12 +118,17 @@
                     </label>
                 </div>
             </div>
-            <div>
-                <input class="submit_button_row" type="submit" value="Submit">
+            <div class="confirm_icon">&emsp;</div>
+                <button class="submit_button_row"
+                    hx-post="{% url 'recsys:book' title_id%}"
+                    hx-trigger="click" hx-target=".confirm_icon"
+                    >Submit
+                </button>
             </div>
         </form>
     </div>
 {% endif %}
+</div>
 
 {% if inconsistent %}
     <h2 class="book_notes">Important Note</h2>

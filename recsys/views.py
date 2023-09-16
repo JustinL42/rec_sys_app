@@ -2,11 +2,13 @@ import os
 import sys
 from datetime import datetime
 from itertools import chain
+from textwrap import dedent
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import CharField, Count, Exists, F, OuterRef, Q
 from django.db.models.functions import MD5, Cast
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import generic
@@ -29,7 +31,13 @@ class HomeView(generic.ListView):
     template_name = "recsys/home.html"
 
     def post(self, request):
+        try:
+            title_id = int(request.POST.get("rating_title_id"))
+        except ValueError:
+            return self.get(request, error_text="Invalid title ID")
         error_text = update_rating(request)
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse(bookrow_htmx_update(title_id, error_text))
         return self.get(request, error_text=error_text)
 
     def get_queryset(self):
@@ -126,9 +134,39 @@ def isbn10_to_13(isbn10):
     return "978" + isbn10[:-1] + str(cd)
 
 
+def bookrow_htmx_update(title_id, error_text):
+    if not error_text:
+        return dedent(
+            f'''
+                \N{heavy check mark}
+                <div hx-swap-oob="delete:#br{title_id} .error_text">
+                </div>
+            '''
+        )
+    return dedent(
+        f'''
+            \N{cross mark}
+            <div hx-swap-oob="delete:#br{title_id} .error_text"></div>
+            <div hx-swap-oob="beforeend:#br{title_id}">
+                <div class="error_text">{error_text}</div>
+            </div>
+        '''
+    )
+
+
 class book(generic.View):
     def post(self, request, book_id):
         error_text = update_rating(request)
+        if request.META.get("HTTP_HX_REQUEST"):
+            try:
+                title_id = int(request.POST.get("rating_title_id"))
+            except ValueError:
+                return self.get(
+                    request,
+                    book_id,
+                    error_text="Invalid title ID",
+                )
+            return HttpResponse(bookrow_htmx_update(title_id, error_text))
         return self.get(request, book_id, error_text=error_text)
 
     def get(self, request, book_id, error_text=None):
@@ -203,7 +241,13 @@ class SearchResultsView(generic.View):
     paginate_by = 8
 
     def post(self, request):
+        try:
+            title_id = int(request.POST.get("rating_title_id"))
+        except ValueError:
+            return self.get(request, error_text="Invalid title ID")
         error_text = update_rating(request)
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse(bookrow_htmx_update(title_id, error_text))
         return self.get(request, error_text=error_text)
 
     def get(self, request, error_text=None):
@@ -359,7 +403,13 @@ class AbstractRatingsView(LoginRequiredMixin, generic.ListView):
         return context
 
     def post(self, request):
+        try:
+            title_id = int(request.POST.get("rating_title_id"))
+        except ValueError:
+            return self.get(request, error_text="Invalid title ID")
         error_text = update_rating(request)
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse(bookrow_htmx_update(title_id, error_text))
         return self.get(request, error_text=error_text)
 
 
@@ -402,7 +452,13 @@ class RecommendationsView(LoginRequiredMixin, generic.ListView):
     login_url = "/login/"
 
     def post(self, request):
+        try:
+            title_id = int(request.POST.get("rating_title_id"))
+        except ValueError:
+            return self.get(request, error_text="Invalid title ID")
         error_text = update_rating(request)
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse(bookrow_htmx_update(title_id, error_text))
         return self.get(request, error_text=error_text)
 
     def get_queryset(self):
@@ -469,7 +525,36 @@ class FirstRatingsView(LoginRequiredMixin, generic.View):
 
     def post(self, request):
         if "done" not in request.POST:
+            try:
+                title_id = int(request.POST.get("rating_title_id"))
+            except ValueError:
+                return self.get(request, error_text="Invalid title ID")
             error_text = update_rating(request)
+            if request.META.get("HTTP_HX_REQUEST"):
+                html_update = bookrow_htmx_update(title_id, error_text)
+                rating_count = (
+                    self.request.user.rating_set.select_related("book")
+                    .filter(rating__isnull=False)
+                    .count()
+                )
+                if rating_count < 10:
+                    html_update += dedent(
+                        f'''
+                            <div hx-swap-oob="innerHTML:.rating_count">
+                                {rating_count}
+                            </div>
+                        '''
+                    )
+                else:
+                    html_update += dedent(
+                        f'''
+                            <div hx-swap-oob="innerHTML:.cs_instructions">
+                            <p>You've rated <span class="datum rating_count">{rating_count}</span> books. Click this button to generate some recommendations</p>
+                            <input class="submit_button_form" type="submit" value="Generate Recommendations">
+                            </div>
+                        '''
+                    )
+                return HttpResponse(html_update)
             return self.get(request, error_text=error_text)
 
         # Get both the top 12 and bottom 12 recommendations. This will
@@ -528,7 +613,13 @@ class SecondRatingsView(LoginRequiredMixin, generic.ListView):
 
     def post(self, request):
         if "done" not in request.POST:
+            try:
+                title_id = int(request.POST.get("rating_title_id"))
+            except ValueError:
+                return self.get(request, error_text="Invalid title ID")
             error_text = update_rating(request)
+            if request.META.get("HTTP_HX_REQUEST"):
+                return HttpResponse(bookrow_htmx_update(title_id, error_text))
             return self.get(request, error_text=error_text)
 
         # The final cold start recommendations are limited to 120 simply

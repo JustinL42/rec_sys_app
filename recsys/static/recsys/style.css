@@ -649,3 +649,15 @@ footer {
 .cover-gallery a:hover {
   border-width: medium;
 }
+
+.confirm_icon {
+  padding-left: 6px;
+  padding-right: 6px;
+  color: green;
+}
+
+.error_text {
+  padding-left: 12px;
+  padding-right: 12px;
+  color: crimson;
+}

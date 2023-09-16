@@ -1,6 +1,6 @@
 {% load isfdb_image_handling %}
 
-<div class="book_row_item">
+<div class="book_row_item" id=br{{book.title_id}}>
     <div class="img_data_and_rating">
         {% if user.is_authenticated %}
             <div class="rating_box">
@@ -45,8 +45,14 @@
                             </label>
                         </div>
                     </div>
-                    <div>
-                        <input class="submit_button_row" type="submit" value="Submit">
+                    <div style="display: flex; align-items: center;">
+                        <div class="confirm_icon">&emsp;</div>
+                        <div><button class="submit_button_row"
+                            hx-post="{{request.get_full_path}}"
+                            hx-trigger="click"
+                            hx-target="#br{{book.title_id}} .confirm_icon"
+                            >Submit
+                    </button></div>
                     </div>
                 </form>
             </div>
