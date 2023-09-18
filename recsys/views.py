@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from datetime import datetime
@@ -25,6 +26,8 @@ from .search_functions import (
 path = os.path.join(os.path.dirname(__file__), os.pardir, "tuning")
 sys.path.append(path)
 from tune_update_methods import update_one_users_recs
+
+searchLogger = logging.getLogger("search")
 
 
 class HomeView(generic.ListView):
@@ -251,7 +254,13 @@ class SearchResultsView(generic.View):
         return self.get(request, error_text=error_text)
 
     def get(self, request, error_text=None):
+        searchLogger.info("user search", extra={
+            "search_term": self.request.GET.get("search"),
+            "user": request.user.username or "guest",
+            "admin": request.user.is_superuser,
+        })
         search = unaccent(self.request.GET.get("search", "").strip().lower())
+
         search_errors = []
         if len(search) > 70:
             search_errors.append(

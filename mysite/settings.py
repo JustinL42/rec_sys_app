@@ -174,3 +174,35 @@ Q_CLUSTER = {
     # uncomment this to disable the scheduler
     # 'scheduler': False,
 }
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "non_admin": {
+            "()": lambda : lambda r: not r.admin
+        },
+    },
+    "formatters": {
+        "search_format": {
+            "format": "{asctime}\t{levelname}\t{user}\t{search_term}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "search_handler": {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{config["log_dir"]}/search.log',
+            'maxBytes': 1048576,
+            'backupCount': 10,
+            "formatter": "search_format",
+            "filters": ["non_admin"],
+        },
+    },
+    "loggers": {
+        "search": {
+            "handlers": ["search_handler"],
+            "level": "DEBUG",
+        },
+    },
+}
