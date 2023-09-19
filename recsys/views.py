@@ -28,6 +28,7 @@ sys.path.append(path)
 from tune_update_methods import update_one_users_recs
 
 searchLogger = logging.getLogger("search")
+userLogger = logging.getLogger("user")
 
 
 class HomeView(generic.ListView):
@@ -577,6 +578,13 @@ class FirstRatingsView(LoginRequiredMixin, generic.View):
             urgent=True,
             cold_start=True,
         )
+        userLogger.info("finished coldstart 1", extra={
+            "user": request.user.username,
+            "admin": request.user.is_superuser,
+            "rating": "",
+            "title_id": "",
+            "title": "",
+        })
         return redirect("/secondratings/")
 
 
@@ -640,6 +648,13 @@ class SecondRatingsView(LoginRequiredMixin, generic.ListView):
             urgent=True,
             cold_start=True,
         )
+        userLogger.info("finished cold start 2", extra={
+            "user": request.user.username,
+            "admin": request.user.is_superuser,
+            "rating": "",
+            "title_id": "",
+            "title": "",
+        })
         return redirect("/recommendations/")
 
 
@@ -699,6 +714,19 @@ def update_rating(request):
         rating_obj.blocked = block
         rating_obj.last_updated = timezone.now()
         rating_obj.save()
+        if userLogger.isEnabledFor(logging.INFO):
+            if "book_obj" not in locals():
+                book_obj = (
+                    Books.objects.values_list("title", named=True)
+                    .get(pk=rating_title_id)
+                )
+            userLogger.info("rated", extra={
+                "user": request.user.username,
+                "admin": request.user.is_superuser,
+                "rating": new_rating,
+                "title_id": rating_title_id,
+                "title": book_obj.title,
+            })
 
     return error_text
 

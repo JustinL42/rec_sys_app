@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django.contrib.auth import authenticate, get_user_model, login
@@ -9,6 +10,7 @@ from django.views.generic import View
 from django.views.generic.base import TemplateView
 
 User = get_user_model()
+userLogger = logging.getLogger("user")
 
 
 class AbstractAccount(TemplateView):
@@ -134,6 +136,15 @@ class SignUpView(View):
                     "email": email,
                 },
             )
+
+        userLogger.info("created account", extra={
+            "user": username,
+            "admin": False,
+            "event": "account creation",
+            "rating": "",
+            "title_id": "",
+            "title": "",
+        })
 
         return redirect("/firstratings")
 
@@ -297,6 +308,13 @@ class AccountDeleteView(LoginRequiredMixin, AbstractAccount):
 
         user = User.objects.get(username=username)
         user.delete()
+        userLogger.info("deleted account", extra={
+            "user": username,
+            "admin": request.user.is_superuser,
+            "rating": "",
+            "title_id": "",
+            "title": "",
+        })
         return render(
             request,
             "registration/account_delete_done.html",

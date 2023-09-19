@@ -188,6 +188,12 @@ LOGGING = {
             "format": "{asctime}\t{levelname}\t{user}\t{search_term}",
             "style": "{",
         },
+        "user_format": {
+            "format": "{asctime}\t{levelname}\t{user}\t{message}\t{rating}\t{title_id}\t{title:.40}",
+            "defaults": {"title_id": "", "rating": ""},
+            "style": "{",
+            "validate": True,
+        }
     },
     "handlers": {
         "search_handler": {
@@ -198,10 +204,22 @@ LOGGING = {
             "formatter": "search_format",
             "filters": ["non_admin"],
         },
+        "user_handler": {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{config["log_dir"]}/user.log',
+            'maxBytes': 1048576,
+            'backupCount': 10,
+            "formatter": "user_format",
+            "filters": ["non_admin"],
+        },
     },
     "loggers": {
         "search": {
             "handlers": ["search_handler"],
+            "level": "DEBUG",
+        },
+        "user": {
+            "handlers": ["user_handler"],
             "level": "DEBUG",
         },
     },
