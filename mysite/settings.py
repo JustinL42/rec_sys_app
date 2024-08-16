@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "recsys.apps.RecSysConfig",
     "django.contrib.postgres",
-    "django_q",
 ]
 
 MIDDLEWARE = [

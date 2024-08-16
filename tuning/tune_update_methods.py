@@ -50,7 +50,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         AND r.rating IS NOT NULL;
         """,
         conn,
-        params=[BX_BOOK_CLUB_NAME],
+        params=(BX_BOOK_CLUB_NAME,),
     )
 
     large_df = pd.read_sql(
@@ -65,7 +65,7 @@ def tune_svd_model(n_iter=10, force=False, n_jobs=1):
         AND u.virtual = FALSE;
         """,
         conn,
-        params=[BX_BOOK_CLUB_NAME],
+        params=(BX_BOOK_CLUB_NAME,),
     )
 
     df = pd.concat([small_df, large_df])

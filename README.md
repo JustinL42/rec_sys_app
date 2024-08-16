@@ -12,7 +12,7 @@ Some of the motivations for this project include:
 
 The algorithm used to generate recommendations is a [collaborative filtering](https://en.wikipedia.org/wiki/Collaborative_filtering), [matrix factorization](https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)) model. Specifically, this is the [SVD algorithm](https://surprise.readthedocs.io/en/stable/matrix_factorization.html#surprise.prediction_algorithms.matrix_factorization.SVD) from the [Surprise](http://surpriselib.com/) python package, with some customizations. 
 
-The [Book Crossing](http://www2.informatik.uni-freiburg.de/~cziegler/BX/) ratings data set was used jump start the model-tuning. The data isn't an ideal fit for this application for a number of reasons. Because of this, the algorithm's evaluation function was modified so that only the accuracy of predictions for the site's real users (not Book Crossings ratings) was used to guide the tuning of the model.
+The [Book Crossing](https://web.archive.org/web/20230319134511/http://www2.informatik.uni-freiburg.de/~cziegler/BX/) ratings data set was used jump start the model-tuning. The data isn't an ideal fit for this application for a number of reasons. Because of this, the algorithm's evaluation function was modified so that only the accuracy of predictions for the site's real users (not Book Crossings ratings) was used to guide the tuning of the model.
 
 ## Installation
 

@@ -74,7 +74,7 @@
                         {% if book.title|length >= 90 %}
                             title="{{ book.title }}"
                         {% endif %}
-                        ><a href="{% url 'recsys:book' book.title_id %}">{{ book.title|truncatechars_html:90 }}</a> ({{ book.year|default:"date unknown" }})</p>
+                        ><a href="{% url 'recsys:book' book.title_id %}">{{ book.title|truncatechars:90 }}</a> ({{ book.year|default:"date unknown" }})</p>
                     <p>by <span class="datum">{{ book.authors|truncatechars_html:110 }}</span></p>
                     <p>
                         {{ book.book_type|title }}{% if book.pages %}, <span class="datum">{{ book.pages }}</span> pages{% endif %}
