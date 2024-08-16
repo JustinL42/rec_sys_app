@@ -137,14 +137,17 @@ class SignUpView(View):
                 },
             )
 
-        userLogger.info("created account", extra={
-            "user": username,
-            "admin": False,
-            "event": "account creation",
-            "rating": "",
-            "title_id": "",
-            "title": "",
-        })
+        userLogger.info(
+            "created account",
+            extra={
+                "user": username,
+                "admin": False,
+                "event": "account creation",
+                "rating": "",
+                "title_id": "",
+                "title": "",
+            },
+        )
 
         return redirect("/firstratings")
 
@@ -308,13 +311,16 @@ class AccountDeleteView(LoginRequiredMixin, AbstractAccount):
 
         user = User.objects.get(username=username)
         user.delete()
-        userLogger.info("deleted account", extra={
-            "user": username,
-            "admin": request.user.is_superuser,
-            "rating": "",
-            "title_id": "",
-            "title": "",
-        })
+        userLogger.info(
+            "deleted account",
+            extra={
+                "user": username,
+                "admin": request.user.is_superuser,
+                "rating": "",
+                "title_id": "",
+                "title": "",
+            },
+        )
         return render(
             request,
             "registration/account_delete_done.html",

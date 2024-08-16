@@ -501,7 +501,7 @@ def update_one_users_recs(
             + predictions[(-bottom_n if bottom_n else len(predictions)) :]
         )
 
-    for (prediction, title_id) in predictions:
+    for prediction, title_id in predictions:
         conn.execute(
             """
             INSERT INTO recsys_rating

@@ -141,20 +141,20 @@ def isbn10_to_13(isbn10):
 def bookrow_htmx_update(title_id, error_text):
     if not error_text:
         return dedent(
-            f'''
+            f"""
                 \N{heavy check mark}
                 <div hx-swap-oob="delete:#br{title_id} .error_text">
                 </div>
-            '''
+            """
         )
     return dedent(
-        f'''
+        f"""
             \N{cross mark}
             <div hx-swap-oob="delete:#br{title_id} .error_text"></div>
             <div hx-swap-oob="beforeend:#br{title_id}">
                 <div class="error_text">{error_text}</div>
             </div>
-        '''
+        """
     )
 
 
@@ -255,11 +255,14 @@ class SearchResultsView(generic.View):
         return self.get(request, error_text=error_text)
 
     def get(self, request, error_text=None):
-        searchLogger.info("user search", extra={
-            "search_term": self.request.GET.get("search"),
-            "user": request.user.username or "guest",
-            "admin": request.user.is_superuser,
-        })
+        searchLogger.info(
+            "user search",
+            extra={
+                "search_term": self.request.GET.get("search"),
+                "user": request.user.username or "guest",
+                "admin": request.user.is_superuser,
+            },
+        )
         search = unaccent(self.request.GET.get("search", "").strip().lower())
 
         search_errors = []
@@ -549,20 +552,20 @@ class FirstRatingsView(LoginRequiredMixin, generic.View):
                 )
                 if rating_count < 10:
                     html_update += dedent(
-                        f'''
+                        f"""
                             <div hx-swap-oob="innerHTML:.rating_count">
                                 {rating_count}
                             </div>
-                        '''
+                        """
                     )
                 else:
                     html_update += dedent(
-                        f'''
+                        f"""
                             <div hx-swap-oob="innerHTML:.cs_instructions">
                             <p>You've rated <span class="datum rating_count">{rating_count}</span> books. Click this button to generate some recommendations</p>
                             <input class="submit_button_form" type="submit" value="Generate Recommendations">
                             </div>
-                        '''
+                        """
                     )
                 return HttpResponse(html_update)
             return self.get(request, error_text=error_text)
@@ -578,13 +581,16 @@ class FirstRatingsView(LoginRequiredMixin, generic.View):
             urgent=True,
             cold_start=True,
         )
-        userLogger.info("finished coldstart 1", extra={
-            "user": request.user.username,
-            "admin": request.user.is_superuser,
-            "rating": "",
-            "title_id": "",
-            "title": "",
-        })
+        userLogger.info(
+            "finished coldstart 1",
+            extra={
+                "user": request.user.username,
+                "admin": request.user.is_superuser,
+                "rating": "",
+                "title_id": "",
+                "title": "",
+            },
+        )
         return redirect("/secondratings/")
 
 
@@ -648,13 +654,16 @@ class SecondRatingsView(LoginRequiredMixin, generic.ListView):
             urgent=True,
             cold_start=True,
         )
-        userLogger.info("finished cold start 2", extra={
-            "user": request.user.username,
-            "admin": request.user.is_superuser,
-            "rating": "",
-            "title_id": "",
-            "title": "",
-        })
+        userLogger.info(
+            "finished cold start 2",
+            extra={
+                "user": request.user.username,
+                "admin": request.user.is_superuser,
+                "rating": "",
+                "title_id": "",
+                "title": "",
+            },
+        )
         return redirect("/recommendations/")
 
 
@@ -716,17 +725,19 @@ def update_rating(request):
         rating_obj.save()
         if userLogger.isEnabledFor(logging.INFO):
             if "book_obj" not in locals():
-                book_obj = (
-                    Books.objects.values_list("title", named=True)
-                    .get(pk=rating_title_id)
+                book_obj = Books.objects.values_list("title", named=True).get(
+                    pk=rating_title_id
                 )
-            userLogger.info("rated", extra={
-                "user": request.user.username,
-                "admin": request.user.is_superuser,
-                "rating": new_rating,
-                "title_id": rating_title_id,
-                "title": book_obj.title,
-            })
+            userLogger.info(
+                "rated",
+                extra={
+                    "user": request.user.username,
+                    "admin": request.user.is_superuser,
+                    "rating": new_rating,
+                    "title_id": rating_title_id,
+                    "title": book_obj.title,
+                },
+            )
 
     return error_text
 

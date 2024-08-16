@@ -178,9 +178,7 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
-        "non_admin": {
-            "()": lambda : lambda r: not r.admin
-        },
+        "non_admin": {"()": lambda: lambda r: not r.admin},
     },
     "formatters": {
         "search_format": {
@@ -192,22 +190,22 @@ LOGGING = {
             "defaults": {"title_id": "", "rating": ""},
             "style": "{",
             "validate": True,
-        }
+        },
     },
     "handlers": {
         "search_handler": {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': f'{config["log_dir"]}/search.log',
-            'maxBytes': 1048576,
-            'backupCount': 10,
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": f'{config["log_dir"]}/search.log',
+            "maxBytes": 1048576,
+            "backupCount": 10,
             "formatter": "search_format",
             "filters": ["non_admin"],
         },
         "user_handler": {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': f'{config["log_dir"]}/user.log',
-            'maxBytes': 1048576,
-            'backupCount': 10,
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": f'{config["log_dir"]}/user.log',
+            "maxBytes": 1048576,
+            "backupCount": 10,
             "formatter": "user_format",
             "filters": ["non_admin"],
         },
